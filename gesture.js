@@ -14,24 +14,46 @@ function init(elem){
     listen(elem, startEvent, function(e){
         e.stopPropagation();
         e.preventDefault();
-        var startT = +new Date();
-        var mouseup = function(e){
+        var startT = new Date();
+        var startX = e.pageX || e.targetTouches[0].pageX;
+        var startY = e.pageY || e.targetTouches[0].pageY;
+        var currX;
+        var currY;
+        var isPressed = false;
+        var isMoved = false;
+        var timeout = setTimeout(function(){
+            isPressed = true;
+        }, TAP_MAX_MS);
+        function move(e){
             e.stopPropagation();
             e.preventDefault();
-            unlisten(elem, endEvent, mouseup);
-            var endT = +new Date();
+            isMoved = true;
+            currX = e.pageX || e.targetTouches[0].pageX;
+            currY = e.pageY || e.targetTouches[0].pageY;
+        }
+        function end(e){
+            e.stopPropagation();
+            e.preventDefault();
+            clearTimeout(timeout);
+            unlisten(elem, moveEvent, move);
+            unlisten(elem, endEvent, end);
+            isPressed = (new Date() - startT > TAP_MAX_MS) || isPressed;
+            if( isMoved ){
+                isMoved = Math.sqrt(Math.pow(currX-startX, 2) + Math.pow(currY-startY, 2)) > 50;
+            }
             var type;
-            if(endT - startT <= TAP_MAX_MS){
-                type = 'tap';
+            if( isMoved ){
+                type = isPressed ? 'drag' : 'flick';
             }else{
-                type = 'taphold';
-            };
+                type = isPressed ? 'press' : 'tap';
+            }
             var event = document.createEvent('CustomEvent');
             event.initCustomEvent(type, true, true, {});
             //var event = new CustomEvent(type, {});
             elem.dispatchEvent(event);
         }
-        listen(elem, endEvent, mouseup);
+        listen(elem, moveEvent, move);
+        listen(elem, endEvent, end);
     });
 }
 
@@ -67,6 +89,7 @@ var TAP_MAX_MS = 300;
 var is_ie = navigator.userAgent.indexOf('MSIE') >= 0;
 var is_touch_supported = 'ontouchstart' in document.documentElement;
 var startEvent = is_touch_supported ? 'touchstart' : 'mousedown';
+var moveEvent = is_touch_supported ? 'touchmove' : 'mousemove';
 var endEvent = is_touch_supported ? 'touchend' : 'mouseup';
 
 var ie_event_extends = {

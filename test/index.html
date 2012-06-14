@@ -3,6 +3,21 @@
     <head>
         <meta charset="utf-8">
         <title>Gesture Tester</title>
+        <style type="text/css" rel="stylesheet">
+            .nav{
+                position: relative;
+                top: 100px;
+            }
+            .nav ol.menus{
+                position: relative;
+                list-style: none;
+            }
+            .nav .menus li{
+                position: relative;
+                height: 50px;
+                font-size: 36px;
+            }
+        </style>
     </head>
     <body>
         <div class="nav">
@@ -18,6 +33,7 @@
             var $nav = $('.nav');
             var $home = $('.home');
             var $messages = $('.messages');
+            var $settings = $('.settings');
             $home[0].gesture('tap', function(e){
                 console.log('tap ' + this.className);
             });
@@ -28,16 +44,14 @@
             $nav[0].gesture('tap', function(e){
                 console.log('tap ' + this.className);
             });
-            
-            $home[0].gesture('taphold', function(e){
-                console.log('taphold ' + this.className);
+            $nav[0].gesture('press', function(e){
+                console.log('press ' + this.className);
             });
-            $messages[0].gesture('taphold', function(e){
-                console.log('taphold ' + this.className);
-                e.stopPropagation();
+            $nav[0].gesture('drag', function(e){
+                console.log('drag ' + this.className);
             });
-            $nav[0].gesture('taphold', function(e){
-                console.log('taphold ' + this.className);
+            $nav[0].gesture('flick', function(e){
+                console.log('flick ' + this.className);
             });
         </script>
     </body>
