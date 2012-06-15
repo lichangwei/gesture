@@ -1,104 +1,127 @@
-(function(window){
 
-HTMLElement.prototype.gesture = function(event, fn){
-    if(!this._gesture_inited) init(this);
-    listen(this, event, fn);
+(function(){
+
+var g = window.g = function(elem){
+    var elems = arrayify(elem);
+    if(!elems || elems.length === 0 ) return;
+    if ( !(this instanceof arguments.callee) )
+        return new arguments.callee(elems);
+    for(var i = 0, len = elems.length; i < len; i++){
+        if(!elems[i]._gesture_inited) init(elems[i]);
+    }
+    this.elems = elems;
 }
-HTMLElement.prototype.ungesture = function(event, fn){
-    if(!this._gesture_inited) return;
-    unlisten(this, event, fn);
+g.register = function(event, handler){
+    events[event] = handler;
+    if( g[event] ) return;
+    g[event] = function(elem, callback){
+        var elems = arrayify(elem);
+        for(var i = 0, len = elems.length; i < len; i++){
+            elems[i].addEventListener(event, callback, false);
+        }
+    }
+    g.prototype[event] = function(callback){
+        return g[event](this.elems, callback)
+    }
 }
+g.delegate = function(elem, selector, event, callback){
+    var elems = arrayify(elem);
+    g[event](elems, function(e){
+        var target = e.original.target;
+        var candidates = [];
+        var find = 0;
+        out: for(var i = 0, len = elems.length; i < len; i++){
+            var list = elem[i].querySelectorAll(selector);
+            for(var j = 0; j < list.length; j++){
+                if( target === list[j] ){
+                    find = 1;
+                    break out;
+                }
+            }
+        }
+        find && callback.call(target, e)
+    })
+}
+g.opt = function(k, v){
+    return v === void 0 ? opt[k] : (opt[k]=v);
+}
+g.createEvent = function(name, e, attrs){
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent(name, false, false, {});
+    evt.original = e;
+    for(var k in attrs){
+        if(attrs.hasOwnProperty(k)){
+            evt[k] = attrs[k];
+        }
+    }
+    (e.currentTarget || document).dispatchEvent(evt);
+}
+
+function arrayify( elem ){
+    if(elem.jquery) return elem.get();
+    if(elem instanceof HTMLElement) return [elem];
+    return elem;
+}
+var events = {};
+var opt = {};
 
 function init(elem){
     elem._gesture_inited = true;
-    listen(elem, startEvent, function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        var startT = new Date();
-        var startX = e.pageX || e.targetTouches[0].pageX;
-        var startY = e.pageY || e.targetTouches[0].pageY;
-        var currX;
-        var currY;
-        var isPressed = false;
-        var isMoved = false;
-        var timeout = setTimeout(function(){
-            isPressed = true;
-        }, TAP_MAX_MS);
-        function move(e){
-            e.stopPropagation();
-            e.preventDefault();
-            isMoved = true;
-            currX = e.pageX || e.targetTouches[0].pageX;
-            currY = e.pageY || e.targetTouches[0].pageY;
+    elem.addEventListener(start, function(e){
+        var startT = e.timeStamp;
+        var startX = e.pageX;
+        var startY = e.pageY;
+        var endT = startT;
+        var endX = startX;
+        var endY = startY;
+        var deltaT;
+        var deltaX;
+        var deltaY;
+        var distance;
+        for(var k in events){
+            if(typeof events[k].touchstart !== 'function') continue;
+            var result = events[k].touchstart(e, startT, startX, startY);
+            if(result === false) break;
         }
-        function end(e){
-            e.stopPropagation();
-            e.preventDefault();
-            clearTimeout(timeout);
-            unlisten(elem, moveEvent, move);
-            unlisten(elem, endEvent, end);
-            isPressed = (new Date() - startT > TAP_MAX_MS) || isPressed;
-            if( isMoved ){
-                isMoved = Math.sqrt(Math.pow(currX-startX, 2) + Math.pow(currY-startY, 2)) > 50;
+        function touchmove(e){
+            endX = e.pageX;
+            endY = e.pageY;
+            for(var k in events){
+                if(typeof events[k].touchmove !== 'function') continue;
+                var result = events[k].touchmove(e, endX, endY);
+                if(result === false) break;
             }
-            var type;
-            if( isMoved ){
-                type = isPressed ? 'drag' : 'flick';
-            }else{
-                type = isPressed ? 'press' : 'tap';
-            }
-            var event = document.createEvent('CustomEvent');
-            event.initCustomEvent(type, true, true, {});
-            //var event = new CustomEvent(type, {});
-            elem.dispatchEvent(event);
         }
-        listen(elem, moveEvent, move);
-        listen(elem, endEvent, end);
-    });
+        function touchend(e){
+            endT = e.timeStamp;
+            deltaT = endT - startT;
+            deltaX = endX - startX;
+            deltaY = endY - startY;
+            distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            for(var k in events){
+                if(typeof events[k].touchend !== 'function') continue;
+                var result = events[k].touchend(e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
+                if(result === false) break;
+            }
+            elem.removeEventListener(move, touchmove);
+            elem.removeEventListener(end, touchend);
+            elem.removeEventListener(leave, touchleave);
+        }
+        function touchleave(e){
+            elem.removeEventListener(move, touchmove);
+            elem.removeEventListener(end, touchend);
+            elem.removeEventListener(leave, touchleave);
+        }
+        elem.addEventListener(move, touchmove, false);
+        elem.addEventListener(end, touchend, false);
+        elem.addEventListener(leave, touchleave, false);
+    }, false);
 }
 
-function listen(elem, event, fn){
-    if(elem.removeEventListener){
-        elem.addEventListener(event, fn, false);
-    }else{
-        fn._wrap = function(e){
-            e = extend(e||window.event, ie_event_extends);
-            fn( e );
-        };
-        elem.attachEvent(event, fn._wrap);
-    }
-}
-
-function unlisten(elem, event, fn){
-    if(elem.removeEventListener){
-        elem.removeEventListener(event, fn);
-    }else{
-        elem.detachEvent(event, fn._wrap);
-    }
-}
-
-function extend(target, source){
-    for(var k in source){
-        target[k] = source[k];
-    }
-    return target;
-}
-
-var TAP_MAX_MS = 300;
-
-var is_ie = navigator.userAgent.indexOf('MSIE') >= 0;
 var is_touch_supported = 'ontouchstart' in document.documentElement;
-var startEvent = is_touch_supported ? 'touchstart' : 'mousedown';
-var moveEvent = is_touch_supported ? 'touchmove' : 'mousemove';
-var endEvent = is_touch_supported ? 'touchend' : 'mouseup';
+var start = is_touch_supported ? 'touchstart' : 'mousedown';
+var move = is_touch_supported ? 'touchmove' : 'mousemove';
+var end = is_touch_supported ? 'touchend' : 'mouseup';
+var leave = is_touch_supported ? 'touchleave' : 'mouseleave';
 
-var ie_event_extends = {
-    stopPropagation: function(){
-        this.cancelBubble = true;
-    },
-    preventDefault: function(){
-        this.returnValue = false;
-    }
-};
-
-})(window);
+})();

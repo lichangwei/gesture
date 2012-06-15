@@ -2,11 +2,11 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Gesture Tester</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Touch Tester</title>
         <style type="text/css" rel="stylesheet">
             .nav{
                 position: relative;
-                top: 100px;
             }
             .nav ol.menus{
                 position: relative;
@@ -29,29 +29,35 @@
         </div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
+        <script src="../tap.js"></script>
+        <script src="../taphold.js"></script>
+        <script src="../flick.js"></script>
         <script>
-            var $nav = $('.nav');
-            var $home = $('.home');
-            var $messages = $('.messages');
-            var $settings = $('.settings');
-            $home[0].gesture('tap', function(e){
-                console.log('tap ' + this.className);
-            });
-            $messages[0].gesture('tap', function(e){
-                console.log('tap ' + this.className);
-                e.stopPropagation();
-            });
-            $nav[0].gesture('tap', function(e){
-                console.log('tap ' + this.className);
-            });
-            $nav[0].gesture('press', function(e){
-                console.log('press ' + this.className);
-            });
-            $nav[0].gesture('drag', function(e){
-                console.log('drag ' + this.className);
-            });
-            $nav[0].gesture('flick', function(e){
-                console.log('flick ' + this.className);
+            $(function(){
+                var $nav = $('.nav');
+                var $menus = $('.menus');
+                var $lis = $nav.find('li');
+                g($lis).tap(function(e){
+                    console.log('tap ' + this.className);
+                });
+                g.taphold($lis, function(e){
+                    console.log('taphold ' + this.className);
+                });
+                g($nav[0]).tap(function(e){
+                    console.log('tap ' + this.className);
+                });
+                g.taphold($nav[0], function(e){
+                    console.log('taphold ' + this.className);
+                });
+                $('.home')[0].addEventListener('flick', function(e){
+                    console.log('flick ' + e.direction + ' ' + this.className);
+                }, false);
+                g.delegate($nav, '.nav li', 'flick', function(e){
+                    console.log('g.delegate flick ' + e.direction + ' ' + this.className);
+                });
+                g.delegate($nav, 'li.notexisted', 'flick', function(e){
+                    console.log('you should not find out me.');
+                });
             });
         </script>
     </body>
