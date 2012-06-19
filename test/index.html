@@ -23,13 +23,13 @@
         <div class="nav">
             <ol class="menus">
                 <li class="home">Home</li>
-                <li class="messages">Messages</li>
+                <li class="messages">Messages <span>22</span></li>
                 <li class="settings">Settings</li>
             </ol>
         </div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
-        <script src="../tap.js"></script>
+        <script src="../tripletap.js"></script>
         <script src="../taphold.js"></script>
         <script src="../flick.js"></script>
         <script>
@@ -39,6 +39,9 @@
                 var $lis = $nav.find('li');
                 g($lis).tap(function(e){
                     console.log('tap ' + this.className);
+                });
+                g($lis.add($nav)).doubletap(function(e){
+                    console.log('doubletap ' + this.className);
                 });
                 g.taphold($lis, function(e){
                     console.log('taphold ' + this.className);
@@ -57,6 +60,12 @@
                 });
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');
+                });
+                g.delegate($nav, '.nav li', 'doubletap', function(e){
+                    console.log('g.delegate doubletap ' + this.className);
+                });
+                g.delegate($nav, '.nav li', 'tripletap', function(e){
+                    console.log('g.delegate tripletap ' + this.className);
                 });
             });
         </script>

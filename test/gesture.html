@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Gesture Tester</title>
+    </head>
+    <body>
+       <div class="nav">
+            <ol class="menus">
+                <li class="home">Home</li>
+                <li class="messages">Messages</li>
+                <li class="settings">Settings</li>
+            </ol>
+        </div>
+        <script src="../../base/jquery-1.7.2.min.js"></script>
+        <script defer>
+            var _console = window.console;
+            var console = {
+                log: function(arr){
+                    if(typeof arr === 'string') return _console.log(arr);
+                    var result = '';
+                    for(var i = 0; i < arr.length; i++){
+                        result += (result ? ', ' : '') + arr[i].target.className; 
+                    }
+                    _console.log(result);
+                }
+            }
+            $('.home')[0].addEventListener('touchstart', function(e){
+                console.log('------------------------------home');
+                console.log(e.targetTouches);
+                console.log(e.touches);
+                console.log(e.changedTouches);
+                // for(var i = 0; i < e.targetTouches.length; i++){
+                    // for(var k in e.targetTouches[i]){
+                        // console.log(k + '=' + e.targetTouches[i][k]);
+                    // }
+                // }
+            }, false);
+            
+            $('.nav')[0].addEventListener('touchstart', function(e){
+                console.log('------------------------------nav');
+                console.log(e.targetTouches);
+                console.log(e.touches);
+                console.log(e.changedTouches);
+            }, false);
+        </script> 
+    </body>
+</html>
