@@ -61,7 +61,7 @@
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');
                 });
-                g.delegate($nav, '.nav li', 'doubletap', function(e){
+                g.delegate($nav, '.nav li.messages', 'doubletap', function(e){
                     console.log('g.delegate doubletap ' + this.className);
                 });
                 g.delegate($nav, '.nav li', 'tripletap', function(e){

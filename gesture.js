@@ -35,19 +35,15 @@ g.unregister = function(event){
 g.delegate = function(elem, selector, event, callback){
     var elems = arrayify(elem);
     g[event](elems, function(e){
-        var target = e.original.target;
-        var candidates = [];
-        var find = 0;
-        out: for(var i = 0, len = elems.length; i < len; i++){
-            var list = elem[i].querySelectorAll(selector);
-            for(var j = 0; j < list.length; j++){
-                if( target === list[j] ){
-                    find = 1;
-                    break out;
-                }
-            }
+        var _list = this.querySelectorAll(selector);
+        var list = [];
+        for(var i = 0, len = _list.length; i < len; i++){
+            list.push(_list[i]);
         }
-        find && callback.call(target, e)
+        for(var target = e.original.target; target !== this; target = target.parentNode){
+            if(list.indexOf(target) < 0) continue;
+            callback.call(target, e);
+        }
     });
     return this;
 }
