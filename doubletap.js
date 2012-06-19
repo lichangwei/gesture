@@ -1,31 +1,28 @@
 (function(){
 
-var times = {};
+var events = {};
 var timeout = {};
 
 g.register('tap,doubletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         var _gesture_id = e.currentTarget._gesture_id;
-        if(times[_gesture_id] === void 0){
-            times[_gesture_id] = 0;
+        if(events[_gesture_id] === void 0){
+            events[_gesture_id] = [];
         }
         if( distance <= 30 && deltaT <= 300 ){
-            times[_gesture_id]++;
+            events[_gesture_id].push(e);
         }
-        if( times[_gesture_id] >= 2 ){
-            times[_gesture_id] = 0;
+        if(events[_gesture_id].length >= 2){
             clearTimeout(timeout[_gesture_id]);
-            g.createEvent('doubletap', e);
-        }else if(times[_gesture_id] === 1){
-            (function(e, gid){
-                var attrs = {
-                    currentTarget: e.currentTarget
-                };
+            g.createEvent('doubletap', e, {events: events[gid]});
+            events[_gesture_id] = [];
+        }else if(events[_gesture_id].length === 1){
+            (function(gid){
                 timeout[gid] = setTimeout(function(){
-                    times[gid] = 0;
-                    g.createEvent('tap', e, attrs);
+                    g.createEvent('tap', e, {events: events[gid]});
+                    events[gid] = [];
                 }, g.opt('tap_interval'));
-            })(e, _gesture_id);
+            })(_gesture_id);
         }
     }
 });
