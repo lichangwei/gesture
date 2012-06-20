@@ -36,6 +36,7 @@ g.delegate = function(elem, selector, event, callback){
     var elems = arrayify(elem);
     g[event](elems, function(e){
         var _list = this.querySelectorAll(selector);
+        if( _list.length === 0 ) return;
         var list = [];
         for(var i = 0; i < _list.length; i++){
             list.push(_list[i]);
@@ -46,7 +47,7 @@ g.delegate = function(elem, selector, event, callback){
             for(var o = targets[i]; o !== this; o = o.parentNode){
                 if(list.indexOf(o) >= 0) break;
             }
-            if( target === this ) return;
+            if(o === this) return;
             if(target && (target !== o)) return;
             target = o;
         }
@@ -68,8 +69,7 @@ g.createEvent = function(name, e, attrs){
     attrs.original = e;
     var evt = document.createEvent('CustomEvent');
     evt.initCustomEvent(name, false, false, attrs);
-    var target = e.currentTarget || attrs.target
-        || attrs.targets[attrs.targets.length-1];
+    var target = e.currentTarget || attrs.currentTarget;
     (target || document).dispatchEvent(evt);
 }
 

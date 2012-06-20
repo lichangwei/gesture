@@ -15,16 +15,24 @@ g.register('tap,doubletap,tripletap', {
             targets[gid] = null;
         }else if(ts.length === 2){
             (function(e, gid){
+                var currentTarget = e.currentTarget;
                 clearTimeout(timeout[gid]);
                 timeout[gid] = setTimeout(function(){
-                    g.createEvent('doubletap', e, {targets: ts});
+                    g.createEvent('doubletap', e, {
+                        currentTarget: currentTarget,
+                        targets: ts
+                    });
                     targets[gid] = null;
                 }, g.opt('tap_interval'));
             })(e, gid);
         }else if(ts.length === 1){
             (function(e, gid){
+                var currentTarget = e.currentTarget;
                 timeout[gid] = setTimeout(function(){
-                    g.createEvent('tap', e, {targets: ts});
+                    g.createEvent('tap', e, {
+                        currentTarget: currentTarget,
+                        targets: ts
+                    });
                     targets[gid] = null;
                 }, g.opt('tap_interval'));
             })(e, gid);

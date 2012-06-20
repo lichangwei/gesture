@@ -56,7 +56,7 @@
                     console.log('flick ' + e.direction + ' ' + this.className);
                 }, false);
                 g.delegate($nav, '.nav li', 'flick', function(e){
-                    console.log('g.delegate flick ' + e.direction + ' ' + this.className);
+                    console.log('g.delegate flick ' + e.detail.direction + ' ' + this.className);
                 });
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');
