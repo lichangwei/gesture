@@ -41,7 +41,7 @@ g.delegate = function(elem, selector, event, callback){
         for(var i = 0; i < _list.length; i++){
             list.push(_list[i]);
         }
-        var targets = e.detail.targets || [e.detail.original.target];
+        var targets = e.data.targets || [e.data.original.target];
         var target;
         for(var i = 0; i < targets.length; i++){
             for(var o = targets[i]; o !== this; o = o.parentNode){
@@ -67,8 +67,14 @@ g.opt = function(k, v){
 g.createEvent = function(name, e, attrs){
     attrs = attrs || {};
     attrs.original = e;
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent(name, false, false, attrs);
+    if(is_customer_event_supported){
+        var evt = document.createEvent('CustomEvent');
+        evt.initCustomEvent(name, false, true, attrs);
+    }else{
+        var evt = document.createEvent('UIEvent');
+        evt.initUIEvent(name, false, true);
+    }
+    evt.data = attrs;
     var target = e.currentTarget || attrs.currentTarget;
     (target || document).dispatchEvent(evt);
 }
@@ -98,25 +104,27 @@ var opt = {
     'tap_interval': 500
 };
 var gesture_id = 0;
+var status_init = 0,
+    status_touch_start = 1,
+    status_touch_move = 2,
+    status_gesture_start = 4;
+    status_gesture_end = 8,
+    status_touch_end = 16;
 
 function init(elem){
     elem._gesture_id = ++gesture_id;
     
-    var status;
+    var status = status_init;
     var startT, startX, startY;
     var endT, endX, endY;
     var deltaT, deltaX, deltaY;
     var distance;
     
     elem.addEventListener(start, function(e){
-        if(e.touches && e.touches.length >= 2){
-            status = 2;
-        }else{
-            status = 1;
-        }
+        status = 1;
         startT = e.timeStamp;
-        startX = e.pageX;
-        startY = e.pageY;
+        startX = e.pageX || e.touches[0].pageX;
+        startY = e.pageY || e.touches[0].pageY;
         endT = startT;
         endX = startX;
         endY = startY;
@@ -129,11 +137,12 @@ function init(elem){
     }, false);
     elem.addEventListener(move, function(e){
         if(!status) return;
-        endX = e.pageX;
-        endY = e.pageY;
+        endT = e.timeStamp;
+        endX = e.pageX || e.touches[0].pageX;
+        endY = e.pageY || e.touches[0].pageY;
         for(var k in events){
             if(typeof events[k].touchmove !== 'function') continue;
-            var result = events[k].touchmove.call(this, e, endX, endY);
+            var result = events[k].touchmove.call(this, e, endT, endX, endY);
             if(result === false) break;
         }
     }, false);
@@ -153,12 +162,85 @@ function init(elem){
     elem.addEventListener(leave, function(e){
         status = 0;
     }, false);
+    
+    elem.addEventListener('gesturestart', function(e){
+        status = 0;
+        for(var k in events){
+            if(typeof events[k].gesturestart !== 'function') continue;
+            var result = events[k].gesturestart.call(this, e);
+            if(result === false) break;
+        }
+    }, false);
+    elem.addEventListener('gesturechange', function(e){
+        status = 0;
+        for(var k in events){
+            if(typeof events[k].gesturechange !== 'function') continue;
+            var result = events[k].gesturechange.call(this, e);
+            if(result === false) break;
+        }
+    }, false);
+    elem.addEventListener('gestureend', function(e){
+        status = 0;
+        for(var k in events){
+            if(typeof events[k].gestureend !== 'function') continue;
+            var result = events[k].gestureend.call(this, e);
+            if(result === false) break;
+        }
+    }, false);
+    if(is_touch_supported && !is_gesture_supported){
+        (function(){
+            var status = 0;
+            var t1, t2, distance, scale;
+            elem.addEventListener(start, function(e){
+                status++;
+                if(status === 1) t1 = {x: e.touches[0].pageX, y: e.touches[0].pageY};
+                if(status >= 2) t2 = {x: e.touches[0].pageX, y: e.touches[0].pageY};
+                if(!t2 || !t1) return;
+                distance = Math.sqrt((t2.x-t1.x)*(t2.x-t1.x) + (t2.y-t1.y)*(t2.y-t1.y));
+                scale = 1;
+                g.createEvent('gesturestart', e, {
+                    scale: scale
+                });
+            }, false);
+            elem.addEventListener(move, function(e){
+                if(!t2 || !t1 || !scale || !distance) return;
+                var touch = e.touches[0];
+                var x = touch.pageX;
+                var y = touch.pageY;
+                if( Math.sqrt((x-t1.x)*(x-t1.x) + (y-t1.y)*(y-t1.y)) 
+                    > Math.sqrt((x-t2.x)*(x-t1.x) + (y-t2.y)*(y-t2.y)) ){
+                    t2 = {x: x, y: y};
+                }else{
+                    t1 = {x: x, y: y};
+                }
+                var d = Math.sqrt((t2.x-t1.x)*(t2.x-t1.x) + (t2.y-t1.y)*(t2.y-t1.y));
+                scale = d / distance;
+                g.createEvent('gesturechange', e, {
+                    scale: scale
+                });
+            }, false);
+            elem.addEventListener(end, function(e){
+                if(t2 && t1 && scale && distance){
+                    g.createEvent('gestureend', e, {
+                        scale: scale
+                    });
+                }
+                status = t1 = t2 = scale = distance = 0;
+            }, false);
+        })();
+    }
 }
 
 var is_touch_supported = 'ontouchstart' in document.documentElement;
+var is_gesture_supported = 'ongesturestart' in document.documentElement;
 var start = is_touch_supported ? 'touchstart' : 'mousedown';
 var move = is_touch_supported ? 'touchmove' : 'mousemove';
 var end = is_touch_supported ? 'touchend' : 'mouseup';
 var leave = is_touch_supported ? 'touchleave' : 'mouseleave';
-
+var is_customer_event_supported = true;
+try{
+    document.createEvent('CustomEvent');
+}catch(e){
+    is_customer_event_supported = false;
+}
 })();

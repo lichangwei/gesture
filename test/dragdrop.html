@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Drap & Drop Tester</title>
+        <style type="text/css" rel="stylesheet">
+            ul.list{
+                list-style: none;
+            }
+            ul.list li{
+                display: inline;
+            }
+            .playground{
+                position: relative;
+                top: 30px;
+                width: 100%;
+                height: 300px;
+                background: #E2E2E2;
+            }
+        </style>
+    </head>
+    <body>
+        <ul class="list">
+            <li><a href="#" class="a">AAAAAA</a></li>
+            <li><a href="#" class="b">BBBBBB</a></li>
+            <li><a href="#" class="c">CCCCCC</a></li>
+        </ul>
+        <div class="playground"></div>
+        <script src="../../base/jquery-1.7.2.min.js"></script>
+        <script src="../gesture.js"></script>
+        <script src="../dragdrop.js"></script>
+        <script>
+            var $as = $('.list a');
+            var $pg = $('.playground');
+            var gas = g($as);
+            var gpg = g($pg)
+            g($as).draggable(function(e){
+                $pg.html('drag ' + e.target.className);
+            }, function(e){
+                $pg.append('<br>dragend');
+            });
+            g($pg).dropable(function(e){
+                $pg.append('<br>dragenter');
+            }, function(e){
+                $pg.append('dragmove');
+            }, function(e){
+                $pg.append('<br>dragleave');
+            }, function(e){
+                $pg.append('<br>drop');
+            });
+        </script>
+    </body>
+</html>

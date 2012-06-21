@@ -17,6 +17,11 @@
                 height: 50px;
                 font-size: 36px;
             }
+            .playground{
+                width: 100%;
+                height: 320px;
+                background: #E2E2E2;
+            }
         </style>
     </head>
     <body>
@@ -27,16 +32,25 @@
                 <li class="settings">Settings</li>
             </ol>
         </div>
+        <div class="playground"></div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
         <script src="../tripletap.js"></script>
         <script src="../taphold.js"></script>
         <script src="../flick.js"></script>
+        <script src="../zoom.js"></script>
         <script>
             $(function(){
                 var $nav = $('.nav');
                 var $menus = $('.menus');
                 var $lis = $nav.find('li');
+                var $pg = $('.playground');
+                if(navigator.userAgent.indexOf('Android') > -1){
+                    console = console || {};
+                    console.log = function(text){
+                        $pg.append(' ' + text);
+                    }
+                }
                 g($lis).tap(function(e){
                     console.log('tap ' + this.className);
                 });
@@ -53,10 +67,10 @@
                     console.log('taphold ' + this.className);
                 });
                 $('.home')[0].addEventListener('flick', function(e){
-                    console.log('flick ' + e.direction + ' ' + this.className);
+                    console.log('flick ' + e.data.direction + ' ' + this.className);
                 }, false);
                 g.delegate($nav, '.nav li', 'flick', function(e){
-                    console.log('g.delegate flick ' + e.detail.direction + ' ' + this.className);
+                    console.log('g.delegate flick ' + e.data.direction + ' ' + this.className);
                 });
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');
@@ -67,7 +81,14 @@
                 g.delegate($nav, '.nav li', 'tripletap', function(e){
                     console.log('g.delegate tripletap ' + this.className);
                 });
+                g($pg).zoomin(function(e){
+                    console.log('zoomin');
+                });
+                g($pg).zoomout(function(e){
+                    console.log('zoomout');
+                });
             });
+            
         </script>
     </body>
 </html>
