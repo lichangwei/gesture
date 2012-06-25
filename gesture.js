@@ -136,6 +136,10 @@ function init(elem){
         }
     }, false);
     elem.addEventListener(move, function(e){
+        // The touchevents are not fired propperly 
+        // if e.preventDefault() is not used on touchstart and touchmove
+        // http://code.google.com/p/android/issues/detail?id=19827
+        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         endX = e.pageX || e.touches[0].pageX;
@@ -147,6 +151,7 @@ function init(elem){
         }
     }, false);
     elem.addEventListener(end, function(e){
+        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         deltaT = endT - startT;

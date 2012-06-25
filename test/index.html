@@ -45,12 +45,7 @@
                 var $menus = $('.menus');
                 var $lis = $nav.find('li');
                 var $pg = $('.playground');
-                if(navigator.userAgent.indexOf('Android') > -1){
-                    console = console || {};
-                    console.log = function(text){
-                        $pg.append(' ' + text);
-                    }
-                }
+                
                 g($lis).tap(function(e){
                     console.log('tap ' + this.className);
                 });
@@ -87,8 +82,14 @@
                 g($pg).zoomout(function(e){
                     console.log('zoomout');
                 });
+                
+                if(navigator.userAgent.indexOf('Android') > -1){
+                    console = console || {};
+                    console.log = function(){
+                        $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+                    }
+                }
             });
-            
         </script>
     </body>
 </html>
