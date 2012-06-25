@@ -5,16 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>Drap &amp; Drop Tester</title>
         <style type="text/css" rel="stylesheet">
-            ul{
+            ul.list{
                 list-style: none;
-                border: 1px solid black;
-                height: 50px;
-                line-height: 50px;
             }
-            .item{
+            ul.list li{
                 display: inline;
                 border: 1px solid black;
-                font: 36px arial;
             }
             .playground{
                 position: relative;
@@ -29,34 +25,39 @@
         </style>
     </head>
     <body>
-        <ul class="candidate">
-            <li class="item">AAAAAA</li>
-            <li class="item">BBBBBB</li>
-            <li class="item">CCCCCC</li>
-            <li class="item">DDDDDD</li>
-            <li class="item">EEEEEE</li>
-            <li class="item">FFFFFF</li>
+        <ul class="list">
+            <li>AAAAAA</li>
+            <li>BBBBBB</li>
+            <li>CCCCCC</li>
         </ul>
-        <ul class="selected"></ul>
         <div class="playground"></div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
-        <script src="../dragdrop.js"></script>
+        <script src="../dragdrop2.js"></script>
         <script defer>
-            var $candidate = $('.candidate li');
-            var $selected = $('.selected');
+            var $lis = $('.list li');
+            var $pg = $('.playground');
             
-            g($candidate).draggable(function(e, startT, startX, startY){
+            g($lis).draggable(function(e){
                 console.log('dragstart');
-            }, function(e, endT, endX, endY){
-                console.log('drag');
-            }, function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+            }, function(e){
+                //console.log('drag');
+            }, function(e){
                 console.log('dragend');
+            });
+            
+            g($pg).dropable(function(e){
+                console.log('dragenter');
+            }, function(e){
+                console.log('dragover');
+            }, function(e){
+                console.log('dragleave');
+            }, function(e){
+                console.log('drop');
             });
             
             if(navigator.userAgent.indexOf('Android') > -1){
                 console = console || {};
-                var $pg = $('.playground');
                 console.log = function(){
                     $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
                 }

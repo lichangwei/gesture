@@ -75,7 +75,7 @@ g.createEvent = function(name, e, attrs){
         evt.initUIEvent(name, false, true);
     }
     evt.data = attrs;
-    var target = e.currentTarget || attrs.currentTarget;
+    var target = attrs.currentTarget || e.currentTarget;
     (target || document).dispatchEvent(evt);
 }
 

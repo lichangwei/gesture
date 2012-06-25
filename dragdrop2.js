@@ -5,10 +5,6 @@ g.draggable = function(elem, dragstart, drag, dragend){
     return g;
 }
 g.prototype.draggable = function(dragstart, drag, dragend){
-    if(arguments.length === 2){
-        dragend = drag;
-        drag = null;
-    }
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
         elem.draggable = true;
@@ -16,31 +12,25 @@ g.prototype.draggable = function(dragstart, drag, dragend){
         drag && elem.addEventListener('drag', drag, false);
         dragend && elem.addEventListener('dragend', dragend, false);
     }
-    if(draggable) return this;
-    elem.addEventListener('touchstart', function(e){
-        if(!e.target.draggable) return;
-        transfer = e.target;
-        g.createEvent('dragstart', e);
-    }, false);
-    elem.addEventListener('touchmove', function(e){
-        if(!e.target.draggable) return;
-        g.createEvent('drag', e);
-    }, false);
-    elem.addEventListener('touchleave', function(e){
-        
-    }, false);
-    elem.addEventListener('touchend', function(e){
-        if(!e.target.draggable) return;
-        g.createEvent('dragend', e);
-    }, false);
-    function doc_touchend(e){
-        g.createEvent('dragend', e, {
-            currentTarget: transfer
-        });
-        transfer = null;
+    //if(draggable) return this;
+    for(var i = 0; i < this.elems.length; i++){
+        var elem = this.elems[i];
+        elem.addEventListener('touchstart', function(e){
+            if(!e.target.draggable) return;
+            e.preventDefault();
+            transfer = this;
+            g.createEvent('dragstart', e);
+        }, false);
+        elem.addEventListener('touchmove', function(e){
+            e.preventDefault();
+            g.createEvent('drag', e);
+        }, false);
+        elem.addEventListener('touchend', function(e){
+            e.preventDefault();
+            g.createEvent('dragend', e);
+            transfer = null;
+        }, false);
     }
-    document.addEventListener('touchend', doc_touchend, false);
-    document.addEventListener('mouseup', doc_touchend, false);
     return this;
 }
 g.dropable = function(elem, dragenter, dragmove, dragleave, drop){
@@ -55,37 +45,37 @@ g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
         dragleave && elem.addEventListener('dragleave', dragleave, false);
         drop && elem.addEventListener('drop', drop, false);
     }
-    if( !draggable ){
-        g.register('dropable', {
-            touchstart: function(e, startT, startX, startY){
-                transfer = null;
-            },
-            touchmove: function(e, endT, endX, endY){
-                if(!transfer) return;
-                if(!dragenter){
-                    dragenter = true;
-                    g.createEvent('dragenter', e);
-                }else{
-                    g.createEvent('dragover', e);
-                }
-            },
-            touchleave: function(){
-                if(!transfer) return;
-                dragenter = false;
-                g.createEvent('dropleave', e);
-            },
-            touchend: function(e){
-                if(!transfer) return;
-                dragenter = false;
-                g.createEvent('drop', e);
+    //if(draggable) return this;
+    for(var i = 0; i < this.elems.length; i++){
+        var elem = this.elems[i];
+        elem.addEventListener('touchenter', function(e){console.log(1)
+            if(!transfer) return;
+            e.preventDefault();
+            if(!dragentered){
+                dragenter = true;
+                g.createEvent('dragenter', e);
+            }else{
+                g.createEvent('dragover', e);
             }
-        });
+        }, false);
+        elem.addEventListener('touchleave', function(e){
+            if(!transfer) return;
+            e.preventDefault();
+            dragentered = false;
+            g.createEvent('dropleave', e);
+        }, false);
+        elem.addEventListener('touchend', function(e){
+            if(!transfer) return;
+            e.preventDefault();
+            dragentered = false;
+            g.createEvent('drop', e);
+        }, false);
     }
     return this;
 }
 var div = document.createElement('div');
 var draggable = ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
 var transfer;
-var dragenter;
+var dragentered;
 
 })();
