@@ -101,7 +101,17 @@ function arrayify( elem ){
 }
 var events = {};
 var opt = {
-    'tap_interval': 500
+    'tap-max-distance': 30,
+    'tap-max-delta-time': 300,
+    'tap-interval': 500,
+    
+    'taphold-max-distance': 30,
+    'taphold-min-delta-time': 301,
+    
+    'flick-min-x-or-y': 100,
+    
+    'zoomin-max-scale': 0.83,
+    'zoomout-min-scale': 1.2
 };
 var gesture_id = 0;
 var status_init = 0,

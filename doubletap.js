@@ -5,7 +5,8 @@ var timeout = {};
 
 g.register('tap,doubletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-        if( distance > 30 || deltaT > 300 ) return;
+        if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-max-delta-time'))
+            return;
         var gid = this._gesture_id;
         var ts = targets[gid] || (targets[gid] = []);
         ts.push(e.target);
@@ -24,7 +25,7 @@ g.register('tap,doubletap', {
                         targets: targets[gid]
                     });
                     targets[gid] = null;
-                }, g.opt('tap_interval'));
+                }, g.opt('tap-interval'));
             })(e, gid);
         }
     }

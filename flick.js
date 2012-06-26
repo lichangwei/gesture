@@ -1,10 +1,9 @@
 (function(){
 
-var threshold = 100;
-
 g.register('flick', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         var direction;
+        var threshold = g.opt('flick-min-x-or-y');
         if( Math.abs(deltaX) >= Math.abs(deltaY) ){
             if( deltaX > threshold ){
                 direction = 'right';

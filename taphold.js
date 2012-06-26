@@ -2,9 +2,10 @@
 
 g.register('taphold', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-        if( distance <= 30 && deltaT > 300 ){
-            g.createEvent('taphold', e);
-        }
+        if(distance > g.opt('taphold-max-distance') 
+            || deltaT < g.opt('taphold-min-delta-time'))
+            return;
+        g.createEvent('taphold', e);
     }
 });
 

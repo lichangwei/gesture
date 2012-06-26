@@ -3,9 +3,9 @@
 g.register('zoomin,zoomout', {
     gestureend: function(e){
         var scale = e.scale || e.data.scale;
-        if(scale > 1.2){
+        if(scale > g.opt('zoomout-min-scale')){
             g.createEvent('zoomout', e)
-        }else if(scale < 0.83){
+        }else if(scale < g.opt('zoomin-max-scale')){
             g.createEvent('zoomin', e)
         }
     }
