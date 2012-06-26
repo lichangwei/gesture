@@ -6,15 +6,27 @@
         <title>Drap &amp; Drop Tester</title>
         <style type="text/css" rel="stylesheet">
             ul{
+                position: relative;
                 list-style: none;
                 border: 1px solid black;
-                height: 50px;
-                line-height: 50px;
+                height: auto;
             }
             .item{
+                position: relative;
+                top: -1px;
                 display: inline;
                 border: 1px solid black;
                 font: 36px arial;
+            }
+            .e{
+                position: relative;
+                left: 0;
+                top: -1px;
+            }
+            .f{
+                position: absolute;
+                left: 200px;
+                top: -1px;
             }
             .playground{
                 position: relative;
@@ -22,22 +34,21 @@
                 width: 100%;
                 height: 300px;
                 background: #E2E2E2;
-            }
-            *[draggable=true] {
-                -khtml-user-drag: element;
+                display: none;
             }
         </style>
     </head>
     <body>
         <ul class="candidate">
-            <li class="item">AAAAAA</li>
-            <li class="item">BBBBBB</li>
-            <li class="item">CCCCCC</li>
-            <li class="item">DDDDDD</li>
-            <li class="item">EEEEEE</li>
-            <li class="item">FFFFFF</li>
+            <li class="item a">AAAAAA</li>
+            <li class="item b">BBBBBB</li>
+            <li class="item c">CCCCCC</li>
+            <li class="item d">DDDDDD</li>
         </ul>
-        <ul class="selected"></ul>
+        <ul class="selected">
+            <li class="item e">EEEEEE</li>
+            <li class="item f">FFFFFF</li>
+        </ul>
         <div class="playground"></div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
@@ -46,17 +57,62 @@
             var $candidate = $('.candidate li');
             var $selected = $('.selected');
             
-            g($candidate).draggable(function(e, startT, startX, startY){
-                console.log('dragstart');
-            }, function(e, endT, endX, endY){
-                console.log('drag');
-            }, function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-                console.log('dragend');
+            g($('.a')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                }
             });
-            
+            g($('.b')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                show: 'no'
+            });
+            g($('.c')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                positionShadow: function (left, top){
+                    this.style.cssText = 'position: absolute; top: '
+                        + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
+                }
+            });
+            g($('.e')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchmove: function(e, x, y, dx, dy, dt){
+                    this.style.left = x + 'px';
+                    return false;
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                show: 'me'
+            });
+            g($('.f')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchmove: function(e, x, y, dx, dy, dt){
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                show: 'me'
+            });
             if(navigator.userAgent.indexOf('Android') > -1){
                 console = console || {};
-                var $pg = $('.playground');
+                var $pg = $('.playground').show();
                 console.log = function(){
                     $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
                 }
