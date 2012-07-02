@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Qunit for Gesture</title>
+        <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css"/>
+    </head>
+    <body>
+        <h1 id="qunit-header">QUnit example</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture">
+            test markup, will be hidden
+        </div>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="http://code.jquery.com/qunit/git/qunit.js"></script>
+        <script src="eventsimulator.js"></script>
+        <script src="../gesture.js"></script>
+        <script src="../tripletap.js"></script>
+        <script src="../taphold.js"></script>
+        <script src="../flick.js"></script>
+        <script src="../zoom.js"></script>
+        <script>
+            $(function(){
+                var $header = $('#qunit-header');
+                var $banner = $('#qunit-banner');
+                var header = $header[0];
+                var banner = $banner[0];
+                
+                var statistics = {
+                    'qunit-header': {},
+                    'qunit-banner': {}
+                };
+                var events = ['tap', 'doubletap', 'tripletap', 'taphold', 'flick'];
+                for(var i = 0; i < events.length; i++){
+                    statistics['qunit-header'][events[i]] = 0;
+                    statistics['qunit-banner'][events[i]] = 0;
+                }
+                g($header).tap(function(e){
+                    statistics[this.id][e.type]++;
+                });
+                g.taphold($header, function(e){
+                    statistics[this.id][e.type]++;
+                });
+                g(header).doubletap(function(e){
+                    statistics[this.id][e.type]++;
+                });
+                g(header).tripletap(function(e){
+                    statistics[this.id][e.type]++;
+                });
+                g(header).flick(function(e){
+                    statistics[this.id][e.type]++;
+                });
+                module("Gesture");
+                
+                var is_touch_supported = 'ontouchstart' in document.documentElement;
+                var is_gesture_supported = 'ongesturestart' in document.documentElement;
+                var startEvent = is_touch_supported ? 'touchstart' : 'mousedown';
+                var moveEvent = is_touch_supported ? 'touchmove' : 'mousemove';
+                var endEvent = is_touch_supported ? 'touchend' : 'mouseup';
+                
+                function startend(target, callback, s2e, e2c){
+                    es[startEvent](target);
+                    setTimeout(function(){
+                        es[endEvent](target);
+                        setTimeout(callback, e2c);
+                    }, s2e);
+                }
+                
+                function startmoveend(target, callback, s2m, m2e, e2c){
+                    es[startEvent](target);
+                    setTimeout(function(){
+                        es[moveEvent](target, {clientX: 150, });
+                        setTimeout(function(){
+                            es[endEvent](target, {clientX: 180});
+                            setTimeout(callback, e2c);
+                        }, m2e);
+                    }, s2m);
+                }
+                
+                var es = eventsimulator;
+                
+                asyncTest("tap", function(){
+                    startend(header, function(){
+                        equal(statistics['qunit-header']['tap'], 1);
+                        equal(statistics['qunit-header']['taphold'], 0);
+                        start();
+                    }, 100, 2000);
+                });
+                
+                asyncTest("taphold", function(){
+                    startend(header, function(){
+                        equal(statistics['qunit-header']['tap'], 1);
+                        equal(statistics['qunit-header']['taphold'], 1);
+                        start();
+                    }, 400, 2000);
+                });
+                
+                asyncTest("doubletap", function(){
+                    startend(header, function(){
+                        startend(header, function(){
+                            equal(statistics['qunit-header']['tap'], 1);
+                            equal(statistics['qunit-header']['doubletap'], 1);
+                            start();
+                        }, 100, 2000);
+                    }, 100, 100);
+                });
+                
+                asyncTest("tripletap", function(){
+                    startend(header, function(){
+                        startend(header, function(){
+                            startend(header, function(){
+                                equal(statistics['qunit-header']['tripletap'], 1);
+                                start();
+                            }, 100, 2000);
+                        }, 100, 100);
+                    }, 100, 100);
+                });
+                
+                asyncTest("flick", function(){
+                    startmoveend(header, function(){
+                        equal(statistics['qunit-header']['flick'], 1);
+                        start();
+                    }, 100, 100, 2000);
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -133,8 +133,8 @@ function init(elem){
     elem.addEventListener(start, function(e){
         status = 1;
         startT = e.timeStamp;
-        startX = e.pageX || e.touches[0].pageX;
-        startY = e.pageY || e.touches[0].pageY;
+        startX = getPageX(e);
+        startY = getPageY(e);
         endT = startT;
         endX = startX;
         endY = startY;
@@ -152,8 +152,8 @@ function init(elem){
         e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
-        endX = e.pageX || e.touches[0].pageX;
-        endY = e.pageY || e.touches[0].pageY;
+        endX = getPageX(e);
+        endY = getPageY(e);
         for(var k in events){
             if(typeof events[k].touchmove !== 'function') continue;
             var result = events[k].touchmove.call(this, e, endT, endX, endY);
@@ -257,5 +257,13 @@ try{
     document.createEvent('CustomEvent');
 }catch(e){
     is_customer_event_supported = false;
+}
+
+function getPageX(e){
+    return e.pageX || e.clientX || (e.touches && e.touches[0] ? e.touches[0].pageX : 0);
+}
+
+function getPageY(e){
+    return e.pageY || e.clientY || (e.touches && e.touches[0] ? e.touches[0].pageY : 0);
 }
 })();
