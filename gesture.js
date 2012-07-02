@@ -103,7 +103,7 @@ var events = {};
 var opt = {
     'tap-max-distance': 30,
     'tap-max-delta-time': 300,
-    'tap-interval': 500,
+    'tap-interval': 250,
     
     'taphold-max-distance': 30,
     'taphold-min-delta-time': 301,
