@@ -8,9 +8,9 @@ g.prototype.draggable = function(opt){
     opt = opt || {};
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
-        elem.draggable = true;
+        elem._draggable = true;
         elem.addEventListener(start, function(e){
-            if(this.draggable !== true) return;
+            if(this._draggable !== true) return;
             var dragged = this;
             var startT = new Date();
             var startX = getPageX(e);
