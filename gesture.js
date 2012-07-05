@@ -273,6 +273,6 @@ function getPageX(e){
 function getPageY(e){
     return e.pageY || e.clientY 
         || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
-        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
+        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
 })();
