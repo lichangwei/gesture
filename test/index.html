@@ -62,10 +62,10 @@
                     console.log('taphold ' + this.className);
                 });
                 $('.home')[0].addEventListener('flick', function(e){
-                    console.log('flick ' + e.data.direction + ' ' + this.className);
+                    console.log('flick ' + e.direction + ' ' + this.className);
                 }, false);
                 g.delegate($nav, '.nav li', 'flick', function(e){
-                    console.log('g.delegate flick ' + e.data.direction + ' ' + this.className);
+                    console.log('g.delegate flick ' + e.direction + ' ' + this.className);
                 });
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');

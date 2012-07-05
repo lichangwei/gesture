@@ -53,6 +53,9 @@
                 g(header).flick(function(e){
                     statistics[this.id][e.type]++;
                 });
+                g(header).zoomin(function(e){
+                    statistics[this.id][e.type]++;
+                });
                 module("Gesture");
                 
                 var is_touch_supported = 'ontouchstart' in document.documentElement;
@@ -124,6 +127,23 @@
                         equal(statistics['qunit-header']['flick'], 1);
                         start();
                     }, 100, 100, 2000);
+                });
+                
+                asyncTest("zoomin", function(){
+                    es[startEvent](header, {pageX: 0, pageY: 0});
+                    setTimeout(function(){
+                        es[startEvent](header, {pageX: 100, pageY: 100});
+                        setTimeout(function(){
+                            es[moveEvent](header, {pageX: 70, pageY: 70});
+                            setTimeout(function(){
+                                es[endEvent](header);
+                                setTimeout(function(){
+                                    equal(statistics['qunit-header']['zoomin'], 1);
+                                    start();
+                                }, 500);
+                            }, 10);
+                        }, 10);
+                    }, 10);
                 });
             });
         </script>

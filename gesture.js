@@ -41,7 +41,7 @@ g.delegate = function(elem, selector, event, callback){
         for(var i = 0; i < _list.length; i++){
             list.push(_list[i]);
         }
-        var targets = e.data.targets || [e.data.original.target];
+        var targets = e.targets || [e.original.target];
         var target;
         for(var i = 0; i < targets.length; i++){
             for(var o = targets[i]; o !== this; o = o.parentNode){
@@ -65,17 +65,22 @@ g.opt = function(k, v){
     return v === void 0 ? opt[k] : (opt[k]=v);
 }
 g.createEvent = function(name, e, attrs){
-    attrs = attrs || {};
-    attrs.original = e;
     if(is_customer_event_supported){
         var evt = document.createEvent('CustomEvent');
-        evt.initCustomEvent(name, false, true, attrs);
+        evt.initCustomEvent(name, false, true, 1);
     }else{
         var evt = document.createEvent('UIEvent');
-        evt.initUIEvent(name, false, true);
+        evt.initUIEvent(name, false, true, document.defaultView, 1);
     }
-    evt.data = attrs;
-    var target = attrs.currentTarget || e.currentTarget;
+    for(var k in attrs){
+        if(attrs.hasOwnProperty(k)){
+            evt[k] = attrs[k];
+        }
+    }
+    evt.original = e;
+    evt.pageX = getPageX(e);
+    evt.pageY = getPageY(e);
+    var target = (attrs && attrs.currentTarget) || e.currentTarget;
     (target || document).dispatchEvent(evt);
 }
 
@@ -108,7 +113,7 @@ var opt = {
     'taphold-max-distance': 30,
     'taphold-min-delta-time': 301,
     
-    'flick-min-x-or-y': 100,
+    'flick-min-x-or-y': 30,
     
     'zoomin-max-scale': 0.83,
     'zoomout-min-scale': 1.2
@@ -260,10 +265,14 @@ try{
 }
 
 function getPageX(e){
-    return e.pageX || e.clientX || (e.touches && e.touches[0] ? e.touches[0].pageX : 0);
+    return e.pageX || e.clientX 
+        || (e.touches && e.touches[0] ? e.touches[0].pageX : 0)
+        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
 }
 
 function getPageY(e){
-    return e.pageY || e.clientY || (e.touches && e.touches[0] ? e.touches[0].pageY : 0);
+    return e.pageY || e.clientY 
+        || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
+        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
 }
 })();
