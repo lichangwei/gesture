@@ -78,8 +78,8 @@ g.createEvent = function(name, e, attrs){
         }
     }
     evt.original = e;
-    evt.pageX = getPageX(e);
-    evt.pageY = getPageY(e);
+    evt.pageX = evt.pX = getPageX(e);
+    evt.pageY = evt.pY = getPageY(e);
     var target = (attrs && attrs.currentTarget) || e.currentTarget;
     (target || document).dispatchEvent(evt);
 }
