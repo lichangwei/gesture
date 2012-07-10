@@ -209,43 +209,29 @@ function init(elem){
     }, false);
     if(is_touch_supported && !is_gesture_supported){
         (function(){
-            var status = 0;
-            var t1, t2, distance, scale;
+            var distance, scale;
             elem.addEventListener(start, function(e){
-                status++;
-                if(status === 1) t1 = {x: e.touches[0].pageX, y: e.touches[0].pageY};
-                if(status >= 2) t2 = {x: e.touches[0].pageX, y: e.touches[0].pageY};
-                if(!t2 || !t1) return;
-                distance = Math.sqrt((t2.x-t1.x)*(t2.x-t1.x) + (t2.y-t1.y)*(t2.y-t1.y));
+                if(e.touches.length < 2) return;
+                distance = getDistance(e);
                 scale = 1;
                 g.createEvent('gesturestart', e, {
                     scale: scale
                 });
             }, false);
             elem.addEventListener(move, function(e){
-                if(!t2 || !t1 || !scale || !distance) return;
-                var touch = e.touches[0];
-                var x = touch.pageX;
-                var y = touch.pageY;
-                if( Math.sqrt((x-t1.x)*(x-t1.x) + (y-t1.y)*(y-t1.y)) 
-                    > Math.sqrt((x-t2.x)*(x-t1.x) + (y-t2.y)*(y-t2.y)) ){
-                    t2 = {x: x, y: y};
-                }else{
-                    t1 = {x: x, y: y};
-                }
-                var d = Math.sqrt((t2.x-t1.x)*(t2.x-t1.x) + (t2.y-t1.y)*(t2.y-t1.y));
-                scale = d / distance;
+                if(e.touches.length < 2) return;
+                scale = getDistance(e) / distance;
                 g.createEvent('gesturechange', e, {
                     scale: scale
                 });
             }, false);
             elem.addEventListener(end, function(e){
-                if(t2 && t1 && scale && distance){
-                    g.createEvent('gestureend', e, {
-                        scale: scale
-                    });
-                }
-                status = t1 = t2 = scale = distance = 0;
+                if(e.touches.length > 0) return;
+                if(!scale || !distance) return;
+                g.createEvent('gestureend', e, {
+                    scale: scale
+                });
+                scale = distance = 0;
             }, false);
         })();
     }
@@ -275,4 +261,13 @@ function getPageY(e){
         || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
         || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
+
+function getDistance(e){
+    var t0 = e.touches[0];
+    var t1 = e.touches[1];
+    var p0 = {x: t0.pageX, y: t0.pageY};
+    var p1 = {x: t1.pageX, y: t1.pageY};
+    return Math.sqrt((p1.x-p0.x)*(p1.x-p0.x) + (p1.y-p0.y)*(p1.y-p0.y));
+}
+
 })();
