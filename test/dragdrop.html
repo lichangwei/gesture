@@ -13,15 +13,18 @@
             }
             .item{
                 position: relative;
-                top: -1px;
+                top: 1px;
                 display: inline;
                 border: 1px solid black;
                 font: 36px arial;
             }
+            .item div{
+                display: inline;
+            }
             .e{
                 position: relative;
                 left: 0;
-                top: -1px;
+                top: 1px;
             }
             .f{
                 position: absolute;
@@ -47,7 +50,12 @@
         </ul>
         <ul class="selected">
             <li class="item e">EEEEEE</li>
-            <li class="item f">FFFFFF</li>
+            <li class="item f">
+                <img src="circle.png">
+                <div>DIV</div>
+                <span>SPAN</span>
+                FFF
+            </li>
         </ul>
         <div class="playground"></div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
@@ -88,10 +96,11 @@
             });
             g($('.e')).draggable({
                 touchstart: function(e){
+                    this._left = parseInt(this.style.left) || 0;
                     console.log('dragstart');
                 },
                 touchmove: function(e, x, y, dx, dy, dt){
-                    this.style.left = x + 'px';
+                    this.style.left = this._left + dx + 'px';
                     return false;
                 },
                 touchend: function(e){
@@ -102,10 +111,13 @@
             g($('.f')).draggable({
                 touchstart: function(e){
                     console.log('dragstart');
+                    e.preventDefault();
                 },
                 touchmove: function(e, x, y, dx, dy, dt){
+                    e.preventDefault();
                 },
                 touchend: function(e){
+                    e.preventDefault();
                     console.log('dragend');
                 },
                 show: 'me'
@@ -115,6 +127,12 @@
                 var $pg = $('.playground').show();
                 console.log = function(){
                     $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+                }
+            }
+            
+            if(!console){
+                console = {
+                    log: function(){}
                 }
             }
         </script>
