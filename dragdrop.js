@@ -10,14 +10,18 @@ g.prototype.draggable = function(opt){
         var elem = this.elems[i];
         elem._draggable = true;
         elem.addEventListener(start, function(e){
+            e.preventDefault();
+            
             if(this._draggable !== true) return;
             var dragged = this;
             var startT = new Date();
             var startX = getPageX(e);
             var startY = getPageY(e);
             var offset = findPosition(this);
-            var offsetX = this.offsetLeft;
-            var offsetY = this.offsetTop;
+            var style = window.getComputedStyle(this, null);
+            var isAbsolute = style['position'] === 'absolute';
+            var offsetX = isAbsolute ? this.offsetLeft : (parseInt(style['left']) || 0); 
+            var offsetY = isAbsolute ? this.offsetTop : (parseInt(style['top']) || 0);
             var endT = new Date();
             var endX;
             var endY;
@@ -27,36 +31,45 @@ g.prototype.draggable = function(opt){
             var shadowY = offset.y;
             
             function touchmove(e){
+                e.preventDefault();
+                
                 endX = getPageX(e);
                 endY = getPageY(e);
+                thisX = endX - startX + offsetX;
+                thisY = endY - startY + offsetY;
                 if(opt.touchmove){
-                    thisX = endX - startX + offsetX;
-                    thisY = endY - startY + offsetY;
                     var result = opt.touchmove.call(dragged, e, thisX, thisY, 
                         endX-startX, endY-startY, new Date()-(endT||startT));
                     endT = new Date();
                 }
-                if(result === false) return;
                 if((opt.show === void 0) || (opt.show === 'shadow')){
                     shadowX = endX - startX + offset.x;
                     shadowY = endY - startY + offset.y;
                     (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
-                }else if(opt.show === 'me'){
+                }else if(result !== false){
                     dragged.style.left = thisX + 'px';
                     dragged.style.top = thisY + 'px';
                 }
             }
             function touchend(e){
+                e.preventDefault();
+                
                 document.removeEventListener(move, touchmove);
                 document.removeEventListener(end, touchend);
+                endX = getPageX(e);
+                endY = getPageY(e);
+                thisX = endX - startX + offsetX;
+                thisY = endY - startY + offsetY;
                 if(opt.touchend){
                     var result = opt.touchend.call(dragged, e, thisX, thisY, 
                         endX-startX, endY-startY);
                 }
-                if(result === false) return;
                 if((opt.show === void 0) || (opt.show === 'shadow')){
                     document.body.removeChild(shadow);
                 }
+                if(result === false) return;
+                dragged.style.left = thisX + 'px';
+                dragged.style.top = thisY + 'px';
             }
             document.addEventListener(move, touchmove, false);
             document.addEventListener(end, touchend, false);
@@ -64,13 +77,13 @@ g.prototype.draggable = function(opt){
             if(opt.touchstart){
                 var result = opt.touchstart.call(this, e, startX, startY, offsetX, offsetY);
             }
-            if(result === false) return;
             if((opt.show === void 0) || (opt.show === 'shadow')){
                 var shadow = this.cloneNode(true);
                 shadow.className = this.className;
                 (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY)
                 document.body.appendChild(shadow);
             }
+            if(result === false) return;
         });
     }
 }
@@ -91,11 +104,15 @@ function findPosition( obj ){
 }
 
 function getPageX(e){
-    return e.pageX || e.clientX || (e.touches && e.touches[0] ? e.touches[0].pageX : 0);
+    return e.pageX || e.clientX 
+        || (e.touches && e.touches[0] ? e.touches[0].pageX : 0)
+        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
 }
 
 function getPageY(e){
-    return e.pageY || e.clientY || (e.touches && e.touches[0] ? e.touches[0].pageY : 0);
+    return e.pageY || e.clientY 
+        || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
+        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
 
 function positionShadow(left, top){

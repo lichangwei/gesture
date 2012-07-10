@@ -17,6 +17,7 @@
                 display: inline;
                 border: 1px solid black;
                 font: 36px arial;
+                cursor: pointer;
             }
             .item div{
                 display: inline;
@@ -45,15 +46,20 @@
         <ul class="candidate">
             <li class="item a">AAAAAA</li>
             <li class="item b">BBBBBB</li>
-            <li class="item c">CCCCCC</li>
+            <li class="item c">
+                <img src="circle.png">
+                <div>Div</div>
+                <span>Span</span>
+                CCC
+            </li>
             <li class="item d">DDDDDD</li>
         </ul>
         <ul class="selected">
             <li class="item e">EEEEEE</li>
             <li class="item f">
                 <img src="circle.png">
-                <div>DIV</div>
-                <span>SPAN</span>
+                <div>Div</div>
+                <span>Span</span>
                 FFF
             </li>
         </ul>
@@ -105,22 +111,19 @@
                 },
                 touchend: function(e){
                     console.log('dragend');
+                    return false;
                 },
-                show: 'me'
+                show: 'no'
             });
             g($('.f')).draggable({
                 touchstart: function(e){
                     console.log('dragstart');
-                    e.preventDefault();
                 },
                 touchmove: function(e, x, y, dx, dy, dt){
-                    e.preventDefault();
                 },
                 touchend: function(e){
-                    e.preventDefault();
                     console.log('dragend');
-                },
-                show: 'me'
+                }
             });
             if(navigator.userAgent.indexOf('Android') > -1){
                 console = console || {};
@@ -130,7 +133,7 @@
                 }
             }
             
-            if(!console){
+            if(!window.console){
                 console = {
                     log: function(){}
                 }
