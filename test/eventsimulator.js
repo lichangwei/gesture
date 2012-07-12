@@ -8,7 +8,7 @@ var simulator = {
     },
     touch: {
         events: ['touchstart', 'touchmove', 'touchend', 'touchcancel'],
-        create: fireMouseEvent
+        create: fireTouchEvent
     }
 };
 
@@ -24,7 +24,7 @@ for(var t in simulator){
     }
 }
 
-function fireMouseEvent(event, target, opt){
+function fireMouseEvent(type, target, opt){
     opt = opt || {};
     // https://developer.mozilla.org/en/DOM/event.initMouseEvent
     // https://developer.mozilla.org/en/DOM/event.detail
@@ -35,17 +35,22 @@ function fireMouseEvent(event, target, opt){
     // screenX, screenY, clientX, clientY, 
     // ctrlKey, altKey, shiftKey, metaKey, 
     // button, relatedTarget
-    evt.initMouseEvent(event, opt.canBubble || true, opt.cancelable || true, window,
+    evt.initMouseEvent(type, opt.canBubble || true, opt.cancelable || true, window,
         opt.detail || 1, 
         opt.screenX || 0, opt.screenY || 0, opt.clientX || 0, opt.clientY || 0,
         opt.ctrlKey || false, opt.altKey || false, opt.shiftKey || false, opt.metaKey || false,
         opt.button || 0, opt.relatedTarget || null);
+    for(var k in opt){
+        if(opt.hasOwnProperty(k)){
+            evt[k] = opt[k];
+        }
+    }
     evt.isSimulated = true;
     target.dispatchEvent(evt);
 }
 
-function fireTouchEvent(event, target, opt){
-    var data = createTouchEventData(event, target, opt);
+function fireTouchEvent(type, target, opt){
+    var data = createTouchEventData(type, target, opt);
     var evt = document.createEvent('TouchEvent');
     if (evt.initTouchEvent.length === 9) {
         evt.initTouchEvent(data.touches, data.targetTouches, data.changedTouches,
@@ -66,13 +71,14 @@ function fireTouchEvent(event, target, opt){
     return target.dispatchEvent(evt);
 }
 
-function createTouchEventData(event, target, opt){
+function createTouchEventData(type, target, opt){
+    opt = opt || {};
      var data = {
-         type: event,
-         timeStamp: Date.now(),
+         type: type,
+         timeStamp: +new Date(),
          bubbles: true,
          cancelable: true,
-         detail: 1, // Not sure what this does in "touch" event.
+         detail: 1,
          screenX: 0,
          screenY: 0,
          pageX: 0,
@@ -87,21 +93,19 @@ function createTouchEventData(event, target, opt){
          rotation: 0
      };
      if (!serializable) {
-         touchEventData.target = target;
-         touchEventData.view = document.defaultView;
+         data.target = target;
+         data.view = document.defaultView;
      }
-     if(opt){
-         for(var k in data){
-             if(opt.hasOwnProperty(k)){
-                 data[k] = opt[k];
-             }
+     for(var k in data){
+         if(opt.hasOwnProperty(k)){
+             data[k] = opt[k];
          }
      }
      ['touches', 'targetTouches', 'changedTouches'].forEach(function(touchListName) {
-         if(options.hasOwnProperty(touchListName)){
-             touchEventData[touchListName] = this.createTouchList(options[touchListName], target);
+         if(opt.hasOwnProperty(touchListName)){
+             data[touchListName] = createTouchList(opt[touchListName], target);
          }else{
-             touchEventData[touchListName] = this.createTouchList(touchEventData, target);
+             data[touchListName] = createTouchList(data, target);
          }
      }, this);
      return data;
@@ -136,7 +140,7 @@ function createTouchList(data, target){
         if (!serializable && !data[i].target) {
             data[i].target = target;
         }
-        touch = this.createTouch(data[i].target, data[i]);
+        touch = createTouch(data[i].target, data[i]);
         touches.push(touch);
     }
     if (!document.createTouchList || serializable) {

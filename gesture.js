@@ -102,6 +102,23 @@ function addEvent(event){
 function arrayify( elem ){
     if(elem.jquery) return elem.get();
     if(elem instanceof HTMLElement) return [elem];
+    // Here we recommend to use below methods to get an element collection.
+    // getElementsByClassName
+    // getElementsByTagName
+    // getElementsByName
+    // querySelectorAll
+    // children attribute
+    
+    // and we don't handle these collections:
+    // HTMLOptionsCollection, HTMLSelectElement
+    // HTMLFormElement, HTMLAllCollection
+    if(elem instanceof NodeList || elem instanceof HTMLCollection){
+        var array = [];
+        for(var i = 0; i < elem.length; i++){
+            array.push(elem[i]);
+        }
+        return array;
+    }
     return elem;
 }
 var events = {};
@@ -119,17 +136,11 @@ var opt = {
     'zoomout-min-scale': 1.2
 };
 var gesture_id = 0;
-var status_init = 0,
-    status_touch_start = 1,
-    status_touch_move = 2,
-    status_gesture_start = 4;
-    status_gesture_end = 8,
-    status_touch_end = 16;
 
 function init(elem){
     elem._gesture_id = ++gesture_id;
     
-    var status = status_init;
+    var status = 0;
     var startT, startX, startY;
     var endT, endX, endY;
     var deltaT, deltaX, deltaY;
@@ -267,6 +278,10 @@ function getDistance(e){
     var t1 = e.touches[1];
     var p0 = {x: t0.pageX, y: t0.pageY};
     var p1 = {x: t1.pageX, y: t1.pageY};
+    return getDistance2(p0, p1);
+}
+
+function getDistance2(p0, p1){
     return Math.sqrt((p1.x-p0.x)*(p1.x-p0.x) + (p1.y-p0.y)*(p1.y-p0.y));
 }
 
