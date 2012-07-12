@@ -42,7 +42,7 @@ g.prototype.draggable = function(opt){
                         endX-startX, endY-startY, new Date()-(endT||startT));
                     endT = new Date();
                 }
-                if((opt.show === void 0) || (opt.show === 'shadow')){
+                if((opt.helper === void 0) || (opt.helper === 'shadow')){
                     shadowX = endX - startX + offset.x;
                     shadowY = endY - startY + offset.y;
                     (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
@@ -64,7 +64,7 @@ g.prototype.draggable = function(opt){
                     var result = opt.touchend.call(dragged, e, thisX, thisY, 
                         endX-startX, endY-startY);
                 }
-                if((opt.show === void 0) || (opt.show === 'shadow')){
+                if((opt.helper === void 0) || (opt.helper === 'clone')){
                     document.body.removeChild(shadow);
                 }
                 if(result === false) return;
@@ -77,7 +77,7 @@ g.prototype.draggable = function(opt){
             if(opt.touchstart){
                 var result = opt.touchstart.call(this, e, startX, startY, offsetX, offsetY);
             }
-            if((opt.show === void 0) || (opt.show === 'shadow')){
+            if((opt.helper === void 0) || (opt.helper === 'shadow')){
                 var shadow = this.cloneNode(true);
                 shadow.className = this.className;
                 (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY)
