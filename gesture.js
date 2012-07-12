@@ -220,29 +220,37 @@ function init(elem){
     }, false);
     if(is_touch_supported && !is_gesture_supported){
         (function(){
-            var distance, scale;
+            var distance, scale, angle;
             elem.addEventListener(start, function(e){
                 if(e.touches.length < 2) return;
-                distance = getDistance(e);
+                var info = getInfo(e);
+                distance = info.distance;
                 scale = 1;
+                angle = info.angle;
                 g.createEvent('gesturestart', e, {
-                    scale: scale
+                    scale: 1,
+                    rotation: 0
                 });
             }, false);
             elem.addEventListener(move, function(e){
                 if(e.touches.length < 2) return;
-                scale = getDistance(e) / distance;
+                if(!distance) return;
+                var info = getInfo(e);
+                scale = info.distance / distance;
                 g.createEvent('gesturechange', e, {
-                    scale: scale
+                    scale: scale,
+                    rotation: info.angle - angle
                 });
+                angle = info.angle;
             }, false);
             elem.addEventListener(end, function(e){
-                if(e.touches.length > 0) return;
-                if(!scale || !distance) return;
+                if(e.touches.length > 1) return;
+                if(!distance) return;
                 g.createEvent('gestureend', e, {
-                    scale: scale
+                    scale: scale,
+                    rotation: 0
                 });
-                scale = distance = 0;
+                distance = angle = 0;
             }, false);
         })();
     }
@@ -273,15 +281,22 @@ function getPageY(e){
         || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
 
-function getDistance(e){
+function getInfo(e){
     var t0 = e.touches[0];
     var t1 = e.touches[1];
     var p0 = {x: t0.pageX, y: t0.pageY};
     var p1 = {x: t1.pageX, y: t1.pageY};
-    return getDistance2(p0, p1);
+    return {
+        distance: getDistance(p0, p1),
+        angle: getAngle(p0, p1)
+    };
 }
 
-function getDistance2(p0, p1){
+function getAngle(p0, p1){
+    return Math.atan((p0.y-p1.y)/(p0.x-p1.x)) * 180 / Math.PI
+}
+
+function getDistance(p0, p1){
     return Math.sqrt((p1.x-p0.x)*(p1.x-p0.x) + (p1.y-p0.y)*(p1.y-p0.y));
 }
 
