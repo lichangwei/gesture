@@ -146,7 +146,7 @@ function init(elem){
     var deltaT, deltaX, deltaY;
     var distance;
     
-    elem.addEventListener(start, function(e){
+    elem.addEventListener(touchstart, function(e){
         status = 1;
         startT = e.timeStamp;
         startX = getPageX(e);
@@ -161,7 +161,7 @@ function init(elem){
             if(result === false) break;
         }
     }, false);
-    elem.addEventListener(move, function(e){
+    elem.addEventListener(touchmove, function(e){
         // The touchevents are not fired propperly 
         // if e.preventDefault() is not used on touchstart and touchmove
         // http://code.google.com/p/android/issues/detail?id=19827
@@ -176,7 +176,7 @@ function init(elem){
             if(result === false) break;
         }
     }, false);
-    elem.addEventListener(end, function(e){
+    elem.addEventListener(touchend, function(e){
         e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
@@ -190,7 +190,7 @@ function init(elem){
             if(result === false) break;
         }
     }, false);
-    elem.addEventListener(leave, function(e){
+    elem.addEventListener(touchleave, function(e){
         status = 0;
     }, false);
     
@@ -220,37 +220,40 @@ function init(elem){
     }, false);
     if(is_touch_supported && !is_gesture_supported){
         (function(){
-            var distance, scale, angle;
-            elem.addEventListener(start, function(e){
+            var start, end, rotation;
+            elem.addEventListener(touchstart, function(e){
                 if(e.touches.length < 2) return;
-                var info = getInfo(e);
-                distance = info.distance;
-                scale = 1;
-                angle = info.angle;
+                start = getInfo(e);
+                rotation = 0;
                 g.createEvent('gesturestart', e, {
                     scale: 1,
-                    rotation: 0
+                    rotation: rotation
                 });
             }, false);
-            elem.addEventListener(move, function(e){
+            elem.addEventListener(touchmove, function(e){
                 if(e.touches.length < 2) return;
-                if(!distance) return;
-                var info = getInfo(e);
-                scale = info.distance / distance;
+                if(!start) return;
+                end = getInfo(e);
+                var _rotation = end.angle - start.angle;
+                if(_rotation - rotation > 90){
+                    _rotation = _rotation - 180;
+                }else if(_rotation - rotation < -90){
+                    _rotation = _rotation + 180;
+                }
+                rotation = _rotation;
                 g.createEvent('gesturechange', e, {
-                    scale: scale,
-                    rotation: info.angle - angle
+                    scale: end.distance/start.distance,
+                    rotation: _rotation
                 });
-                angle = info.angle;
             }, false);
-            elem.addEventListener(end, function(e){
+            elem.addEventListener(touchend, function(e){
                 if(e.touches.length > 1) return;
-                if(!distance) return;
+                if(!start) return;
                 g.createEvent('gestureend', e, {
-                    scale: scale,
-                    rotation: 0
+                    scale: end.distance/start.distance,
+                    rotation: rotation
                 });
-                distance = angle = 0;
+                start = end = 0;
             }, false);
         })();
     }
@@ -258,10 +261,10 @@ function init(elem){
 
 var is_touch_supported = 'ontouchstart' in document.documentElement;
 var is_gesture_supported = 'ongesturestart' in document.documentElement;
-var start = is_touch_supported ? 'touchstart' : 'mousedown';
-var move = is_touch_supported ? 'touchmove' : 'mousemove';
-var end = is_touch_supported ? 'touchend' : 'mouseup';
-var leave = is_touch_supported ? 'touchleave' : 'mouseleave';
+var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
+var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
+var touchend = is_touch_supported ? 'touchend' : 'mouseup';
+var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
 var is_customer_event_supported = true;
 try{
     document.createEvent('CustomEvent');
@@ -293,7 +296,12 @@ function getInfo(e){
 }
 
 function getAngle(p0, p1){
-    return Math.atan((p0.y-p1.y)/(p0.x-p1.x)) * 180 / Math.PI
+    var deltaX = p0.x-p1.x;
+    var deltaY = p0.y-p1.y;
+    if(deltaX === 0){
+        return deltaY === 0 ? 0 : (deltaY > 0 ? 90 : -90);
+    }
+    return Math.atan(deltaY / deltaX) * 180 / Math.PI
 }
 
 function getDistance(p0, p1){
