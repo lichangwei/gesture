@@ -88,6 +88,9 @@ g.prototype.draggable = function(opt){
     }
 }
 
+var getPageX = g.util.getPageX;
+var getPageY = g.util.getPageY;
+
 var is_touch_supported = 'ontouchstart' in document.documentElement;
 var start = is_touch_supported ? 'touchstart' : 'mousedown';
 var move = is_touch_supported ? 'touchmove' : 'mousemove';
@@ -101,18 +104,6 @@ function findPosition( obj ){
           obj = obj.offsetParent;
      }
      return {x: left, y: top};
-}
-
-function getPageX(e){
-    return e.pageX || e.clientX 
-        || (e.touches && e.touches[0] ? e.touches[0].pageX : 0)
-        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
-}
-
-function getPageY(e){
-    return e.pageY || e.clientY 
-        || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
-        || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
 
 function positionShadow(left, top){

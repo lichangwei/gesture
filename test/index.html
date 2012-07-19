@@ -47,46 +47,56 @@
                 var $pg = $('.playground');
                 
                 g($lis).tap(function(e){
-                    console.log('tap ' + this.className);
-                });
-                g($lis.add($nav)).doubletap(function(e){
-                    console.log('doubletap ' + this.className);
+                    console.log('g.prototype.tap ' + this.className);
                 });
                 g.taphold($lis, function(e){
-                    console.log('taphold ' + this.className);
+                    console.log('g.taphold ' + this.className);
                 });
-                g($nav[0]).tap(function(e){
-                    console.log('tap ' + this.className);
-                });
-                g.taphold($nav[0], function(e){
-                    console.log('taphold ' + this.className);
-                });
-                $('.home')[0].addEventListener('flick', function(e){
-                    console.log('flick ' + e.direction + ' ' + this.className);
+                
+                $pg[0].addEventListener('tap', function(e){
+                    console.log('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
                 }, false);
-                g.delegate($nav, '.nav li', 'flick', function(e){
-                    console.log('g.delegate flick ' + e.direction + ' ' + this.className);
-                });
+                
                 g.delegate($nav, 'li.notexisted', 'flick', function(e){
                     console.log('you should not find out me.');
                 });
-                g.delegate($nav, '.nav li.messages', 'doubletap', function(e){
-                    console.log('g.delegate doubletap ' + this.className);
+                
+                g.delegate($nav, '.nav li', 'doubletap tripletap', function(e){
+                    console.log('g.delegate ' + e.type + ' ' + this.className);
                 });
-                g.delegate($nav, '.nav li', 'tripletap', function(e){
-                    console.log('g.delegate tripletap ' + this.className);
-                });
-                g($pg).zoomin(function(e){
-                    console.log('zoomin');
-                });
-                g($pg).zoomout(function(e){
-                    console.log('zoomout');
+                g($nav).delegate('.nav li', 'doubletap tripletap', function(e){
+                    console.log('g.prototype.delegate ' + e.type + ' ' + this.className);
                 });
                 
+                g.bind($pg, 'flick', function(e){
+                    console.log('g.bind ' + e.type + ' ' + e.direction + ' ' + this.className);
+                });
+                g($pg).bind('flick', function(e){
+                    console.log('g.prototype.bind ' + e.type + ' ' + e.direction + ' ' + this.className);
+                });
+                
+                g($pg).bind('zoomin zoomout', function(e){
+                    console.log('g.prototype.bind ' + e.type + ' ' + this.className);
+                });
+                
+                /*
+                $pg[0].addEventListener('touchstart', function(e){
+                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                }, false);
+                $pg[0].addEventListener('touchmove', function(e){
+                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                    e.preventDefault();
+                }, false);
+                $pg[0].addEventListener('touchend', function(e){
+                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                    e.preventDefault();
+                }, false);
+                */
+               
                 if(navigator.userAgent.indexOf('Android') > -1){
                     console = console || {};
                     console.log = function(){
-                        $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+                        $pg[0].innerHTML +=(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
                     }
                 }
             });

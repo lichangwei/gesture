@@ -11,29 +11,38 @@ var g = window.g = function(elem){
     }
     this.elems = elems;
 }
-g.register = function(event, handler){
+
+g.bind = function(elem, event, callback){
+    g(elem).bind(event, callback);
+    return g;
+}
+g.prototype.bind = function(event, callback){
+    // allow to bind 2+ events at the same time
     var _t = this;
     if(event.search(/\s/) >= 0){
         event.replace(/\S+/g, function(evt){
-            _t.register(evt, handler);
+            _t.bind(evt, callback);
         });
         return _t;
     }
-    events[event] = handler;
-    event = event.split(',');
-    for(var i = 0; i < event.length; i++){
-        addEvent(event[i]);
-    }
-    return _t;
+    if( !_t[event] ) return console.error('no "' + event + '" event type.');
+    return _t[event](callback);
 }
-g.unregister = function(event){
-    delete events[event];
-    delete g[event];
-    delete g.prototype[event];
-    return this;
-}
+
 g.delegate = function(elem, selector, event, callback){
-    var elems = arrayify(elem);
+    g(elem).delegate(selector, event, callback);
+    return g;
+}
+g.prototype.delegate = function(selector, event, callback){
+    var elems = this.elems;
+    // allow to delegate 2+ events at the same time
+    var _t = this;
+    if(event.search(/\s/) >= 0){
+        event.replace(/\S+/g, function(evt){
+            _t.delegate(selector, evt, callback);
+        });
+        return _t;
+    }
     g[event](elems, function(e){
         var _list = this.querySelectorAll(selector);
         if( _list.length === 0 ) return;
@@ -55,6 +64,30 @@ g.delegate = function(elem, selector, event, callback){
     });
     return this;
 }
+
+g.register = function(event, handler){
+    // allow to register 2+ events at the same time
+    var _t = this;
+    if(event.search(/\s/) >= 0){
+        event.replace(/\S+/g, function(evt){
+            _t.register(evt, handler);
+        });
+        return _t;
+    }
+    events[event] = handler;
+    event = event.split(',');
+    for(var i = 0; i < event.length; i++){
+        addEvent(event[i]);
+    }
+    return this;
+}
+g.unregister = function(event){
+    delete events[event];
+    delete g[event];
+    delete g.prototype[event];
+    return this;
+}
+
 g.opt = function(k, v){
     if(typeof k !== 'string'){
         for(var i in k){
@@ -65,13 +98,11 @@ g.opt = function(k, v){
     return v === void 0 ? opt[k] : (opt[k]=v);
 }
 g.createEvent = function(name, e, attrs){
-    if(is_customer_event_supported){
-        var evt = document.createEvent('CustomEvent');
-        evt.initCustomEvent(name, false, true, 1);
-    }else{
-        var evt = document.createEvent('UIEvent');
-        evt.initUIEvent(name, false, true, document.defaultView, 1);
-    }
+    // some browsers don't support CustomEvent
+    // var evt = document.createEvent('CustomEvent');
+    // evt.initCustomEvent(name, false, true, 1);
+    var evt = document.createEvent('UIEvent');
+    evt.initUIEvent(name, false, true, document.defaultView, 1);
     for(var k in attrs){
         if(attrs.hasOwnProperty(k)){
             evt[k] = attrs[k];
@@ -82,6 +113,11 @@ g.createEvent = function(name, e, attrs){
     evt.pageY = evt.pY = getPageY(e);
     var target = (attrs && attrs.currentTarget) || e.currentTarget;
     (target || document).dispatchEvent(evt);
+}
+
+g.util = {
+    getPageX: getPageX,
+    getPageY: getPageY
 }
 
 function addEvent(event){
@@ -147,6 +183,7 @@ function init(elem){
     var distance;
     
     elem.addEventListener(touchstart, function(e){
+        e.preventDefault();
         status = 1;
         startT = e.timeStamp;
         startX = getPageX(e);
@@ -265,12 +302,6 @@ var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
 var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
 var touchend = is_touch_supported ? 'touchend' : 'mouseup';
 var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
-var is_customer_event_supported = true;
-try{
-    document.createEvent('CustomEvent');
-}catch(e){
-    is_customer_event_supported = false;
-}
 
 function getPageX(e){
     return e.pageX || e.clientX 
