@@ -1,5 +1,7 @@
 (function(){
 
+'use strict';
+
 g.draggable = function(elem, opt){
     g(elem).draggable(opt);
     return g;

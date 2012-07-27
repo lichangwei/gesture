@@ -132,22 +132,25 @@
                     }, 100, 100, 2000);
                 });
                 
-                asyncTest("zoomin", function(){
-                    es[startEvent](fixture, {touches: [{pageX:0, pageY:0}]});
-                    setTimeout(function(){
-                        es[startEvent](fixture, {touches: [{pageX:0, pageY:0}, {pageX:100, pageY:100}]});
+                if('ontouchend' in fixture){
+                    asyncTest("zoomin", function(){
+                        es[startEvent](fixture, {touches: [{pageX:0, pageY:0}]});
                         setTimeout(function(){
-                            es[moveEvent](fixture, {touches: [{pageX:40, pageY:40}, {pageX:60, pageY:60}]});
+                            es[startEvent](fixture, {touches: [{pageX:0, pageY:0}, {pageX:100, pageY:100}]});
                             setTimeout(function(){
-                                es[endEvent](fixture, {touches: []});
+                                es[moveEvent](fixture, {touches: [{pageX:40, pageY:40}, {pageX:60, pageY:60}]});
                                 setTimeout(function(){
-                                    equal(statistics['qunit-fixture']['zoomin'], 1);
-                                    start();
-                                }, 500);
+                                    es[endEvent](fixture, {touches: []});
+                                    setTimeout(function(){
+                                        equal(statistics['qunit-fixture']['zoomin'], 1);
+                                        start();
+                                    }, 500);
+                                }, 10);
                             }, 10);
                         }, 10);
-                    }, 10);
-                });
+                    });
+                }
+                
             });
         </script>
     </body>

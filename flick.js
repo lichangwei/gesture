@@ -1,5 +1,7 @@
 (function(){
 
+'use strict';
+
 g.register('flick', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         var direction;

@@ -1,5 +1,7 @@
 (function(){
 
+'use strict';
+
 g.register('zoomin,zoomout', {
     gestureend: function(e){
         var scale = e.scale;

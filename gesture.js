@@ -1,9 +1,11 @@
 
 (function(){
 
+'use strict';
+
 var g = window.g = function(elem){
-    if ( !(this instanceof arguments.callee) )
-        return new arguments.callee(elem);
+    if ( !(this instanceof g) )
+        return new g(elem);
     var elems = arrayify(elem);
     if(!elems || elems.length === 0 ) return;
     for(var i = 0; i < elems.length; i++){
