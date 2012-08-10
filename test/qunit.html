@@ -47,7 +47,7 @@
                 g($header).tap(function(e){
                     statistics[this.id][e.type]++;
                 });
-                g.taphold($header[0], function(e){
+                g($header[0]).taphold(function(e){
                     statistics[this.id][e.type]++;
                 });
                 g(h2s_q).doubletap(function(e){

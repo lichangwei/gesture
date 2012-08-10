@@ -49,34 +49,30 @@
                 g($lis).tap(function(e){
                     console.log('g.prototype.tap ' + this.className);
                 });
-                g.taphold($lis, function(e){
-                    console.log('g.taphold ' + this.className);
+                g($lis).on('tap', function(e){
+                    console.log('g.prototype.on tap ' + this.className);
                 });
-                
-                $pg[0].addEventListener('tap', function(e){
+                $lis[0].addEventListener('tap', function(e){
                     console.log('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
                 }, false);
                 
-                g.delegate($nav, 'li.notexisted', 'flick', function(e){
+                g($nav).on('taphold', 'li.notexisted', function(e){
+                    console.log('you should not find out me.');
+                });
+                g($nav).on('taphold', 'li', function(e){
                     console.log('you should not find out me.');
                 });
                 
-                g.delegate($nav, '.nav li', 'doubletap tripletap', function(e){
-                    console.log('g.delegate ' + e.type + ' ' + this.className);
+                g($nav).on('doubletap tripletap', '.nav li', function(e){
+                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
                 });
-                g($nav).delegate('.nav li', 'doubletap tripletap', function(e){
-                    console.log('g.prototype.delegate ' + e.type + ' ' + this.className);
-                });
-                
-                g.bind($pg, 'flick', function(e){
-                    console.log('g.bind ' + e.type + ' ' + e.direction + ' ' + this.className);
-                });
-                g($pg).bind('flick', function(e){
-                    console.log('g.prototype.bind ' + e.type + ' ' + e.direction + ' ' + this.className);
+
+                g($pg).on('flick', function(e){
+                    console.log('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
                 });
                 
-                g($pg).bind('zoomin zoomout', function(e){
-                    console.log('g.prototype.bind ' + e.type + ' ' + this.className);
+                g($pg).on('zoomin zoomout', function(e){
+                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
                 });
                 
                 /*

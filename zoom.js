@@ -2,7 +2,7 @@
 
 'use strict';
 
-g.register('zoomin,zoomout', {
+g.register('zoomin zoomout', {
     gestureend: function(e){
         var scale = e.scale;
         if(scale > g.opt('zoomout-min-scale')){

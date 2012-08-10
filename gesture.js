@@ -14,79 +14,78 @@ var g = window.g = function(elem){
     this.elems = elems;
 }
 
-g.bind = function(elem, event, callback){
-    g(elem).bind(event, callback);
-    return g;
-}
-g.prototype.bind = function(event, callback){
+g.prototype.on = function(event, selector, callback){
     // allow to bind 2+ events at the same time
     var _t = this;
     if(event.search(/\s/) >= 0){
         event.replace(/\S+/g, function(evt){
-            _t.bind(evt, callback);
+            _t.on(evt, selector, callback);
         });
         return _t;
     }
-    if( !_t[event] ) return console.error('no "' + event + '" event type.');
-    return _t[event](callback);
+    if(typeof selector === 'string'){
+        var cbs = callback._g_cbs = callback._g_cbs || {};
+        if( !cbs[selector] ){
+            cbs[selector] = function(e){
+                var _list = this.querySelectorAll(selector);
+                if( _list.length === 0 ) return;
+                var list = [];
+                for(var i = 0; i < _list.length; i++){
+                    list.push(_list[i]);
+                }
+                var targets = e.targets || [e.original.target];
+                var target;
+                for(var i = 0; i < targets.length; i++){
+                    for(var o = targets[i]; o !== this; o = o.parentNode){
+                        if(list.indexOf(o) >= 0) break;
+                    }
+                    if(o === this) return;
+                    if(target && (target !== o)) return;
+                    target = o;
+                }
+                callback.call(target, e);
+            }
+        }
+    }
+    _t[event]((cbs && cbs[selector]) || selector);
 }
 
-g.delegate = function(elem, selector, event, callback){
-    g(elem).delegate(selector, event, callback);
-    return g;
-}
-g.prototype.delegate = function(selector, event, callback){
-    var elems = this.elems;
-    // allow to delegate 2+ events at the same time
+g.prototype.off = function(event, selector, callback){
+    // allow to bind 2+ events at the same time
     var _t = this;
     if(event.search(/\s/) >= 0){
         event.replace(/\S+/g, function(evt){
-            _t.delegate(selector, evt, callback);
+            _t.off(evt, selector, callback);
         });
         return _t;
     }
-    g[event](elems, function(e){
-        var _list = this.querySelectorAll(selector);
-        if( _list.length === 0 ) return;
-        var list = [];
-        for(var i = 0; i < _list.length; i++){
-            list.push(_list[i]);
-        }
-        var targets = e.targets || [e.original.target];
-        var target;
-        for(var i = 0; i < targets.length; i++){
-            for(var o = targets[i]; o !== this; o = o.parentNode){
-                if(list.indexOf(o) >= 0) break;
-            }
-            if(o === this) return;
-            if(target && (target !== o)) return;
-            target = o;
-        }
-        callback.call(target, e);
-    });
+    if(typeof selector === 'string'){
+        callback = callback._g_cb && callback._g_cb[selector];
+    }else{
+        callback = selector;
+    }
+    if( !callback ) return;
+    for(var i = 0; i < this.elems.length; i++){
+        this.elems[i].addEventListener(event, callback, false);
+    }
     return this;
 }
 
 g.register = function(event, handler){
-    // allow to register 2+ events at the same time
-    var _t = this;
-    if(event.search(/\s/) >= 0){
-        event.replace(/\S+/g, function(evt){
-            _t.register(evt, handler);
-        });
-        return _t;
-    }
+    if( events[event] ) return console.error('"' + event + '" cannot be regiested twice.');
     events[event] = handler;
-    event = event.split(',');
+    event = event.split(/\s/);
     for(var i = 0; i < event.length; i++){
-        addEvent(event[i]);
+        register(event[i])
     }
     return this;
 }
 g.unregister = function(event){
     delete events[event];
-    delete g[event];
-    delete g.prototype[event];
+    event = event.split(/\s/);
+    for(var i = 0; i < event.length; i++){
+        delete g.prototype[event[i]];
+    }
     return this;
 }
 
@@ -99,6 +98,7 @@ g.opt = function(k, v){
     }
     return v === void 0 ? opt[k] : (opt[k]=v);
 }
+
 g.createEvent = function(name, e, attrs){
     // some browsers don't support CustomEvent
     // var evt = document.createEvent('CustomEvent');
@@ -122,18 +122,12 @@ g.util = {
     getPageY: getPageY
 }
 
-function addEvent(event){
-    if( g[event] ){
-        return console.error('You try to bind "' + event + '" event to g twice, pleace check.');
-    }
-    g[event] = function(elem, callback){
-        var elems = arrayify(elem);
-        for(var i = 0; i < elems.length; i++){
-            elems[i].addEventListener(event, callback, false);
-        }
-    }
+function register(event){
     g.prototype[event] = function(callback){
-        return g[event](this.elems, callback)
+        for(var i = 0; i < this.elems.length; i++){
+            this.elems[i].addEventListener(event, callback, false);
+        }
+        return this;
     }
 }
 

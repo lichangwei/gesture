@@ -5,7 +5,7 @@
 var targets = {};
 var timeout = {};
 
-g.register('tap,doubletap,tripletap', {
+g.register('tap doubletap tripletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-max-delta-time'))
             return;
