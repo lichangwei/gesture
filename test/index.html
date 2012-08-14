@@ -25,6 +25,7 @@
         </style>
     </head>
     <body>
+        <input type="button" name="remove" value="RemoveEventListener">
         <div class="nav">
             <ol class="menus">
                 <li class="home">Home</li>
@@ -46,20 +47,34 @@
                 var $lis = $nav.find('li');
                 var $pg = $('.playground');
                 
-                g($lis).tap(function(e){
+                function tap1(e){
                     console.log('g.prototype.tap ' + this.className);
-                });
-                g($lis).on('tap', function(e){
-                    console.log('g.prototype.on tap ' + this.className);
-                });
-                $lis[0].addEventListener('tap', function(e){
+                }
+                g($lis).tap(tap1);
+                
+                function tap2(e){
                     console.log('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
-                }, false);
+                }
+                $lis[0].addEventListener('tap', tap2, false);
+                
+                function taptaphold(e){
+                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                }
+                g($lis).on('tap taphold', taptaphold);
+ 
+                function taptaphold2(e){
+                    console.log('delegate ' + e.type + ' event on li element.');
+                }
+                g($nav).on('tap taphold', 'li', taptaphold2);
+                
+                g($('input[name=remove]')).on('tap taphold', function(){
+                    g($lis).off('tap', tap1);
+                    $lis[0].removeEventListener('tap', tap2);
+                    g($lis).off('tap taphold', taptaphold);
+                    g($nav).off('tap taphold', 'li', taptaphold2);
+                });
                 
                 g($nav).on('taphold', 'li.notexisted', function(e){
-                    console.log('you should not find out me.');
-                });
-                g($nav).on('taphold', 'li', function(e){
                     console.log('you should not find out me.');
                 });
                 
@@ -88,7 +103,7 @@
                     e.preventDefault();
                 }, false);
                 */
-               
+                
                 if(navigator.userAgent.indexOf('Android') > -1){
                     console = console || {};
                     console.log = function(){

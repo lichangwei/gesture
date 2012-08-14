@@ -25,8 +25,9 @@ g.prototype.on = function(event, selector, callback){
     }
     if(typeof selector === 'string'){
         var cbs = callback._g_cbs = callback._g_cbs || {};
-        if( !cbs[selector] ){
-            cbs[selector] = function(e){
+        var identification = event + '-' + selector;
+        if( !cbs[identification] ){
+            cbs[identification] = function(e){
                 var _list = this.querySelectorAll(selector);
                 if( _list.length === 0 ) return;
                 var list = [];
@@ -46,8 +47,10 @@ g.prototype.on = function(event, selector, callback){
                 callback.call(target, e);
             }
         }
+        _t[event](cbs[identification]);
+    }else if(typeof selector === 'function'){
+        _t[event](selector);
     }
-    _t[event]((cbs && cbs[selector]) || selector);
 }
 
 g.prototype.off = function(event, selector, callback){
@@ -60,13 +63,14 @@ g.prototype.off = function(event, selector, callback){
         return _t;
     }
     if(typeof selector === 'string'){
-        callback = callback._g_cb && callback._g_cb[selector];
-    }else{
+        var identification = event + '-' + selector;
+        callback = callback._g_cbs && callback._g_cbs[identification];
+    }else if(typeof selector === 'function'){
         callback = selector;
     }
     if( !callback ) return;
     for(var i = 0; i < this.elems.length; i++){
-        this.elems[i].addEventListener(event, callback, false);
+        this.elems[i].removeEventListener(event, callback, false);
     }
     return this;
 }
@@ -100,11 +104,15 @@ g.opt = function(k, v){
 }
 
 g.createEvent = function(name, e, attrs){
+    attrs = attrs || {};
     // some browsers don't support CustomEvent
-    // var evt = document.createEvent('CustomEvent');
-    // evt.initCustomEvent(name, false, true, 1);
-    var evt = document.createEvent('UIEvent');
-    evt.initUIEvent(name, false, true, document.defaultView, 1);
+    if(is_customer_event_supported){
+        var evt = document.createEvent('CustomEvent');
+        evt.initCustomEvent(name, false, true, 1);
+    }else{
+        var evt = document.createEvent('UIEvent');
+        evt.initUIEvent(name, false, true, document.defaultView, 1);
+    }
     for(var k in attrs){
         if(attrs.hasOwnProperty(k)){
             evt[k] = attrs[k];
@@ -113,7 +121,7 @@ g.createEvent = function(name, e, attrs){
     evt.original = e;
     evt.pageX = evt.pX = getPageX(e);
     evt.pageY = evt.pY = getPageY(e);
-    var target = (attrs && attrs.currentTarget) || e.currentTarget;
+    var target = attrs.eventTarget || e.currentTarget;
     (target || document).dispatchEvent(evt);
 }
 
@@ -181,12 +189,9 @@ function init(elem){
     elem.addEventListener(touchstart, function(e){
         e.preventDefault();
         status = 1;
-        startT = e.timeStamp;
-        startX = getPageX(e);
-        startY = getPageY(e);
-        endT = startT;
-        endX = startX;
-        endY = startY;
+        endT = startT = e.timeStamp;
+        endX = startX = getPageX(e);
+        endY = startY = getPageY(e);
 
         for(var k in events){
             if(typeof events[k].touchstart !== 'function') continue;
@@ -298,6 +303,12 @@ var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
 var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
 var touchend = is_touch_supported ? 'touchend' : 'mouseup';
 var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
+var is_customer_event_supported = false;
+try{
+    document.createEvent('CustomEvent');
+}catch(e){
+    is_customer_event_supported = false;
+}
 
 function getPageX(e){
     return e.pageX || e.clientX 

@@ -23,7 +23,7 @@ g.register('tap doubletap', {
                 var currentTarget = e.currentTarget;
                 timeout[gid] = setTimeout(function(){
                     g.createEvent('tap', e, {
-                        currentTarget: currentTarget,
+                        eventTarget: currentTarget,
                         targets: targets[gid]
                     });
                     targets[gid] = null;

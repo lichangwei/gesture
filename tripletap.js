@@ -22,7 +22,7 @@ g.register('tap doubletap tripletap', {
                 clearTimeout(timeout[gid]);
                 timeout[gid] = setTimeout(function(){
                     g.createEvent('doubletap', e, {
-                        currentTarget: currentTarget,
+                        eventTarget: currentTarget,
                         targets: ts
                     });
                     targets[gid] = null;
@@ -33,7 +33,7 @@ g.register('tap doubletap tripletap', {
                 var currentTarget = e.currentTarget;
                 timeout[gid] = setTimeout(function(){
                     g.createEvent('tap', e, {
-                        currentTarget: currentTarget,
+                        eventTarget: currentTarget,
                         targets: ts
                     });
                     targets[gid] = null;
