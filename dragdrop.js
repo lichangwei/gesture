@@ -2,10 +2,6 @@
 
 'use strict';
 
-g.draggable = function(elem, opt){
-    g(elem).draggable(opt);
-    return g;
-}
 g.prototype.draggable = function(opt){
     opt = opt || {};
     for(var i = 0; i < this.elems.length; i++){
