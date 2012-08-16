@@ -127,12 +127,16 @@ g.createEvent = function(name, e, attrs){
 
 g.util = {
     getPageX: getPageX,
-    getPageY: getPageY
+    getPageY: getPageY,
+    getDistance: getDistance
 }
 
 function register(event){
     g.prototype[event] = function(callback){
         for(var i = 0; i < this.elems.length; i++){
+            if(event.indexOf('scroll') >= 0 ){
+                this.elems[i]._scroll = event;
+            }
             this.elems[i].addEventListener(event, callback, false);
         }
         return this;
@@ -208,9 +212,12 @@ function init(elem){
         endT = e.timeStamp;
         endX = getPageX(e);
         endY = getPageY(e);
+        deltaT = endT - startT;
+        deltaX = endX - startX;
+        deltaY = endY - startY;
         for(var k in events){
             if(typeof events[k].touchmove !== 'function') continue;
-            var result = events[k].touchmove.call(this, e, endT, endX, endY);
+            var result = events[k].touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
             if(result === false) break;
         }
     }, false);
@@ -227,6 +234,7 @@ function init(elem){
             var result = events[k].touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
             if(result === false) break;
         }
+        status = 0;
     }, false);
     elem.addEventListener(touchleave, function(e){
         status = 0;
@@ -325,8 +333,8 @@ function getPageY(e){
 function getInfo(e){
     var t0 = e.touches[0];
     var t1 = e.touches[1];
-    var p0 = {x: t0.pageX, y: t0.pageY};
-    var p1 = {x: t1.pageX, y: t1.pageY};
+    var p0 = [t0.pageX, t0.pageY];
+    var p1 = [t1.pageX, t1.pageY];
     return {
         distance: getDistance(p0, p1),
         angle: getAngle(p0, p1)
@@ -334,8 +342,8 @@ function getInfo(e){
 }
 
 function getAngle(p0, p1){
-    var deltaX = p0.x-p1.x;
-    var deltaY = p0.y-p1.y;
+    var deltaX = p0[0]-p1[0];
+    var deltaY = p0[1]-p1[1];
     if(deltaX === 0){
         return deltaY === 0 ? 0 : (deltaY > 0 ? 90 : -90);
     }
@@ -343,7 +351,7 @@ function getAngle(p0, p1){
 }
 
 function getDistance(p0, p1){
-    return Math.sqrt((p1.x-p0.x)*(p1.x-p0.x) + (p1.y-p0.y)*(p1.y-p0.y));
+    return Math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0]) + (p1[1]-p0[1])*(p1[1]-p0[1]));
 }
 
 })();
