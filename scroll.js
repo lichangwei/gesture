@@ -46,7 +46,6 @@ g.register('scroll scrollhorizontal scrollvertical', {
         var data = getData(this);
         var lefttop = getLeftTop(this, data, deltaX, deltaY, false);
         var need = needMove(data, lefttop);
-        console.log(need)
         if(need) move(this, data, lefttop);
         data.speed = [(endX-data.prevX)/deltaT, (endY-data.prevY)/deltaT];
         data.prevX = endX;
@@ -67,12 +66,14 @@ g.register('scroll scrollhorizontal scrollvertical', {
                 g.createEvent(data.scroll, e, {
                     eventTarget: eventTarget
                 });
-            }
+            };
             _t.addEventListener('webkitTransitionEnd', webkitTransitionEnd, false);
             setTransitionStyle(_t, default_animation_style);
             move(_t, data, lefttop);
         }
     }
+}, function(event){
+    this[attrname] = event;
 });
 
 function getLeftTop(elem, data, deltaX, deltaY, checkBoundaries){
@@ -81,7 +82,6 @@ function getLeftTop(elem, data, deltaX, deltaY, checkBoundaries){
         var left = data.left + deltaX;
         if(left > 0) left = checkBoundaries ? 0 : left / 3;
         var min = data.p_width - data.width;
-        console.log(left < min)
         if(left < min) left = checkBoundaries ? min : left;
         lefttop.left = Math.floor(left);
     }

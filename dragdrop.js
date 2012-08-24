@@ -78,13 +78,13 @@ g.prototype.draggable = function(opt){
             if((opt.helper === void 0) || (opt.helper === 'shadow')){
                 var shadow = this.cloneNode(true);
                 shadow.className = this.className;
-                (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY)
+                (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
                 document.body.appendChild(shadow);
             }
             if(result === false) return;
         });
     }
-}
+};
 
 var getPageX = g.util.getPageX;
 var getPageY = g.util.getPageY;

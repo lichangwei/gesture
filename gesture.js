@@ -12,7 +12,7 @@ var g = window.g = function(elem){
         if(!elems[i]._gesture_id) init(elems[i]);
     }
     this.elems = elems;
-}
+};
 
 g.prototype.on = function(event, selector, callback){
     // allow to bind 2+ events at the same time
@@ -45,13 +45,13 @@ g.prototype.on = function(event, selector, callback){
                     target = o;
                 }
                 callback.call(target, e);
-            }
-        }
+            };
+        };
         _t[event](cbs[identification]);
     }else if(typeof selector === 'function'){
         _t[event](selector);
     }
-}
+};
 
 g.prototype.off = function(event, selector, callback){
     // allow to bind 2+ events at the same time
@@ -73,17 +73,17 @@ g.prototype.off = function(event, selector, callback){
         this.elems[i].removeEventListener(event, callback, false);
     }
     return this;
-}
+};
 
-g.register = function(event, handler){
+g.register = function(event, handler, ifBind){
     if( events[event] ) return console.error('"' + event + '" cannot be regiested twice.');
     events[event] = handler;
     event = event.split(/\s/);
     for(var i = 0; i < event.length; i++){
-        register(event[i])
+        register(event[i], ifBind);
     }
     return this;
-}
+};
 g.unregister = function(event){
     delete events[event];
     event = event.split(/\s/);
@@ -91,7 +91,7 @@ g.unregister = function(event){
         delete g.prototype[event[i]];
     }
     return this;
-}
+};
 
 g.opt = function(k, v){
     if(typeof k !== 'string'){
@@ -101,7 +101,7 @@ g.opt = function(k, v){
         return;
     }
     return v === void 0 ? opt[k] : (opt[k]=v);
-}
+};
 
 g.createEvent = function(name, e, attrs){
     attrs = attrs || {};
@@ -123,25 +123,23 @@ g.createEvent = function(name, e, attrs){
     evt.pageY = evt.pY = getPageY(e);
     var target = attrs.eventTarget || e.currentTarget;
     (target || document).dispatchEvent(evt);
-}
+};
 
 g.util = {
     getPageX: getPageX,
     getPageY: getPageY,
     getDistance: getDistance
-}
+};
 
-function register(event){
+function register(event, ifBind){
     g.prototype[event] = function(callback){
         for(var i = 0; i < this.elems.length; i++){
-            if(event.indexOf('scroll') >= 0 ){
-                this.elems[i]._scroll = event;
-            }
+            ifBind && ifBind.call(this.elems[i], event);
             this.elems[i].addEventListener(event, callback, false);
         }
         return this;
-    }
-}
+    };
+};
 
 function arrayify( elem ){
     if(elem.jquery) return elem.get();
@@ -347,7 +345,7 @@ function getAngle(p0, p1){
     if(deltaX === 0){
         return deltaY === 0 ? 0 : (deltaY > 0 ? 90 : -90);
     }
-    return Math.atan(deltaY / deltaX) * 180 / Math.PI
+    return Math.atan(deltaY / deltaX) * 180 / Math.PI;
 }
 
 function getDistance(p0, p1){
