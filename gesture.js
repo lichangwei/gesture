@@ -4,25 +4,26 @@
 'use strict';
 
 var g = window.g = function(elem){
+    // if call g function with out 'new' 
     if ( !(this instanceof g) )
         return new g(elem);
-    var elems = arrayify(elem);
+    var elems = this.elems = arrayify(elem);
     if(!elems || elems.length === 0 ) return;
     for(var i = 0; i < elems.length; i++){
         if(!elems[i]._gesture_id) init(elems[i]);
     }
-    this.elems = elems;
 };
 
 g.prototype.on = function(type, selector, callback){
-    // allow to bind 2+ events at the same time
     var _t = this;
+    // allow to bind 2+ events at the same time
     if(type.search(/\s/) >= 0){
         type.replace(/\S+/g, function(evt){
             _t.on(evt, selector, callback);
         });
         return _t;
     }
+    // split event type & namespace
     if(type.indexOf('.') !== -1){
     	var array = type.split('.');
     	type = array[0];
@@ -31,24 +32,27 @@ g.prototype.on = function(type, selector, callback){
     _t[type](selector, callback, namespace);
 };
 
+// off(type[, selector][, callback])
 g.prototype.off = function(type, selector, callback){
-    // allow to bind 2+ events at the same time
     var _t = this;
+    // allow to remove 2+ events at the same time
     if(type.search(/\s/) >= 0){
         type.replace(/\S+/g, function(evt){
             _t.off(evt, selector, callback);
         });
         return _t;
     }
+    // split event type & namespace
     if(type.indexOf('.') !== -1){
         var array = type.split('.');
         type = array[0];
         var namespace = array[1];
     }
+    // case: off('tap', '.delete', fn)
     if(typeof selector === 'string' && typeof callback === 'function'){
         var identification = type + '-' + selector;
         callback = callback._g_cbs && callback._g_cbs[identification];
-    }else if(typeof selector === 'function'){
+    }else if(typeof selector === 'function'){ // case: off('tap', fn)
         callback = selector;
         selector = void 0;
     }
@@ -56,6 +60,7 @@ g.prototype.off = function(type, selector, callback){
         var elem = this.elems[i];
         var cbs = callbacks[elem._gesture_id];
         if( !cbs || cbs.length === 0 ) continue;
+        // remove the callbacks that match the condition
         for(var j = cbs.length - 1; j >= 0; j--){
             var cb = cbs[j];
             if( (!type || (type === cb.type))
@@ -114,8 +119,8 @@ g.createEvent = function(name, e, attrs){
         }
     }
     evt.original = e;
-    evt.pageX = evt.pX = getPageX(e);
-    evt.pageY = evt.pY = getPageY(e);
+    evt.px = getPageX(e);
+    evt.py = getPageY(e);
     var target = attrs.eventTarget || e.currentTarget;
     (target || document).dispatchEvent(evt);
 };
@@ -276,7 +281,7 @@ function init(elem){
         status = 0;
     }, false);
     
-    elem.addEventListener('gesturestart', function(e){
+    elem.addEventListener(gesturestart, function(e){
         status = 0;
         for(var k in events){
             if(typeof events[k].gesturestart !== 'function') continue;
@@ -284,7 +289,7 @@ function init(elem){
             if(result === false) break;
         }
     }, false);
-    elem.addEventListener('gesturechange', function(e){
+    elem.addEventListener(gesturechange, function(e){
         status = 0;
         for(var k in events){
             if(typeof events[k].gesturechange !== 'function') continue;
@@ -292,7 +297,7 @@ function init(elem){
             if(result === false) break;
         }
     }, false);
-    elem.addEventListener('gestureend', function(e){
+    elem.addEventListener(gestureend, function(e){
         status = 0;
         for(var k in events){
             if(typeof events[k].gestureend !== 'function') continue;
@@ -307,7 +312,7 @@ function init(elem){
                 if(e.touches.length < 2) return;
                 start = getInfo(e);
                 rotation = 0;
-                g.createEvent('gesturestart', e, {
+                g.createEvent(gesturestart, e, {
                     scale: 1,
                     rotation: rotation
                 });
@@ -323,7 +328,7 @@ function init(elem){
                     _rotation = _rotation + 180;
                 }
                 rotation = _rotation;
-                g.createEvent('gesturechange', e, {
+                g.createEvent(gesturechange, e, {
                     scale: end.distance/start.distance,
                     rotation: _rotation
                 });
@@ -331,7 +336,7 @@ function init(elem){
             elem.addEventListener(touchend, function(e){
                 if(e.touches.length > 1) return;
                 if(!start) return;
-                g.createEvent('gestureend', e, {
+                g.createEvent(gestureend, e, {
                     scale: end.distance/start.distance,
                     rotation: rotation
                 });
@@ -347,6 +352,9 @@ var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
 var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
 var touchend = is_touch_supported ? 'touchend' : 'mouseup';
 var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
+var gesturestart = 'gesturestart';
+var gesturechange = 'gesturechange';
+var gestureend   = 'gestureend';
 var is_customer_event_supported = false;
 try{
     document.createEvent('CustomEvent');
