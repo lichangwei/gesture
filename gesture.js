@@ -14,63 +14,58 @@ var g = window.g = function(elem){
     this.elems = elems;
 };
 
-g.prototype.on = function(event, selector, callback){
+g.prototype.on = function(type, selector, callback){
     // allow to bind 2+ events at the same time
     var _t = this;
-    if(event.search(/\s/) >= 0){
-        event.replace(/\S+/g, function(evt){
+    if(type.search(/\s/) >= 0){
+        type.replace(/\S+/g, function(evt){
             _t.on(evt, selector, callback);
         });
         return _t;
     }
-    if(typeof selector === 'string'){
-        var cbs = callback._g_cbs = callback._g_cbs || {};
-        var identification = event + '-' + selector;
-        if( !cbs[identification] ){
-            cbs[identification] = function(e){
-                var _list = this.querySelectorAll(selector);
-                if( _list.length === 0 ) return;
-                var list = [];
-                for(var i = 0; i < _list.length; i++){
-                    list.push(_list[i]);
-                }
-                var targets = e.targets || [e.original.target];
-                var target;
-                for(var i = 0; i < targets.length; i++){
-                    for(var o = targets[i]; o !== this; o = o.parentNode){
-                        if(list.indexOf(o) >= 0) break;
-                    }
-                    if(o === this) return;
-                    if(target && (target !== o)) return;
-                    target = o;
-                }
-                callback.call(target, e);
-            };
-        };
-        _t[event](cbs[identification]);
-    }else if(typeof selector === 'function'){
-        _t[event](selector);
+    if(type.indexOf('.') !== -1){
+    	var array = type.split('.');
+    	type = array[0];
+    	var namespace = array[1];
     }
+    _t[type](selector, callback, namespace);
 };
 
-g.prototype.off = function(event, selector, callback){
+g.prototype.off = function(type, selector, callback){
     // allow to bind 2+ events at the same time
     var _t = this;
-    if(event.search(/\s/) >= 0){
-        event.replace(/\S+/g, function(evt){
+    if(type.search(/\s/) >= 0){
+        type.replace(/\S+/g, function(evt){
             _t.off(evt, selector, callback);
         });
         return _t;
     }
-    if(typeof selector === 'string'){
-        var identification = event + '-' + selector;
+    if(type.indexOf('.') !== -1){
+        var array = type.split('.');
+        type = array[0];
+        var namespace = array[1];
+    }
+    if(typeof selector === 'string' && typeof callback === 'function'){
+        var identification = type + '-' + selector;
         callback = callback._g_cbs && callback._g_cbs[identification];
     }else if(typeof selector === 'function'){
         callback = selector;
+        selector = void 0;
     }
-    if( !callback ) return;
     for(var i = 0; i < this.elems.length; i++){
-        this.elems[i].removeEventListener(event, callback, false);
+        var elem = this.elems[i];
+        var cbs = callbacks[elem._gesture_id];
+        if( !cbs || cbs.length === 0 ) continue;
+        for(var j = cbs.length - 1; j >= 0; j--){
+            var cb = cbs[j];
+            if( (!type || (type === cb.type))
+                && (!selector || (selector === cb.selector))
+                && (!namespace || (namespace === cb.namespace))
+                && (!callback || (callback === cb.callback)) ){
+                elem.removeEventListener(cb.type, cb.callback);
+                cbs.splice(j, 1);
+            }
+        }
     }
     return this;
 };
@@ -131,11 +126,51 @@ g.util = {
     getDistance: getDistance
 };
 
-function register(event, ifBind){
-    g.prototype[event] = function(callback){
+function register(type, ifBind){
+    g.prototype[type] = function(selector, callback, namespace){
+        if(typeof selector === 'function'){
+            namespace = callback;
+            callback = selector;
+            selector = void 0;
+        }
+        var cb = callback;
+        if( selector ){
+            var cbs = callback._g_cbs = callback._g_cbs || {};
+            var identification = type + '-' + selector;
+            if( !cbs[identification] ){
+                cbs[identification] = function(e){
+                    var _list = this.querySelectorAll(selector);
+                    if( _list.length === 0 ) return;
+                    var list = [];
+                    for(var i = 0; i < _list.length; i++){
+                        list.push(_list[i]);
+                    }
+                    var targets = e.targets || [e.original.target];
+                    var target;
+                    for(var i = 0; i < targets.length; i++){
+                        for(var o = targets[i]; o !== this; o = o.parentNode){
+                            if(list.indexOf(o) >= 0) break;
+                        }
+                        if(o === this) return;
+                        if(target && (target !== o)) return;
+                        target = o;
+                    }
+                    callback.call(target, e);
+                };
+            };
+            cb = cbs[identification];
+        }
         for(var i = 0; i < this.elems.length; i++){
-            ifBind && ifBind.call(this.elems[i], event);
-            this.elems[i].addEventListener(event, callback, false);
+        	var elem = this.elems[i];
+            ifBind && ifBind.call(elem, type);
+            elem.addEventListener(type, cb, false);
+            var cbs = callbacks[elem._gesture_id] = (callbacks[elem._gesture_id] || []);
+            cbs.push({
+                type: type,
+                selector: selector,
+                namespace: namespace,
+                callback: cb
+            });
         }
         return this;
     };
@@ -164,6 +199,9 @@ function arrayify( elem ){
     return elem;
 }
 var events = {};
+var callbacks = {};
+var gesture_id = 0;
+
 var opt = {
     'tap-max-distance': 30,
     'tap-max-delta-time': 300,
@@ -177,7 +215,7 @@ var opt = {
     'zoomin-max-scale': 0.83,
     'zoomout-min-scale': 1.2
 };
-var gesture_id = 0;
+
 
 function init(elem){
     elem._gesture_id = ++gesture_id;

@@ -47,31 +47,29 @@
                 var $lis = $nav.find('li');
                 var $pg = $('.playground');
                 
-                function tap1(e){
-                    console.log('g.prototype.tap ' + this.className);
-                }
-                g($lis).tap(tap1);
+                var namespace = 'namespace';
+                g($lis).tap(function(e){
+                    console.log('g.prototype.tap ' + this.className + ', namespace = ' + namespace);
+                }, namespace);
                 
-                function tap2(e){
+                function tap(e){
                     console.log('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
                 }
-                $lis[0].addEventListener('tap', tap2, false);
+                $lis[0].addEventListener('tap', tap, false);
                 
-                function taptaphold(e){
+                g($lis).on('tap taphold', function(e){
                     console.log('g.prototype.on ' + e.type + ' ' + this.className);
-                }
-                g($lis).on('tap taphold', taptaphold);
- 
-                function taptaphold2(e){
+                });
+                
+                g($nav).on('tap taphold', 'li', function(e){
                     console.log('delegate ' + e.type + ' event on li element.');
-                }
-                g($nav).on('tap taphold', 'li', taptaphold2);
+                });
                 
                 g($('input[name=remove]')).on('tap taphold', function(){
-                    g($lis).off('tap', tap1);
-                    $lis[0].removeEventListener('tap', tap2);
-                    g($lis).off('tap taphold', taptaphold);
-                    g($nav).off('tap taphold', 'li', taptaphold2);
+                    g($lis).off('.namespace');
+                    $lis[0].removeEventListener('tap', tap);
+                    g($lis).off('tap taphold');
+                    g($nav).off('tap taphold', 'li');
                 });
                 
                 g($nav).on('taphold', 'li.notexisted', function(e){

@@ -3,7 +3,7 @@
 g.draggable = function(elem, dragstart, drag, dragend){
     g(elem).draggable(dragstart, drag, dragend);
     return g;
-}
+};
 g.prototype.draggable = function(dragstart, drag, dragend){
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
