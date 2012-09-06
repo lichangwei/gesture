@@ -209,11 +209,9 @@ var gesture_id = 0;
 
 var opt = {
     'tap-max-distance': 30,
-    'tap-max-delta-time': 300,
-    'tap-interval': 250,
-    
+    'tap-multi-interval': 250,
     'taphold-max-distance': 30,
-    'taphold-min-delta-time': 301,
+    'tap-taphold-press-duration': 300,
     
     'flick-min-x-or-y': 30,
     
