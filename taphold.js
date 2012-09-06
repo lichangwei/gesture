@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -11,4 +11,4 @@ g.register('taphold', {
     }
 });
 
-})();
+})(g);

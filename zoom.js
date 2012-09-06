@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -13,4 +13,4 @@ g.register('zoomin zoomout', {
     }
 });
 
-})();
+})(g);

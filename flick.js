@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -26,4 +26,4 @@ g.register('flick', {
     }
 });
 
-})();
+})(g);

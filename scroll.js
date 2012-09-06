@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -130,4 +130,4 @@ function getData(elem){
     return data;
 }
 
-})();
+})(g);

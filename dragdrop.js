@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -109,4 +109,4 @@ function positionShadow(left, top){
         + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.5;';
 }
 
-})();
+})(g);

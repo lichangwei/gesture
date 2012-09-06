@@ -1,4 +1,4 @@
-(function(){
+(function(g){
 
 'use strict';
 
@@ -88,4 +88,4 @@ handler.tripletap = function(e){
     }
 };
 
-})();
+})(g);
