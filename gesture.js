@@ -14,22 +14,22 @@ var g = window.g = function(elem){
     }
 };
 
-g.prototype.on = function(type, selector, callback){
+g.prototype.on = function(type, selector, data, callback){
     var _t = this;
     // allow to bind 2+ events at the same time
     if(type.search(/\s/) >= 0){
         type.replace(/\S+/g, function(evt){
-            _t.on(evt, selector, callback);
+            _t.on(evt, selector, data, callback);
         });
         return _t;
     }
     // split event type & namespace
     if(type.indexOf('.') !== -1){
-    	var array = type.split('.');
-    	type = array[0];
-    	var namespace = array[1];
+        var array = type.split('.');
+        type = array[0];
+        var namespace = array[1];
     }
-    _t[type](selector, callback, namespace);
+    _t[type](selector, data, callback, namespace);
 };
 
 // off(type[, selector][, callback])
@@ -132,11 +132,17 @@ g.util = {
 };
 
 function register(type, ifBind){
-    g.prototype[type] = function(selector, callback, namespace){
-        if(typeof selector === 'function'){
+    g.prototype[type] = function(selector, data, callback, namespace){
+        if(typeof selector !== 'string'){
             namespace = callback;
-            callback = selector;
+            callback = data;
+            data = selector;
             selector = void 0;
+        }
+        if(typeof data !== 'object'){
+            namespace = callback;
+            callback = data;
+            data = void 0;
         }
         var cb = callback;
         if( selector ){
@@ -166,7 +172,7 @@ function register(type, ifBind){
             cb = cbs[identification];
         }
         for(var i = 0; i < this.elems.length; i++){
-        	var elem = this.elems[i];
+            var elem = this.elems[i];
             ifBind && ifBind.call(elem, type);
             elem.addEventListener(type, cb, false);
             var cbs = callbacks[elem._gesture_id] = (callbacks[elem._gesture_id] || []);
@@ -237,8 +243,9 @@ function init(elem){
         endY = startY = getPageY(e);
 
         for(var k in events){
-            if(typeof events[k].touchstart !== 'function') continue;
-            var result = events[k].touchstart.call(this, e, startT, startX, startY);
+            var ek = events[k];
+            if(typeof ek.touchstart !== 'function') continue;
+            var result = ek.touchstart.call(this, e, startT, startX, startY);
             if(result === false) break;
         }
     }, false);
@@ -255,8 +262,9 @@ function init(elem){
         deltaX = endX - startX;
         deltaY = endY - startY;
         for(var k in events){
-            if(typeof events[k].touchmove !== 'function') continue;
-            var result = events[k].touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
+            var ek = events[k];
+            if(typeof ek.touchmove !== 'function') continue;
+            var result = ek.touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
             if(result === false) break;
         }
     }, false);
@@ -269,8 +277,9 @@ function init(elem){
         deltaY = endY - startY;
         distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         for(var k in events){
-            if(typeof events[k].touchend !== 'function') continue;
-            var result = events[k].touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
+            var ek = events[k];
+            if(typeof ek.touchend !== 'function') continue;
+            var result = ek.touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
             if(result === false) break;
         }
         status = 0;
@@ -282,24 +291,27 @@ function init(elem){
     elem.addEventListener(gesturestart, function(e){
         status = 0;
         for(var k in events){
-            if(typeof events[k].gesturestart !== 'function') continue;
-            var result = events[k].gesturestart.call(this, e);
+            var ek = events[k];
+            if(typeof ek.gesturestart !== 'function') continue;
+            var result = ek.gesturestart.call(this, e);
             if(result === false) break;
         }
     }, false);
     elem.addEventListener(gesturechange, function(e){
         status = 0;
         for(var k in events){
-            if(typeof events[k].gesturechange !== 'function') continue;
-            var result = events[k].gesturechange.call(this, e);
+            var ek = events[k];
+            if(typeof ek.gesturechange !== 'function') continue;
+            var result = ek.gesturechange.call(this, e);
             if(result === false) break;
         }
     }, false);
     elem.addEventListener(gestureend, function(e){
         status = 0;
         for(var k in events){
-            if(typeof events[k].gestureend !== 'function') continue;
-            var result = events[k].gestureend.call(this, e);
+            var ek = events[k];
+            if(typeof ek.gestureend !== 'function') continue;
+            var result = ek.gestureend.call(this, e);
             if(result === false) break;
         }
     }, false);
