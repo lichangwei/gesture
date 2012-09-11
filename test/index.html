@@ -76,7 +76,7 @@
                     console.log('you should not find out me.');
                 });
                 
-                g($nav).on('doubletap tripletap', '.nav li', function(e){
+                g($nav).on('doubletap', '.nav li', function(e){
                     console.log('g.prototype.on ' + e.type + ' ' + this.className);
                 });
 
