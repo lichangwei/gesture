@@ -30,6 +30,7 @@ g.prototype.on = function(type, selector, data, callback){
         var namespace = array[1];
     }
     _t[type](selector, data, callback, namespace);
+    return this;
 };
 
 // off(type[, selector][, callback])
@@ -125,12 +126,6 @@ g.createEvent = function(name, e, attrs){
     (target || document).dispatchEvent(evt);
 };
 
-g.util = {
-    getPageX: getPageX,
-    getPageY: getPageY,
-    getDistance: getDistance
-};
-
 function register(type, ifBind){
     g.prototype[type] = function(selector, data, callback, namespace){
         if(typeof selector !== 'string'){
@@ -156,15 +151,17 @@ function register(type, ifBind){
                     for(var i = 0; i < _list.length; i++){
                         list.push(_list[i]);
                     }
-                    var targets = e.targets || [e.original.target];
-                    var target;
-                    for(var i = 0; i < targets.length; i++){
-                        for(var o = targets[i]; o !== this; o = o.parentNode){
-                            if(list.indexOf(o) >= 0) break;
-                        }
-                        if(o === this) return;
-                        if(target && (target !== o)) return;
-                        target = o;
+                    var target = e.target;
+                    if( !target ){
+                    	var targets = e.targets || [e.original.target];
+	                    for(var i = 0; i < targets.length; i++){
+	                        for(var o = targets[i]; o !== this; o = o.parentNode){
+	                            if(list.indexOf(o) >= 0) break;
+	                        }
+	                        if(o === this) return;
+	                        if(target && (target !== o)) return;
+	                        target = o;
+	                    }
                     }
                     callback.call(target, e);
                 };
@@ -372,6 +369,26 @@ try{
 }catch(e){
     is_customer_event_supported = false;
 }
+
+// allow user bind some standard events.
+g.register([touchstart, touchmove, touchend].join(' '), {});
+
+g.event = {
+	touchstart: touchstart,
+	touchmove: touchmove,
+	touchend: touchend,
+};
+
+g.support = {
+	touch: is_touch_supported,
+	gesture: is_gesture_supported
+};
+
+g.util = {
+    getPageX: getPageX,
+    getPageY: getPageY,
+    getDistance: getDistance
+};
 
 function getPageX(e){
     return e.pageX || e.clientX 

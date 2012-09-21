@@ -79,14 +79,16 @@
                 
                 g($nav).on('doubletap', '.nav li', function(e){
                     console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                }).on(g.event.touchend, '.nav li', function(e){
+                    console.log('Standard Event: ' + e.type + ' ' + this.className);
                 });
 
                 g($pg).on('flick', function(e){
                     console.log('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
-                });
-                
-                g($pg).on('zoomin zoomout', function(e){
+                }).on('zoomin zoomout', function(e){
                     console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                }).on(g.event.touchstart + ' ' + g.event.touchend, function(e){
+                    console.log('Standard Event: ' + e.type + ' ' + this.className);
                 });
                 
                 /*
