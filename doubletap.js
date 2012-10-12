@@ -10,7 +10,7 @@ var target = {};
 g.register('doubletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         
-        if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-taphold-press-duration'))
+        if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-max-duration'))
             return;
         
         var gid = this._gesture_id;
