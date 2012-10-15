@@ -151,19 +151,23 @@ function register(type, ifBind){
                     for(var i = 0; i < _list.length; i++){
                         list.push(_list[i]);
                     }
-                    var target = e.target;
-                    if( !target ){
-                    	var targets = e.targets || [e.original.target];
-	                    for(var i = 0; i < targets.length; i++){
-	                        for(var o = targets[i]; o !== this; o = o.parentNode){
-	                            if(list.indexOf(o) >= 0) break;
-	                        }
-	                        if(o === this) return;
-	                        if(target && (target !== o)) return;
-	                        target = o;
-	                    }
+                    var target;
+                    var eventType = e.toString();
+                    if(eventType === '[object CustomEvent]' 
+                        || eventType === '[object UIEvent]'){
+                        var targets = e.targets || e.original && [e.original.target];
+                        for(var i = 0; targets && i < targets.length; i++){
+                            for(var o = targets[i]; o !== this; o = o.parentNode){
+                                if(list.indexOf(o) >= 0) break;
+                            }
+                            if(o === this) return;
+                            if(target && (target !== o)) return;
+                            target = o;
+                        }
+                    }else{ // for orignal events, such as mouseup, touchend etc.
+                        target = e.target;
                     }
-                    callback.call(target, e);
+                    target && callback.call(target, e);
                 };
             };
             cb = cbs[identification];
@@ -186,7 +190,10 @@ function register(type, ifBind){
 
 function arrayify( elem ){
     if(elem.jquery) return elem.get();
-    if(elem instanceof HTMLElement) return [elem];
+    if(elem instanceof HTMLElement || elem instanceof HTMLDocument) return [elem];
+    if(typeof elem === 'string'){
+        elem = document.querySelectorAll(elem);
+    }
     // Here we recommend to use below methods to get an element collection.
     // getElementsByClassName
     // getElementsByTagName
@@ -373,14 +380,14 @@ try{
 g.register([touchstart, touchmove, touchend].join(' '), {});
 
 g.event = {
-	touchstart: touchstart,
-	touchmove: touchmove,
-	touchend: touchend,
+    touchstart: touchstart,
+    touchmove: touchmove,
+    touchend: touchend,
 };
 
 g.support = {
-	touch: is_touch_supported,
-	gesture: is_gesture_supported
+    touch: is_touch_supported,
+    gesture: is_gesture_supported
 };
 
 g.util = {
