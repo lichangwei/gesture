@@ -190,7 +190,8 @@ function register(type, ifBind){
 
 function arrayify( elem ){
     if(elem.jquery) return elem.get();
-    if(elem instanceof HTMLElement || elem instanceof HTMLDocument) return [elem];
+    // document is instance of HTMLDocument(but Document in IE)
+    if(elem instanceof HTMLElement || elem === document) return [elem];
     if(typeof elem === 'string'){
         elem = document.querySelectorAll(elem);
     }
