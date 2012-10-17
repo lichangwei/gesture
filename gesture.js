@@ -361,21 +361,18 @@ function init(elem){
     }
 }
 
+var is_customer_event_supported = !!window.CustomEvent;
 var is_touch_supported = 'ontouchstart' in document.documentElement;
 var is_gesture_supported = 'ongesturestart' in document.documentElement;
+
 var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
 var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
 var touchend = is_touch_supported ? 'touchend' : 'mouseup';
 var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
+
 var gesturestart = 'gesturestart';
 var gesturechange = 'gesturechange';
 var gestureend   = 'gestureend';
-var is_customer_event_supported = false;
-try{
-    document.createEvent('CustomEvent');
-}catch(e){
-    is_customer_event_supported = false;
-}
 
 // allow user bind some standard events.
 g.register([touchstart, touchmove, touchend].join(' '), {});
