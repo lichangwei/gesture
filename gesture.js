@@ -76,6 +76,14 @@ g.prototype.off = function(type, selector, callback){
     return this;
 };
 
+g.prototype.trigger = function(type){
+    for(var i = 0; i < this.elems.length; i++){
+        g.createEvent(type, null, {
+            eventTarget: this.elems[i]
+        });
+    }
+}
+
 g.register = function(event, handler, ifBind){
     if( events[event] ) return console.error('"' + event + '" cannot be regiested twice.');
     events[event] = handler;
@@ -106,6 +114,7 @@ g.opt = function(k, v){
 
 g.createEvent = function(name, e, attrs){
     attrs = attrs || {};
+    e = e || {};
     // some browsers don't support CustomEvent
     if(is_customer_event_supported){
         var evt = document.createEvent('CustomEvent');
