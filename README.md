@@ -78,7 +78,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 
 # Sample  
 ``` javascript  
-通过事件代理，处理每个菜单项的tap事件
+// 通过事件代理，处理每个菜单项的tap事件
 g('#menu').on('tap', 'li', function(e){
     e.original.preventDefault(); //e.original is touchend/mouseup
     
