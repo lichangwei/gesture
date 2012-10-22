@@ -79,9 +79,11 @@ g.prototype.off = function(type, selector, callback){
 g.prototype.trigger = function(type){
     for(var i = 0; i < this.elems.length; i++){
         g.createEvent(type, null, {
-            eventTarget: this.elems[i]
+            eventTarget: this.elems[i],
+            canBubble: true
         });
     }
+    return this;
 }
 
 g.register = function(event, handler, ifBind){
@@ -118,10 +120,10 @@ g.createEvent = function(name, e, attrs){
     // some browsers don't support CustomEvent
     if(is_customer_event_supported){
         var evt = document.createEvent('CustomEvent');
-        evt.initCustomEvent(name, false, true, 1);
+        evt.initCustomEvent(name, attrs.canBubble || false, true, 1);
     }else{
         var evt = document.createEvent('UIEvent');
-        evt.initUIEvent(name, false, true, document.defaultView, 1);
+        evt.initUIEvent(name, attrs.canBubble || false, true, document.defaultView, 1);
     }
     for(var k in attrs){
         if(attrs.hasOwnProperty(k)){
@@ -164,7 +166,7 @@ function register(type, ifBind){
                     var eventType = e.toString();
                     if(eventType === '[object CustomEvent]' 
                         || eventType === '[object UIEvent]'){
-                        var targets = e.targets || e.original && [e.original.target];
+                        var targets = e.targets || (e.eventTarget && [e.eventTarget]) || (e.original && [e.original.target]);
                         for(var i = 0; targets && i < targets.length; i++){
                             for(var o = targets[i]; o !== this; o = o.parentNode){
                                 if(list.indexOf(o) >= 0) break;

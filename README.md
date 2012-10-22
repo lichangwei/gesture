@@ -24,6 +24,11 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @param callback: 函数，可选。解除绑定在某事件上的某个函数。  
 @return g对象。  
 
+**g.prototype.trigger(type)**  
+使用代码触发某类事件。  
+@param type: 字符串，必选。需要触发的事件类型。如"tap"。  
+@return g对象。  
+
 **g.prototype.tap([selector, ][data, ]callback[, namespace])**  
 绑定tap事件。  
 @param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。 
