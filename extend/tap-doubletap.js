@@ -1,3 +1,6 @@
+/**
+ * Cannot be used with tap.js & doubletap.js
+ */
 (function(g){
 
 'use strict';
@@ -10,7 +13,7 @@ g.register('tap doubletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
         if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-max-duration'))
             return;
-        var tap_type = this[attr_name] || 'tap';
+        var tap_type = this[attr_name] || 'doubletap';
         handler[tap_type].call(this, e);
     }
 }, function(event){
@@ -31,7 +34,7 @@ handler.doubletap = function(e){
     ts.push(e.target);
     if(ts.length >= 2){
         clearTimeout(timeout[gid]);
-        g.createEvent(events[1], e, {
+        g.createEvent('doubletap', e, {
             targets: targets[gid]
         });
         targets[gid] = null;
@@ -39,7 +42,7 @@ handler.doubletap = function(e){
         (function(e, gid){
             var currentTarget = e.currentTarget;
             timeout[gid] = setTimeout(function(){
-                g.createEvent(events[0], e, {
+                g.createEvent('tap', e, {
                     eventTarget: currentTarget,
                     targets: targets[gid]
                 });
