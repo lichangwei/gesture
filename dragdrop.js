@@ -7,7 +7,7 @@ g.prototype.draggable = function(opt){
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
         elem._draggable = true;
-        elem.addEventListener(start, function(e){
+        elem.addEventListener(g.event.touchstart, function(e){
             e.preventDefault();
             
             if(this._draggable !== true) return;
@@ -52,15 +52,15 @@ g.prototype.draggable = function(opt){
             function touchend(e){
                 e.preventDefault();
                 
-                document.removeEventListener(move, touchmove);
-                document.removeEventListener(end, touchend);
+                document.removeEventListener(g.event.touchmove, touchmove);
+                document.removeEventListener(g.event.touchend, touchend);
                 endX = getPageX(e);
                 endY = getPageY(e);
                 thisX = endX - startX + offsetX;
                 thisY = endY - startY + offsetY;
                 if(opt.touchend){
                     var result = opt.touchend.call(dragged, e, thisX, thisY, 
-                        endX-startX, endY-startY);
+                        endX-startX, endY-startY, endX, endY);
                 }
                 if((opt.helper === void 0) || (opt.helper === 'clone')){
                     document.body.removeChild(shadow);
@@ -69,8 +69,8 @@ g.prototype.draggable = function(opt){
                 dragged.style.left = thisX + 'px';
                 dragged.style.top = thisY + 'px';
             }
-            document.addEventListener(move, touchmove, false);
-            document.addEventListener(end, touchend, false);
+            document.addEventListener(g.event.touchmove, touchmove, false);
+            document.addEventListener(g.event.touchend, touchend, false);
             
             if(opt.touchstart){
                 var result = opt.touchstart.call(this, e, startX, startY, offsetX, offsetY);
@@ -88,11 +88,6 @@ g.prototype.draggable = function(opt){
 
 var getPageX = g.util.getPageX;
 var getPageY = g.util.getPageY;
-
-var is_touch_supported = 'ontouchstart' in document.documentElement;
-var start = is_touch_supported ? 'touchstart' : 'mousedown';
-var move = is_touch_supported ? 'touchmove' : 'mousemove';
-var end = is_touch_supported ? 'touchend' : 'mouseup';
 
 function findPosition( obj ){
      var left =0, top = 0;

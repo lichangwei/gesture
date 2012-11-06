@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <title>Qunit for Gesture</title>
-        <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css"/>
+        <link rel="stylesheet" href="../../base/qunit-1.10.0.css" type="text/css"/>
     </head>
     <body>
         <h1 id="qunit-header" class="header">QUnit example</h1>
@@ -14,8 +14,8 @@
         <div id="qunit-fixture">
             test markup, will be hidden
         </div>
-        <script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src="http://code.jquery.com/qunit/git/qunit.js"></script>
+        <script src="../../base/jquery-1.8.2.js"></script>
+        <script src="../../base/qunit-1.10.0.js"></script>
         <script src="eventsimulator.js"></script>
         <script src="../gesture.js"></script>
         <script src="../tap.js"></script>
@@ -39,7 +39,7 @@
                     'qunit-banner': {},
                     'qunit-fixture': {}
                 };
-                var events = ['tap', 'doubletap', 'tripletap', 'taphold', 'flick', 'zoomin', 'zoomout'];
+                var events = ['tap', 'doubletap'/*, 'tripletap'*/, 'taphold', 'flick', 'zoomin', 'zoomout'];
                 for(var i = 0; i < events.length; i++){
                     statistics['qunit-header'][events[i]] = 0;
                     statistics['qunit-banner'][events[i]] = 0;
@@ -54,9 +54,9 @@
                 g(h2s_q).doubletap(function(e){
                     statistics[this.id][e.type]++;
                 });
-                g(divs_t).tripletap(function(e){
-                    statistics[this.id][e.type]++;
-                });
+                // g(divs_t).tripletap(function(e){
+                //     statistics[this.id][e.type]++;
+                // });
                 g(classname).flick(function(e){
                     statistics[this.id][e.type]++;
                 });
@@ -65,11 +65,9 @@
                 });
                 module("Gesture");
                 
-                var is_touch_supported = 'ontouchstart' in document.documentElement;
-                var is_gesture_supported = 'ongesturestart' in document.documentElement;
-                var startEvent = is_touch_supported ? 'touchstart' : 'mousedown';
-                var moveEvent = is_touch_supported ? 'touchmove' : 'mousemove';
-                var endEvent = is_touch_supported ? 'touchend' : 'mouseup';
+                var startEvent = g.event.touchstart;
+                var moveEvent = g.event.touchmove;
+                var endEvent = g.event.touchend;
                 
                 function startend(target, callback, s2e, e2c){
                     es[startEvent](target);
@@ -115,6 +113,7 @@
                     }, 100, 100);
                 });
                 
+                /*
                 asyncTest("tripletap", function(){
                     startend(fixture, function(){
                         startend(fixture, function(){
@@ -125,7 +124,7 @@
                         }, 100, 100);
                     }, 100, 100);
                 });
-                
+                */
                 asyncTest("flick", function(){
                     startmoveend(header, function(){
                         equal(statistics['qunit-header']['flick'], 1);
