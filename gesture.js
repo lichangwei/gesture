@@ -237,8 +237,8 @@ var opt = {
     
     'flick-min-x-or-y': 30,
     
-    'zoomin-max-scale': 0.83,
-    'zoomout-min-scale': 1.2
+    'zoomout-max-scale': 0.83,
+    'zoomin-min-scale': 1.2
 };
 
 
