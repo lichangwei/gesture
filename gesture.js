@@ -353,20 +353,20 @@ g.register([touchstart, touchmove, touchend].join(' '), {});
 
 g.event = {
     touchstart: touchstart,
-    touchmove: touchmove,
-    touchend: touchend,
+    touchmove : touchmove,
+    touchend  : touchend,
 };
 
 g.support = {
-    touch: is_touch_supported,
+    touch  : is_touch_supported,
     gesture: is_gesture_supported
 };
 
 g.util = {
-    getPageX: getPageX,
-    getPageY: getPageY,
+    getPageX   : getPageX,
+    getPageY   : getPageY,
     getDistance: getDistance,
-    extend: extend
+    extend     : extend
 };
 
 function getPageX(e){
