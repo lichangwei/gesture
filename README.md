@@ -44,13 +44,13 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @param v: 字符串，可选。为空表示获取该@k值，否则设置@k=@v。  
 @return 当前系统中@k的值。  
 @k的值可以是以下之一：  
-'tap-max-distance': tap事件的条件，开始和结束时手指移动距离最大为30px。  
-'tap-max-duration': tap事件的条件，持续时间最大是300ms。（默认为Number.MAX_VALUE，即不管按下多长时间，都是tap。在taphold.js中将此值修改为300ms，
+'tap_max_distance': tap事件的条件，开始和结束时手指移动距离最大为30px。  
+'tap_max_duration': tap事件的条件，持续时间最大是300ms。（默认为Number.MAX_VALUE，即不管按下多长时间，都是tap。在taphold.js中将此值修改为300ms，
 即小于等于300ms是tap，大于300ms是taphold。）  
 'doubletap_max_interval': 双击事件中，两次单击之间的时间间隔最大为250ms。  
-'flick-min-x-or-y': flick事件中，x或y方向最小移动距离是30px。  
-'zoomin-max-scale': zoomin事件中，两个手指之间的距离最大是初始的0.83倍。  
-'zoomout-min-scale': zoomout事件中，两个手指之间的距离最大是初始的1.2倍。  
+'flick_min_x_or_y': flick事件中，x或y方向最小移动距离是30px。  
+'zoomin_max_scale': zoomin事件中，两个手指之间的距离最大是初始的0.83倍。  
+'zoomout_min_scale': zoomout事件中，两个手指之间的距离最大是初始的1.2倍。  
 
 **g.util.getPageX(e)**  
 @param e: 原生事件e。  

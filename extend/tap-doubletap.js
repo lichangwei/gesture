@@ -11,7 +11,7 @@ var attr_name = '_g_tap';
 
 g.register('tap doubletap', {
     touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-        if(distance > g.opt('tap-max-distance') || deltaT > g.opt('tap-max-duration'))
+        if(distance > g.opt('tap_max_distance') || deltaT > g.opt('tap_max_duration'))
             return;
         var tap_type = this[attr_name] || 'doubletap';
         handler[tap_type].call(this, e);

@@ -193,15 +193,15 @@ var callbacks = {};
 var gesture_id = 0;
 
 var opt = {
-    'tap-max-distance': 30,
-    'tap-max-duration': Number.MAX_VALUE,
+    'tap_max_distance': 30,
+    'tap_max_duration': Number.MAX_VALUE,
     
     'doubletap_max_interval': 250,
     
-    'flick-min-x-or-y': 30,
+    'flick_min_x_or_y': 30,
     
-    'zoomout-max-scale': 0.83,
-    'zoomin-min-scale': 1.2
+    'zoomout_max_scale': 0.83,
+    'zoomin_min_scale': 1.2
 };
 
 
