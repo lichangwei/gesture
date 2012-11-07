@@ -125,11 +125,7 @@ g.createEvent = function(name, e, attrs){
         var evt = document.createEvent('UIEvent');
         evt.initUIEvent(name, attrs.canBubble || false, true, document.defaultView, 1);
     }
-    for(var k in attrs){
-        if(attrs.hasOwnProperty(k)){
-            evt[k] = attrs[k];
-        }
-    }
+    extend( evt, attrs );
     evt.original = e;
     evt.px = getPageX(e);
     evt.py = getPageY(e);
@@ -252,7 +248,7 @@ function init(elem){
     var distance;
     
     elem.addEventListener(touchstart, function(e){
-        // e.preventDefault();
+        e.preventDefault();
         status = 1;
         endT = startT = e.timeStamp;
         endX = startX = getPageX(e);
@@ -269,7 +265,7 @@ function init(elem){
         // The touchevents are not fired propperly 
         // if e.preventDefault() is not used on touchstart and touchmove
         // http://code.google.com/p/android/issues/detail?id=19827
-        // e.preventDefault();
+        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         endX = getPageX(e);
@@ -285,7 +281,7 @@ function init(elem){
         }
     }, false);
     elem.addEventListener(touchend, function(e){
-        // e.preventDefault();
+        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         deltaT = endT - startT;
@@ -373,17 +369,17 @@ function init(elem){
 }
 
 var is_customer_event_supported = !!window.CustomEvent;
-var is_touch_supported = 'ontouchstart' in document.documentElement;
-var is_gesture_supported = 'ongesturestart' in document.documentElement;
+var is_touch_supported          = 'ontouchstart' in document.documentElement;
+var is_gesture_supported        = 'ongesturestart' in document.documentElement;
 
 var touchstart = is_touch_supported ? 'touchstart' : 'mousedown';
-var touchmove = is_touch_supported ? 'touchmove' : 'mousemove';
-var touchend = is_touch_supported ? 'touchend' : 'mouseup';
+var touchmove  = is_touch_supported ? 'touchmove'  : 'mousemove';
+var touchend   = is_touch_supported ? 'touchend'   : 'mouseup';
 var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
 
-var gesturestart = 'gesturestart';
+var gesturestart  = 'gesturestart';
 var gesturechange = 'gesturechange';
-var gestureend   = 'gestureend';
+var gestureend    = 'gestureend';
 
 // allow user bind some standard events.
 g.register([touchstart, touchmove, touchend].join(' '), {});
@@ -402,7 +398,8 @@ g.support = {
 g.util = {
     getPageX: getPageX,
     getPageY: getPageY,
-    getDistance: getDistance
+    getDistance: getDistance,
+    extend: extend
 };
 
 function getPageX(e){
@@ -439,6 +436,14 @@ function getAngle(p0, p1){
 
 function getDistance(p0, p1){
     return Math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0]) + (p1[1]-p0[1])*(p1[1]-p0[1]));
+}
+
+function extend(to, form){
+    for(var k in form){
+        if( form.hasOwnProperty(k) ){
+            to[k] = form[k];
+        }
+    }
 }
 
 })();
