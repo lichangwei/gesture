@@ -38,8 +38,8 @@ g.prototype.off = function(type, selector, callback){
     var _t = this;
     // allow to remove 2+ events at the same time
     if(type.search(/\s/) >= 0){
-        type.replace(/\S+/g, function(evt){
-            _t.off(evt, selector, callback);
+        type.replace(/\S+/g, function(type){
+            _t.off(type, selector, callback);
         });
         return _t;
     }
