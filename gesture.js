@@ -36,6 +36,10 @@ g.prototype.on = function(type, selector, data, callback){
 // off(type[, selector][, callback])
 g.prototype.off = function(type, selector, callback){
     var _t = this;
+    if(typeof selector === 'function'){ // case: off('tap', fn)
+        callback = selector;
+        selector = null;
+    }
     // allow to remove 2+ events at the same time
     if(type.search(/\s/) >= 0){
         type.replace(/\S+/g, function(type){
@@ -49,13 +53,9 @@ g.prototype.off = function(type, selector, callback){
         type = array[0];
         var namespace = array[1];
     }
-    // case: off('tap', '.delete', fn)
-    if(typeof selector === 'string' && typeof callback === 'function'){
+    if( selector ){
         callback = getDelegateCallback(type, selector, callback);
-    }else if(typeof selector === 'function'){ // case: off('tap', fn)
-        callback = selector;
-        selector = void 0;
-    }
+    } 
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
         var cbs = callbacks[elem._gesture_id];

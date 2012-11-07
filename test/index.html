@@ -50,20 +50,20 @@
                 
                 var namespace = 'namespace';
                 g($lis).tap(function(e){
-                    console.log('g.prototype.tap ' + this.className + ', namespace = ' + namespace);
+                    console.info('g.prototype.tap ' + this.className + ', namespace = ' + namespace);
                 }, namespace);
                 
                 function tap(e){
-                    console.log('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
+                    console.info('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
                 }
                 $lis[0].addEventListener('tap', tap, false);
                 
                 g($lis).on('tap taphold', function(e){
-                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                    console.info('g.prototype.on ' + e.type + ' ' + this.className);
                 });
                 
                 g($nav).on('tap taphold', 'li', function(e){
-                    console.log('delegate ' + e.type + ' event on li element.');
+                    console.info('delegate ' + e.type + ' event on li element.');
                 });
                 
                 g($('input[name=remove]')).on('tap taphold', function(){
@@ -74,40 +74,40 @@
                 });
                 
                 g($nav).on('taphold', 'li.notexisted', function(e){
-                    console.log('you should not find out me.');
+                    console.info('you should not find out me.');
                 });
                 
                 g($nav).on('doubletap', '.nav li', function(e){
-                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                    console.info('g.prototype.on ' + e.type + ' ' + this.className);
                 }).on(g.event.touchend, '.nav li', function(e){
-                    console.log('Standard Event: ' + e.type + ' ' + this.className);
+                    console.info('Standard Event: ' + e.type + ' ' + this.className);
                 });
 
                 g($pg).on('flick', function(e){
-                    console.log('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
+                    console.info('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
                 }).on('zoomin zoomout', function(e){
-                    console.log('g.prototype.on ' + e.type + ' ' + this.className);
+                    console.info('g.prototype.on ' + e.type + ' ' + this.className);
                 }).on(g.event.touchstart + ' ' + g.event.touchend, function(e){
-                    console.log('Standard Event: ' + e.type + ' ' + this.className);
+                    console.info('Standard Event: ' + e.type + ' ' + this.className);
                 });
                 
                 /*
                 $pg[0].addEventListener('touchstart', function(e){
-                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                    console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
                 }, false);
                 $pg[0].addEventListener('touchmove', function(e){
-                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                    console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
                     e.preventDefault();
                 }, false);
                 $pg[0].addEventListener('touchend', function(e){
-                    console.log(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+                    console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
                     e.preventDefault();
                 }, false);
                 */
                 
                 if(navigator.userAgent.indexOf('Android') > -1){
                     console = console || {};
-                    console.log = function(){
+                    console.info = function(){
                         $pg[0].innerHTML +=(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
                     }
                 }
