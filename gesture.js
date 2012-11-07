@@ -51,8 +51,7 @@ g.prototype.off = function(type, selector, callback){
     }
     // case: off('tap', '.delete', fn)
     if(typeof selector === 'string' && typeof callback === 'function'){
-        var identification = type + '-' + selector;
-        callback = callback._g_cbs && callback._g_cbs[identification];
+        callback = getDelegateCallback(type, selector, callback);
     }else if(typeof selector === 'function'){ // case: off('tap', fn)
         callback = selector;
         selector = void 0;
@@ -64,10 +63,10 @@ g.prototype.off = function(type, selector, callback){
         // remove the callbacks that match the condition
         for(var j = cbs.length - 1; j >= 0; j--){
             var cb = cbs[j];
-            if( (!type || (type === cb.type))
-                && (!selector || (selector === cb.selector))
-                && (!namespace || (namespace === cb.namespace))
-                && (!callback || (callback === cb.callback)) ){
+            if(    ( !type      || (type      === cb.type     ) )
+                && ( !selector  || (selector  === cb.selector ) )
+                && ( !namespace || (namespace === cb.namespace) )
+                && ( !callback  || (callback  === cb.callback)) ){
                 elem.removeEventListener(cb.type, cb.callback);
                 cbs.splice(j, 1);
             }
@@ -146,39 +145,7 @@ function register(type, ifBind){
             callback = data;
             data = void 0;
         }
-        var cb = callback;
-        if( selector ){
-            var cbs = callback._g_cbs = callback._g_cbs || {};
-            var identification = type + '-' + selector;
-            if( !cbs[identification] ){
-                cbs[identification] = function(e){
-                    var _list = this.querySelectorAll(selector);
-                    if( _list.length === 0 ) return;
-                    var list = [];
-                    for(var i = 0; i < _list.length; i++){
-                        list.push(_list[i]);
-                    }
-                    var target;
-                    var eventType = e.toString();
-                    if(eventType === '[object CustomEvent]' 
-                        || eventType === '[object UIEvent]'){
-                        var targets = e.targets || (e.eventTarget && [e.eventTarget]) || (e.original && [e.original.target]);
-                        for(var i = 0; targets && i < targets.length; i++){
-                            for(var o = targets[i]; o !== this; o = o.parentNode){
-                                if(list.indexOf(o) >= 0) break;
-                            }
-                            if(o === this) return;
-                            if(target && (target !== o)) return;
-                            target = o;
-                        }
-                    }else{ // for orignal events, such as mouseup, touchend etc.
-                        target = e.target;
-                    }
-                    target && callback.call(target, e);
-                };
-            };
-            cb = cbs[identification];
-        }
+        var cb = selector ? createDelegateCallback(type, selector, callback) : callback;
         for(var i = 0; i < this.elems.length; i++){
             var elem = this.elems[i];
             ifBind && ifBind.call(elem, type);
@@ -444,6 +411,48 @@ function extend(to, form){
             to[k] = form[k];
         }
     }
+}
+
+function createDelegateCallback( type, selector, callback ){
+    var cbs = callback._g_cbs = callback._g_cbs || {};
+    var id = getDelegateCallbackId(type, selector);
+    if( !cbs[id] ){
+        cbs[id] = function(e){
+            var _list = this.querySelectorAll(selector);
+            if( _list.length === 0 ) return;
+            var list = [];
+            for(var i = 0; i < _list.length; i++){
+                list.push(_list[i]);
+            }
+            var target;
+            var eventType = e.toString();
+            if(eventType === '[object CustomEvent]' 
+                || eventType === '[object UIEvent]'){
+                var targets = e.targets || (e.eventTarget && [e.eventTarget]) || (e.original && [e.original.target]);
+                for(var i = 0; targets && i < targets.length; i++){
+                    for(var o = targets[i]; o !== this; o = o.parentNode){
+                        if(list.indexOf(o) >= 0) break;
+                    }
+                    if(o === this) return;
+                    if(target && (target !== o)) return;
+                    target = o;
+                }
+            }else{ // for orignal events, such as mouseup, touchend etc.
+                target = e.target;
+            }
+            target && callback.call(target, e);
+        };
+    };
+    return cbs[id];
+}
+
+function getDelegateCallback(type, selector, callback){
+    var id = getDelegateCallbackId(type, selector);
+    return callback._g_cbs && callback._g_cbs[id];
+}
+
+function getDelegateCallbackId(type, selector){
+    return type + '-' + selector;
 }
 
 })();
