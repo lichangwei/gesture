@@ -117,7 +117,7 @@ g.createEvent = function(type, e, attrs){
     attrs = attrs || {};
     e = e || {};
     var evt = new Event(type, e, attrs);
-    var target = evt.target;
+    var target = evt.currentTarget;
     if( !target ) console.error('g.createEvent: Target Not Found.');
     var gid = target._gesture_id || '';
     var cbs = callbacks[gid] || [];
@@ -453,7 +453,8 @@ function Event(type, e, attrs){
     extend( this, attrs );
     this.type = type;
     this.originalEvent = e;
-    this.target = attrs.eventTarget || e.currentTarget
+    this.target = attrs.eventTarget || e.target;
+    this.currentTarget = e.currentTarget;
     this.pageX = getPageX(e);
     this.pageY = getPageY(e);
 }
