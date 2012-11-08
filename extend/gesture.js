@@ -193,15 +193,15 @@ var callbacks = {};
 var gesture_id = 0;
 
 var opt = {
-    'tap-max-distance': 30,
-    'tap-max-duration': Number.MAX_VALUE,
+    'tap_max_distance': 30,
+    'tap_max_duration': Number.MAX_VALUE,
     
     'doubletap_max_interval': 250,
     
-    'flick-min-x-or-y': 30,
+    'flick_min_x_or_y': 30,
     
-    'zoomout-max-scale': 0.83,
-    'zoomin-min-scale': 1.2
+    'zoomout_max_scale': 0.83,
+    'zoomin_min_scale': 1.2
 };
 
 
@@ -425,20 +425,16 @@ function createDelegateCallback( type, selector, callback ){
                 list.push(_list[i]);
             }
             var target;
-            var eventType = e.toString();
-            if(eventType === '[object CustomEvent]' 
-                || eventType === '[object UIEvent]'){
-                var targets = e.targets || (e.eventTarget && [e.eventTarget]) || (e.original && [e.original.target]);
-                for(var i = 0; targets && i < targets.length; i++){
-                    for(var o = targets[i]; o !== this; o = o.parentNode){
-                        if(list.indexOf(o) >= 0) break;
-                    }
-                    if(o === this) return;
-                    if(target && (target !== o)) return;
-                    target = o;
+            var targets = e.targets 
+                || (e.target && [e.target])
+                || (e.eventTarget && [e.eventTarget]);
+            for(var i = 0; targets && i < targets.length; i++){
+                for(var o = targets[i]; o !== this; o = o.parentNode){
+                    if(list.indexOf(o) >= 0) break;
                 }
-            }else{ // for orignal events, such as mouseup, touchend etc.
-                target = e.target;
+                if(o === this) return;
+                if(target && (target !== o)) return;
+                target = o;
             }
             target && callback.call(target, e);
         };
