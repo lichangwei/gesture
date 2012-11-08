@@ -112,8 +112,13 @@ function findPosition( obj ){
 }
 
 function positionShadow(left, top){
-    this.style.cssText = 'position: absolute; top: '
-        + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.5;';
+    this.style.cssText = [
+        'position: absolute',
+        'top: ' + top + 'px',
+        'left: ' + left + 'px',
+        'z-index: 999999',
+        'opacity: 0.5',
+    ].join(';');
 }
 
 })(g);
