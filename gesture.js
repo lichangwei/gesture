@@ -77,7 +77,7 @@ g.prototype.off = function(type, selector, callback){
 
 g.prototype.trigger = function(type){
     for(var i = 0; i < this.elems.length; i++){
-        g.createEvent(type, null, {
+        createCustomEvent(type, null, {
             eventTarget: this.elems[i],
             canBubble: true
         });
@@ -113,23 +113,21 @@ g.opt = function(k, v){
     return v === void 0 ? opt[k] : (opt[k]=v);
 };
 
-g.createEvent = function(name, e, attrs){
+g.createEvent = function(type, e, attrs){
     attrs = attrs || {};
     e = e || {};
-    // some browsers don't support CustomEvent
-    if(is_customer_event_supported){
-        var evt = document.createEvent('CustomEvent');
-        evt.initCustomEvent(name, attrs.canBubble || false, true, 1);
-    }else{
-        var evt = document.createEvent('UIEvent');
-        evt.initUIEvent(name, attrs.canBubble || false, true, document.defaultView, 1);
+    var evt = new Event(type, e, attrs);
+    var target = evt.target;
+    if( !target ) console.error('g.createEvent: Target Not Found.');
+    var gid = target._gesture_id || '';
+    var cbs = callbacks[gid] || [];
+    for(var i = 0; i < cbs.length; i++){
+        var cb = cbs[i];
+        if( cb.type === type ){
+            cb.callback.call( target, evt );
+        }
     }
-    extend( evt, attrs );
-    evt.original = e;
-    evt.px = getPageX(e);
-    evt.py = getPageY(e);
-    var target = attrs.eventTarget || e.currentTarget;
-    (target || document).dispatchEvent(evt);
+
 };
 
 function register(type, ifBind){
@@ -425,20 +423,16 @@ function createDelegateCallback( type, selector, callback ){
                 list.push(_list[i]);
             }
             var target;
-            var eventType = e.toString();
-            if(eventType === '[object CustomEvent]' 
-                || eventType === '[object UIEvent]'){
-                var targets = e.targets || (e.eventTarget && [e.eventTarget]) || (e.original && [e.original.target]);
-                for(var i = 0; targets && i < targets.length; i++){
-                    for(var o = targets[i]; o !== this; o = o.parentNode){
-                        if(list.indexOf(o) >= 0) break;
-                    }
-                    if(o === this) return;
-                    if(target && (target !== o)) return;
-                    target = o;
+            var targets = e.targets 
+                || (e.target && [e.target]) 
+                || (e.eventTarget && [e.eventTarget]);
+            for(var i = 0; targets && i < targets.length; i++){
+                for(var o = targets[i]; o !== this; o = o.parentNode){
+                    if(list.indexOf(o) >= 0) break;
                 }
-            }else{ // for orignal events, such as mouseup, touchend etc.
-                target = e.target;
+                if(o === this) return;
+                if(target && (target !== o)) return;
+                target = o;
             }
             target && callback.call(target, e);
         };
@@ -453,6 +447,57 @@ function getDelegateCallback(type, selector, callback){
 
 function getDelegateCallbackId(type, selector){
     return type + '-' + selector;
+}
+
+function Event(type, e, attrs){
+    extend( this, attrs );
+    this.type = type;
+    this.originalEvent = e;
+    this.target = attrs.eventTarget || e.currentTarget
+    this.pageX = getPageX(e);
+    this.pageY = getPageY(e);
+}
+Event.prototype = {
+    preventDefault: function(){
+        var e = this.originalEvent;
+        if( !e ) return;
+        if( e.preventDefault ){
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+    },
+    stopPropagation: function(){
+        var e = this.originalEvent;
+        if( !e ) return;
+        if( e.stopPropagation ){
+            e.stopPropagation();
+        }else{
+            e.cancelBubble = true;
+        }
+    },
+    isSimulated: true
+}
+
+function createCustomEvent(type, e, attrs){
+    attrs = attrs || {};
+    e = e || {};
+    // some browsers don't support CustomEvent
+    if(is_customer_event_supported){
+        var evt = document.createEvent('CustomEvent');
+        // tap, canBubble
+        evt.initCustomEvent(type, true, true, 1);
+    }else{
+        var evt = document.createEvent('UIEvent');
+        evt.initUIEvent(type, true, true, document.defaultView, 1);
+    }
+    extend( evt, attrs );
+    evt.originalEvent = e;
+    evt.isSimulated = true;
+    evt.px = getPageX(e);
+    evt.py = getPageY(e);
+    var target = attrs.eventTarget || e.currentTarget;
+    (target || document).dispatchEvent(evt);
 }
 
 })();
