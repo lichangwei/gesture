@@ -215,7 +215,6 @@ function init(elem){
     var distance;
     
     elem.addEventListener(touchstart, function(e){
-        e.preventDefault();
         status = 1;
         endT = startT = e.timeStamp;
         endX = startX = getPageX(e);
@@ -229,10 +228,6 @@ function init(elem){
         }
     }, false);
     elem.addEventListener(touchmove, function(e){
-        // The touchevents are not fired propperly 
-        // if e.preventDefault() is not used on touchstart and touchmove
-        // http://code.google.com/p/android/issues/detail?id=19827
-        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         endX = getPageX(e);
@@ -248,7 +243,6 @@ function init(elem){
         }
     }, false);
     elem.addEventListener(touchend, function(e){
-        e.preventDefault();
         if(!status) return;
         endT = e.timeStamp;
         deltaT = endT - startT;

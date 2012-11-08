@@ -91,6 +91,12 @@
                     console.info('Standard Event: ' + e.type + ' ' + this.className);
                 });
                 
+                
+                // The touchevents are not fired propperly 
+                // if e.preventDefault() is not used on touchstart and touchmove
+                // http://code.google.com/p/android/issues/detail?id=19827
+                // e.preventDefault();
+                
                 /*
                 $pg[0].addEventListener('touchstart', function(e){
                     console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
