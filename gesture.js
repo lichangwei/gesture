@@ -118,7 +118,6 @@ g.createEvent = function(type, e, attrs){
     e = e || {};
     var evt = new Event(type, e, attrs);
     var target = evt.currentTarget;
-    if( !target ) console.error('g.createEvent: Target Not Found.');
     var gid = target._gesture_id || '';
     var cbs = callbacks[gid] || [];
     for(var i = 0; i < cbs.length; i++){
@@ -422,11 +421,15 @@ function createDelegateCallback( type, selector, callback ){
                 || (e.eventTarget && [e.eventTarget]);
             for(var i = 0; targets && i < targets.length; i++){
                 for(var o = targets[i]; o !== this; o = o.parentNode){
+                    if( !o ) return;
                     if(list.indexOf(o) >= 0) break;
                 }
                 if(o === this) return;
                 if(target && (target !== o)) return;
                 target = o;
+            }
+            if( e.isSimulated ){
+                e.target = target;
             }
             target && callback.call(target, e);
         };
@@ -447,8 +450,8 @@ function Event(type, e, attrs){
     extend( this, attrs );
     this.type = type;
     this.originalEvent = e;
-    this.target = attrs.eventTarget || e.target;
-    this.currentTarget = e.currentTarget;
+    this.target = e.target || e.currentTarget || document;
+    this.currentTarget = attrs.eventTarget || e.currentTarget || document;
     this.pageX = getPageX(e);
     this.pageY = getPageY(e);
 }
