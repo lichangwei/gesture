@@ -74,9 +74,9 @@ g.prototype.off = function(type, selector, callback){
         type = array[0];
         var namespace = array[1];
     }
-    if( selector ){
-        callback = getDelegateCallback(type, selector, callback);
-    } 
+    //if( selector ){
+    //    callback = getDelegateCallback(type, selector, callback);
+    //} 
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
         var cbs = callbacks[elem._gesture_id];
@@ -87,7 +87,7 @@ g.prototype.off = function(type, selector, callback){
             if(    ( !type      || (type      === cb.type     ) )
                 && ( !selector  || (selector  === cb.selector ) )
                 && ( !namespace || (namespace === cb.namespace) )
-                && ( !callback  || (callback  === cb.callback)) ){
+                && ( !callback  || (callback  === cb.original)) ){
                 elem.removeEventListener(cb.type, cb.callback);
                 cbs.splice(j, 1);
             }
@@ -207,7 +207,8 @@ function register(type, ifBind){
                 type: type,
                 selector: selector,
                 namespace: namespace,
-                callback: cb
+                callback: cb,
+                original: callback
             });
         }
         return this;

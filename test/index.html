@@ -25,7 +25,7 @@
         </style>
     </head>
     <body>
-        <input type="button" name="remove" value="RemoveEventListener">
+        <input type="button" name="remove" value="Remove EventListener on nav">
         <div class="nav">
             <ol class="menus">
                 <li class="home">Home</li>
@@ -71,6 +71,7 @@
                     $lis[0].removeEventListener('tap', tap);
                     g($lis).off('tap taphold');
                     g($nav).off('tap taphold', 'li');
+                    g($nav).off(g.event.touchend, '.nav li');
                 });
                 
                 g($nav).on('taphold', 'li.notexisted', function(e){
