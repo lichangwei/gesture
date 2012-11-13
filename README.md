@@ -6,7 +6,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 # API：  
 **g( elem )**  
 创建一个gesture对象，然后可以绑定事件。  
-@param elem: 需要绑定事件的DOM元素，必选。可以是DOM元素，DOM元素数组，NodeList，HTMLCollection或者jQuery对象。   
+@param elem: 需要绑定事件的DOM元素，必选。可以是字符串（selector），DOM元素，DOM元素数组，NodeList，HTMLCollection或者jQuery对象。   
 @return g，拥有了on，tap，doubletap等方法的对象。  
 
 **g.prototype.on(type[, selector][, data], callback)**  
@@ -20,7 +20,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 **g.prototype.off(type[, selector][, callback])**  
 解除事件。由于type参数可以表示事件类型或（和）命名空间，解除事件的时候，需要事件类型，命名空间，选择器和处理函数需要同时相同才能解除，如果存在的话。  
 @param type: 字符串，必选。需要解除的事件类型。支持命名空间。如有多个，用空格分隔，如".namespace"。  
-@param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。  
+@param selector: 字符串，可选。解除代理给selector指定的子元素上的事件。  
 @param callback: 函数，可选。解除绑定在某事件上的某个函数。  
 @return g对象。  
 
@@ -42,15 +42,15 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 设置或者获取时间判断的条件。
 @param k: 字符串，必选。  
 @param v: 字符串，可选。为空表示获取该@k值，否则设置@k=@v。  
-@return 当前系统中@k的值。  
+@return 当前系统中@param k的值。  
 @k的值可以是以下之一：  
 'tap_max_distance': tap事件的条件，开始和结束时手指移动距离最大为30px。  
 'tap_max_duration': tap事件的条件，持续时间最大是300ms。（默认为Number.MAX_VALUE，即不管按下多长时间，都是tap。在taphold.js中将此值修改为300ms，
 即小于等于300ms是tap，大于300ms是taphold。）  
 'doubletap_max_interval': 双击事件中，两次单击之间的时间间隔最大为250ms。  
 'flick_min_x_or_y': flick事件中，x或y方向最小移动距离是30px。  
-'zoomin_max_scale': zoomin事件中，两个手指之间的距离最大是初始的0.83倍。  
-'zoomout_min_scale': zoomout事件中，两个手指之间的距离最大是初始的1.2倍。  
+'zoomout_max_scale': zoomout事件中，两个手指之间的距离最大是初始的0.83倍。  
+'zoomin_min_scale': zoomin事件中，两个手指之间的距离最小是初始的1.2倍。  
 
 **g.util.getPageX(e)**  
 @param e: 原生事件e。  
@@ -85,7 +85,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 ``` javascript  
 // 通过事件代理，处理每个菜单项的tap事件
 g('#menu').on('tap', 'li', function(e){
-    e.original.preventDefault(); //e.original is touchend/mouseup
+    e.preventDefault();
     
 });
 ```

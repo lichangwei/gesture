@@ -3,6 +3,11 @@
 
 'use strict';
 
+/**
+ * @constructor g
+ * @classdesc Also can be called without 'new'
+ * @param {string, array, object} elem required. String(selector), DOM element, DOM element Array, NodeList, HTMLCollection or jQuery Object
+ */
 var g = window.g = function(elem){
     // if call g function with out 'new' 
     if ( !(this instanceof g) )
@@ -14,6 +19,15 @@ var g = window.g = function(elem){
     }
 };
 
+/**
+ * @method g.prototype.on
+ * @desc bind events.
+ * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace' 
+ * @param {string} selector optional. Delegate these events to its child nodes=querySelectorAll(selector)。
+ * @param {object} data optional. Passing some data to callback.
+ * @param {function} callback required.
+ * @return {g} Current g instance.
+ */
 g.prototype.on = function(type, selector, data, callback){
     var _t = this;
     // allow to bind 2+ events at the same time
@@ -33,7 +47,14 @@ g.prototype.on = function(type, selector, data, callback){
     return this;
 };
 
-// off(type[, selector][, callback])
+/**
+ * @method g.prototype.off
+ * @desc Unbind events.
+ * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace' 
+ * @param {string} selector optional. Unbind these events bind to child nodes.
+ * @param {function} callback optional.
+ * @return {g} Current g instance.
+ */
 g.prototype.off = function(type, selector, callback){
     var _t = this;
     if(typeof selector === 'function'){ // case: off('tap', fn)
@@ -75,6 +96,12 @@ g.prototype.off = function(type, selector, callback){
     return this;
 };
 
+/**
+ * @method g.prototype.trigger
+ * @desc Fire a event manually
+ * @param {string} type required. Event type. such as 'tap'.
+ * @return {g} Current g instance.
+ */
 g.prototype.trigger = function(type){
     for(var i = 0; i < this.elems.length; i++){
         createCustomEvent(type, null, {
@@ -85,6 +112,14 @@ g.prototype.trigger = function(type){
     return this;
 }
 
+/**
+ * @method g.register
+ * @desc Regiester an event type. used to extend this framework.
+ * @param {string} event The event type to regiester.
+ * @param {object} handler A object contains 3 methods named 'touchstart', 'toucmove', 'touchend'
+ * @param {function} ifBind This function will be executed when bind this event to an element.
+ * @return g class
+ */
 g.register = function(event, handler, ifBind){
     if( events[event] ) return console.error('"' + event + '" cannot be regiested twice.');
     events[event] = handler;
@@ -94,6 +129,12 @@ g.register = function(event, handler, ifBind){
     }
     return this;
 };
+/**
+ * @method g.unregister
+ * @desc Unregiester an event type. this function will not be used normally.
+ * @param {string} event 
+ * @return g class
+ */
 g.unregister = function(event){
     delete events[event];
     event = event.split(/\s/);
@@ -102,7 +143,13 @@ g.unregister = function(event){
     }
     return this;
 };
-
+/**
+ * @method g.opt
+ * @desc set or get some config data
+ * @param {string, object} k 
+ * @param {any} v 
+ * @return If k is object, then return undefined, otherwise the value of g.opt(k)
+ */
 g.opt = function(k, v){
     if(typeof k !== 'string'){
         for(var i in k){
@@ -113,6 +160,14 @@ g.opt = function(k, v){
     return v === void 0 ? opt[k] : (opt[k]=v);
 };
 
+/**
+ * @method g.createEvent
+ * @desc fire an event(logicly)
+ * @param {string} type required. Event type.
+ * @param {event} e optional. The relatived original event. touchend or mouseup normally.
+ * @param {object} attrs optional. Some additional attribute. such as 'currentTarget', 'targets', 'direction'(flick)
+ * @return g class.
+ */
 g.createEvent = function(type, e, attrs){
     attrs = attrs || {};
     e = e || {};
@@ -126,7 +181,7 @@ g.createEvent = function(type, e, attrs){
             cb.callback.call( target, evt );
         }
     }
-
+    return this;
 };
 
 function register(type, ifBind){
@@ -189,6 +244,9 @@ var events = {};
 var callbacks = {};
 var gesture_id = 0;
 
+/**
+ * @inner opt
+ */
 var opt = {
     'tap_max_distance': 30,
     'tap_max_duration': Number.MAX_VALUE,
@@ -342,17 +400,33 @@ var gestureend    = 'gestureend';
 // allow user bind some standard events.
 g.register([touchstart, touchmove, touchend].join(' '), {});
 
+/**
+ * @member g.event
+ * @property {string} g.event.touchstart 'touchstart' or 'mousedown'.<br/>
+ * @property {string} g.event.touchmove 'toucmove' or 'mousemove'.<br/>
+ * @property {string} g.event.touchend 'touchend' or 'mouseup'.
+ */
 g.event = {
     touchstart: touchstart,
     touchmove : touchmove,
     touchend  : touchend,
 };
-
+/**
+ * @member g.support
+ * @property {boolean} g.support.touch If touch event supported.<br/>
+ * @property {boolean} g.support.gesture If gesture event supported.
+ */
 g.support = {
     touch  : is_touch_supported,
     gesture: is_gesture_supported
 };
-
+/**
+ * @member g.util
+ * @property {function}  g.util.getPageX @see .util.getPageX
+ * @property {function}  g.util.getPageY @see .util.getPageY
+ * @property {function}  g.util.getDistance @see .util.getDistance
+ * @property {function}  g.util.extend @see .util.extend
+ */
 g.util = {
     getPageX   : getPageX,
     getPageY   : getPageY,
@@ -360,12 +434,26 @@ g.util = {
     extend     : extend
 };
 
+/**
+ * @function g.util.getPageX
+ * @desc return pageY or clientY attribute
+ * @param {event} e
+ * @return {number} pageX value
+ * @memberof! g
+ */
 function getPageX(e){
     return e.pageX || e.clientX 
         || (e.touches && e.touches[0] ? e.touches[0].pageX : 0)
         || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
 }
 
+/**
+ * @function g.util.getPageY
+ * @desc return pageY or clientY attribute
+ * @param {event} e
+ * @return {number} pageY value
+ * @memberof! g
+ */
 function getPageY(e){
     return e.pageY || e.clientY 
         || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
@@ -392,14 +480,29 @@ function getAngle(p0, p1){
     return Math.atan(deltaY / deltaX) * 180 / Math.PI;
 }
 
+/**
+ * @function g.util.getDistance
+ * @desc calculate the distance between 2 points
+ * @param {array} p0 format: [x0, y0]
+ * @param {array} p1 format: [x1, y1]
+ * @return {number} the distance
+ * @memberof! g
+ */
 function getDistance(p0, p1){
     return Math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0]) + (p1[1]-p0[1])*(p1[1]-p0[1]));
 }
 
-function extend(to, form){
-    for(var k in form){
-        if( form.hasOwnProperty(k) ){
-            to[k] = form[k];
+/**
+ * @function g.util.extend
+ * @desc copy @param from attributes to @param to.
+ * @param {object} to required
+ * @param {object} from required
+ * @memberof! g
+ */
+function extend(to, from){
+    for(var k in from){
+        if( from.hasOwnProperty(k) ){
+            to[k] = from[k];
         }
     }
 }
@@ -483,11 +586,10 @@ function createCustomEvent(type, e, attrs){
     // some browsers don't support CustomEvent
     if(is_customer_event_supported){
         var evt = document.createEvent('CustomEvent');
-        // tap, canBubble
-        evt.initCustomEvent(type, true, true, 1);
+        evt.initCustomEvent(type, attrs.canBubble, true, 1);
     }else{
         var evt = document.createEvent('UIEvent');
-        evt.initUIEvent(type, true, true, document.defaultView, 1);
+        evt.initUIEvent(type, attrs.canBubble, true, document.defaultView, 1);
     }
     extend( evt, attrs );
     evt.originalEvent = e;
