@@ -1,3 +1,7 @@
+/**
+ * @overview Regiester taphold event.
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';

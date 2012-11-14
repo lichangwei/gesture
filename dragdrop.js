@@ -1,3 +1,7 @@
+/**
+ * @overview Define drag action.
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';

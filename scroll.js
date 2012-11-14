@@ -1,3 +1,8 @@
+/**
+ * @overview Register scroll/scrollhorizontal/scrollvertical event.<br/>
+ *  Cannot used with delegate api.
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';

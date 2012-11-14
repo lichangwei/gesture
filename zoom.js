@@ -1,3 +1,7 @@
+/**
+ * @overview Regiester zoomin/zoomout event.
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';

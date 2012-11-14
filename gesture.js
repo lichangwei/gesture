@@ -1,4 +1,12 @@
-
+/**
+ * @file gesture.js
+ * @overview An event library that suitable for mobile devices or desktop browsers, 
+ *  encapsulates tap, doubletap, taphold, flick and zoomin/zoomout etc. Simular to the jQuery API, easy to use.
+ * @version dev
+ * @author Li Chang Wei <lichangwei@love.com>
+ * @see https://github.com/lichangwei/gesture
+ * @license MIT License
+ */
 (function(){
 
 'use strict';
@@ -132,7 +140,7 @@ g.register = function(event, handler, ifBind){
 /**
  * @method g.unregister
  * @desc Unregiester an event type. this function will not be used normally.
- * @param {string} event 
+ * @param {string} event event type, such as 'tap'.
  * @return g class
  */
 g.unregister = function(event){
@@ -146,9 +154,9 @@ g.unregister = function(event){
 /**
  * @method g.opt
  * @desc set or get some config data
- * @param {string, object} k 
+ * @param {string, object} k a string key or an object contains key-value pairs.
  * @param {any} v 
- * @return If k is object, then return undefined, otherwise the value of g.opt(k)
+ * @return If k is an object, then return undefined, otherwise the value of g.opt(k)
  */
 g.opt = function(k, v){
     if(typeof k !== 'string'){
@@ -437,9 +445,8 @@ g.util = {
 
 /**
  * @function g.util.getPageX
- * @desc return pageY or clientY attribute
- * @param {event} e
- * @return {number} pageX value
+ * @param {event} e touch or mouse event.
+ * @return {number} pageX or clientX attribute
  * @memberof! g
  */
 function getPageX(e){
@@ -450,9 +457,8 @@ function getPageX(e){
 
 /**
  * @function g.util.getPageY
- * @desc return pageY or clientY attribute
- * @param {event} e
- * @return {number} pageY value
+ * @param {event} e touch or mouse event.
+ * @return {number} pageY or clientY attribute
  * @memberof! g
  */
 function getPageY(e){

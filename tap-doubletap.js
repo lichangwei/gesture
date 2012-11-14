@@ -1,5 +1,9 @@
 /**
- * Cannot be used with tap.js & doubletap.js
+ * @overview Regiester tap & doubletap event. 
+ *  Cannot be used with tap.js or doubletap.js. <br/>
+ *  After a tap event occured, it won't be fired. if another tap occured in 250ms, 
+ *  then a doubletap event fired, otherwise a tap event fired.
+ * @requires gesture.js
  */
 (function(g){
 

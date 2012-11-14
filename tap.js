@@ -1,3 +1,7 @@
+/**
+ * @overview Regiester tap event. Cannot be used with tap-doubletap.js
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';

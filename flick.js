@@ -1,3 +1,7 @@
+/**
+ * @overview Regiester flick event.
+ * @requires gesture.js
+ */
 (function(g){
 
 'use strict';
