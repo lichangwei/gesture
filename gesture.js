@@ -183,7 +183,7 @@ g.createEvent = function(type, e, attrs){
     var target = evt.currentTarget;
     var gid = target._gesture_id || '';
     var cbs = callbacks[gid] || [];
-    for(var i = 0; i < cbs.length; i++){
+    for(var i = 0; i < cbs.length && !evt.isImmediatePropagationStopped(); i++){
         var cb = cbs[i];
         if( cb.type === type ){
             cb.callback.call( target, evt );
@@ -584,6 +584,11 @@ Event.prototype = {
             e.cancelBubble = true;
         }
     },
+    stopImmediatePropagation: function() {
+        this.isImmediatePropagationStopped = returnTrue;
+        this.stopPropagation();
+    },
+    isImmediatePropagationStopped: returnFalse,
     isSimulated: true
 }
 
@@ -605,6 +610,14 @@ function createCustomEvent(type, e, attrs){
     evt.py = getPageY(e);
     var target = attrs.eventTarget || e.currentTarget;
     (target || document).dispatchEvent(evt);
+}
+
+function returnTrue(){
+    return true;
+}
+
+function returnFalse(){
+    return false;
 }
 
 })();
