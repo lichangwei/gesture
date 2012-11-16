@@ -186,6 +186,7 @@ g.createEvent = function(type, e, attrs){
     for(var i = 0; i < cbs.length && !evt.isImmediatePropagationStopped(); i++){
         var cb = cbs[i];
         if( cb.type === type ){
+            evt.data = cb.data;
             cb.callback.call( target, evt );
         }
     }
@@ -216,7 +217,8 @@ function register(type, ifBind){
                 selector: selector,
                 namespace: namespace,
                 callback: cb,
-                original: callback
+                original: callback,
+                data: data
             });
         }
         return this;

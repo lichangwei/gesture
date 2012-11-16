@@ -84,7 +84,8 @@
                     console.info('Standard Event: ' + e.type + ' ' + this.className);
                 });
 
-                g($pg).on('flick', function(e){
+                g($pg).on('flick', {test: 1}, function(e){
+                    console.info( 'e.data.test=' + e.data.test);
                     console.info('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
                 }).on('zoomin zoomout', function(e){
                     console.info('g.prototype.on ' + e.type + ' ' + this.className);
