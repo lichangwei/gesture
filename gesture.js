@@ -409,7 +409,7 @@ var gesturechange = 'gesturechange';
 var gestureend    = 'gestureend';
 
 // allow user bind some standard events.
-g.register([touchstart, touchmove, touchend].join(' '), {});
+g.register([touchstart, touchmove, touchend, 'click'].join(' '), {});
 
 /**
  * @member g.event
