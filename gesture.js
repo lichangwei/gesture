@@ -558,6 +558,13 @@ function getDelegateCallbackId(type, selector){
     return type + '-' + selector;
 }
 
+/**
+ * @constructor Event
+ * @classdesc Simulate same custom events. such as tap etc.
+ * @param {string} type required. Event type.
+ * @param {Event} e optinal. original event, Usually it is the touchend/mouseup event.
+ * @param {Object} attrs optional. Add some additional attributes for this event.
+ */
 function Event(type, e, attrs){
     extend( this, attrs );
     this.type = type;
