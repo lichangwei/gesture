@@ -1,5 +1,8 @@
 
 (function(){
+  
+  if ( !/(iPhone|iPod|iPad)/.test(navigator.userAgent) ) return;
+
   var tapped = {};
 
   g(document).on('tap', 'a', function(){
