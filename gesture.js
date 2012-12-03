@@ -1,6 +1,6 @@
 /**
  * @file gesture.js
- * @overview An event library that suitable for mobile devices or desktop browsers, 
+ * @overview An event library that suitable for mobile devices or desktop browsers.
  *  encapsulates tap, doubletap, taphold, flick and zoomin/zoomout etc. Simular to the jQuery API, easy to use.
  * @version dev
  * @author Li Chang Wei <lichangwei@love.com>
@@ -17,9 +17,10 @@
  * @param {string, array, object} elem required. String(selector), DOM element, DOM element Array, NodeList, HTMLCollection or jQuery Object
  */
 var g = window.g = function(elem){
-    // if call g function with out 'new' 
-    if ( !(this instanceof g) )
+    // if call g function with out 'new'.
+    if ( !(this instanceof g) ){
         return new g(elem);
+    }
     var elems = this.elems = arrayify(elem);
     if(!elems || elems.length === 0 ) return;
     for(var i = 0; i < elems.length; i++){
@@ -30,7 +31,7 @@ var g = window.g = function(elem){
 /**
  * @method g.prototype.on
  * @desc bind events.
- * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace' 
+ * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace'.
  * @param {string} selector optional. Delegate these events to its child nodes=querySelectorAll(selector)。
  * @param {object} data optional. Passing some data to callback.
  * @param {function} callback required.
@@ -58,7 +59,7 @@ g.prototype.on = function(type, selector, data, callback){
 /**
  * @method g.prototype.off
  * @desc Unbind events.
- * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace' 
+ * @param {string} type required. Event type, name space supported, separated by spaces if more than one, such as 'tap taphold.namespace'.
  * @param {string} selector optional. Unbind these events bind to child nodes.
  * @param {function} callback optional.
  * @return {g} Current g instance.
@@ -84,7 +85,7 @@ g.prototype.off = function(type, selector, callback){
     }
     //if( selector ){
     //    callback = getDelegateCallback(type, selector, callback);
-    //} 
+    //};
     for(var i = 0; i < this.elems.length; i++){
         var elem = this.elems[i];
         var cbs = callbacks[elem._gesture_id];
@@ -118,7 +119,7 @@ g.prototype.trigger = function(type){
         });
     }
     return this;
-}
+};
 
 /**
  * @method g.register
@@ -155,7 +156,7 @@ g.unregister = function(event){
  * @method g.opt
  * @desc set or get some config data
  * @param {string, object} k a string key or an object contains key-value pairs.
- * @param {any} v 
+ * @param {any} v.
  * @return If k is an object, then return undefined, otherwise the value of g.opt(k)
  */
 g.opt = function(k, v){
@@ -223,7 +224,7 @@ function register(type, ifBind){
         }
         return this;
     };
-};
+}
 
 function arrayify( elem ){
     if(elem.jquery) return elem.get();
@@ -420,7 +421,7 @@ g.register([touchstart, touchmove, touchend, 'click'].join(' '), {});
 g.event = {
     touchstart: touchstart,
     touchmove : touchmove,
-    touchend  : touchend,
+    touchend  : touchend
 };
 /**
  * @member g.support
@@ -599,7 +600,7 @@ Event.prototype = {
     },
     isImmediatePropagationStopped: returnFalse,
     isSimulated: true
-}
+};
 
 function createCustomEvent(type, e, attrs){
     attrs = attrs || {};

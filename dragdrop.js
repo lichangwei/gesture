@@ -121,7 +121,7 @@ function positionShadow(left, top){
         'top: ' + top + 'px',
         'left: ' + left + 'px',
         'z-index: 999999',
-        'opacity: 0.5',
+        'opacity: 0.5'
     ].join(';');
 }
 

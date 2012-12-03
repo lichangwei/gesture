@@ -42,6 +42,6 @@ function handler(elem, e){
             }, g.opt('doubletap_max_interval'));
         })(e, gid);
     }
-};
+}
 
 })(g);

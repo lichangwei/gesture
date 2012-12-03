@@ -1,3 +1,6 @@
+/**
+ * http://jsfiddle.net/lichangwei/hLJH3/
+ */
 
 (function(){
   
