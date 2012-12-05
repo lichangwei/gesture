@@ -443,7 +443,8 @@ g.util = {
   getPageX   : getPageX,
   getPageY   : getPageY,
   getDistance: getDistance,
-  extend     : extend
+  extend     : extend,
+  Event      : Event
 };
 
 /**
