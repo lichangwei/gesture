@@ -12,26 +12,26 @@ var timeStamp = {};
 var target = {};
 
 g.register('doubletap', {
-    touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-        
-        if(distance > g.opt('tap_max_distance') || deltaT > g.opt('tap_max_duration'))
-            return;
-        
-        var gid = this._gesture_id;
-        var prev = timeStamp[gid];
+  touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+    
+    if(distance > g.opt('tap_max_distance') || deltaT > g.opt('tap_max_duration'))
+      return;
+    
+    var gid = this._gesture_id;
+    var prev = timeStamp[gid];
 
-        if( e.timeStamp - prev < g.opt('doubletap_max_interval') ){
-            g.createEvent('doubletap', e, {
-                eventTarget: e.currentTarget,
-                targets: [target[gid], e.target]
-            });
-            timeStamp[gid] = void 0;
-            target[gid] = void 0;
-        }else{
-            target[gid] = e.target;
-            timeStamp[gid] = e.timeStamp;
-        }
+    if( e.timeStamp - prev < g.opt('doubletap_max_interval') ){
+      g.createEvent('doubletap', e, {
+        eventTarget: e.currentTarget,
+        targets: [target[gid], e.target]
+      });
+      timeStamp[gid] = void 0;
+      target[gid] = void 0;
+    }else{
+      target[gid] = e.target;
+      timeStamp[gid] = e.timeStamp;
     }
+  }
 });
 
 })(g);
