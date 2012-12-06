@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Draggable Sample</title>
+        <style type="text/css" rel="stylesheet">
+            ul{
+                position: relative;
+                list-style: none;
+                border: 1px solid black;
+                height: auto;
+            }
+            .item{
+                position: relative;
+                top: 1px;
+                display: inline;
+                border: 1px solid black;
+                font: 36px arial;
+                cursor: pointer;
+            }
+            .item div{
+                display: inline;
+            }
+            .e{
+                position: relative;
+                left: 0;
+                top: 1px;
+            }
+            .f{
+                position: absolute;
+                left: 200px;
+                top: -1px;
+            }
+            .playground{
+                position: relative;
+                top: 30px;
+                width: 100%;
+                height: 300px;
+                background: #E2E2E2;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <ul class="candidate">
+            <li class="item a">AAAAAA</li>
+            <li class="item b">BBBBBB</li>
+            <li class="item c">
+                <img src="circle.png">
+                <div>Div</div>
+                <span>Span</span>
+                CCC
+            </li>
+            <li class="item d">undraggable</li>
+        </ul>
+        <ul class="selected">
+            <li class="item e">EEEEEE</li>
+            <li class="item f">
+                <img src="circle.png">
+                <div>Div</div>
+                <span>Span</span>
+                FFF
+            </li>
+        </ul>
+        <div class="playground"></div>
+        <script src="../../base/jquery-1.7.2.min.js"></script>
+        <script src="../gesture.js"></script>
+        <script src="../drag.js"></script>
+        <script defer>
+            var $candidate = $('.candidate li');
+            var $selected = $('.selected');
+            
+            g($('.a')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                }
+            });
+            g($('.b')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                helper: 'no'
+            });
+            g($('.c')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                },
+                positionShadow: function (left, top){
+                    this.style.cssText = 'position: absolute; top: '
+                        + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
+                }
+            });
+            g($('.e')).draggable({
+                touchstart: function(e){
+                    this._left = parseInt(this.style.left) || 0;
+                    console.log('dragstart');
+                },
+                touchmove: function(e, x, y, dx, dy, dt){
+                    this.style.left = this._left + dx + 'px';
+                    return false;
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                    return false;
+                },
+                helper: 'no'
+            });
+            g($('.f')).draggable({
+                touchstart: function(e){
+                    console.log('dragstart');
+                },
+                touchmove: function(e, x, y, dx, dy, dt){
+                },
+                touchend: function(e){
+                    console.log('dragend');
+                }
+            });
+            if(navigator.userAgent.indexOf('Android') > -1){
+                console = console || {};
+                var $pg = $('.playground').show();
+                console.log = function(){
+                    $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+                }
+            }
+            
+            if(!window.console){
+                console = {
+                    log: function(){}
+                }
+            }
+        </script>
+    </body>
+</html>

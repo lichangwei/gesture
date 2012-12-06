@@ -1,128 +1,172 @@
-/**
- * @overview Define drag action.
+/*
+ * @overview Regiester draggable & dropable action. 
+ * If the target browser supports the HTML5 draggable api, then uses it directly, otherwise simulate it with mouse/touch event. 
  * @requires gesture.js
  */
-(function(g){
+(function(){
 
-'use strict';
-
-g.opt('tap_max_duration', 300);
-
-g.prototype.draggable = function(opt){
-  opt = opt || {};
+/**
+ * @member g.prototype.draggable
+ * @desc 
+ */
+g.prototype.draggable = function(dragstart, drag, dragend){
+  dragstart = dragstart || noop;
+  drag      = drag      || noop;
+  dragend   = dragend   || noop;
   for(var i = 0; i < this.elems.length; i++){
     var elem = this.elems[i];
-    elem._draggable = true;
-    elem.addEventListener(g.event.touchstart, function(e){
-      var _t = this;
-      this._drag_timeout = setTimeout(function(){
-        ontouchstart.call(_t, e, opt);
-      }, g.opt('tap_max_duration'));
-    });
-    elem.addEventListener(g.event.touchend, function(e){
-      clearTimeout( this._drag_timeout );
-    });
+    if(draggableSupported){
+      elem.draggable = true;
+      elem.addEventListener('dragstart', dragstart, false);
+      elem.addEventListener('drag'     , drag     , false);
+      elem.addEventListener('dragend'  , dragend  , false);
+    }else{
+      draggable(elem, dragstart, drag, dragend);
+    }
+  }
+  return this;
+};
+
+/*
+ * @member g.prototype.dropable
+ * @desc 
+ */
+g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
+  dragenter  = dragenter || noop;
+  dragover   = dragover  || noop;
+  dragleave  = dragleave || noop;
+  drop       = drop      || noop;
+  for(var i = 0; i < this.elems.length; i++){
+    var elem = this.elems[i];
+    if(draggableSupported){
+      dragenter && elem.addEventListener('dragenter', dragenter, false);
+      dragover  && elem.addEventListener('dragover' , dragover , false);
+      dragleave && elem.addEventListener('dragleave', dragleave, false);
+      drop      && elem.addEventListener('drop'     , drop     , false);
+    }else{
+      elem.gdrop = {
+        dragenter: dragenter,
+        dragover : dragover,
+        dragleave: dragleave,
+        drop     : drop
+      }
+    }
+  }
+  return this;
+};
+
+/*
+ * @desc Simulate HTML5 draggable with the basic mouse/touch event.
+ */
+function draggable(elem, dragstart, drag, dragend){
+  elem.addEventListener(touchstart, function(e){
+    e.preventDefault();
+    var dragData = {};
+    drag.timeout = setTimeout(function(){
+      dragData.start = new Date();
+      dragData.dataTransfer = new DataTransfer();
+      dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      if( dataDrag.effectAllowed === 'copy' ){
+        // @TODO 
+      }
+    }, 300);
+
+    function ontouchmove(e){
+      e.preventDefault();
+      if( !dragData.start ) return;
+      drag.call(elem);
+      var pageX = g.util.getPageX(e);
+      var pageY = g.util.getPageY(e);
+      var from = dragData.target;
+      var to = document.elementFromPoint(pageX, pageY);
+      if( from !== to ){
+        if(to && to.gdrop){
+          to.gdrop.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+          dragData.target = to;
+        }else{
+          dragData.target = null;
+        }
+        if(from && from.gdrop){
+          from.gdrop.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        }
+      }else{
+        to.gdrop.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      }
+    }
+
+    function ontouchend(e){
+      document.removeEventListener(touchmove, ontouchmove);
+      document.removeEventListener(touchend , ontouchend);
+      e.preventDefault();
+      if( !dragData.start ){
+        clearTimeout(dragData.timeout);
+        return;
+      }
+      var pageX = g.util.getPageX(e);
+      var pageY = g.util.getPageY(e);
+      var to = document.elementFromPoint(pageX, pageY);
+      if( to && to.gdrop ){
+        to.gdrop.drop.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      }
+      dragend.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+    }
+    document.addEventListener(touchmove, ontouchmove, false);
+    document.addEventListener(touchend , ontouchend , false);
+  }, false);
+}
+
+/*
+ * @constructor DataTransfer
+ * @desc Simulate the e.dataTransfer in the HTML5 drag & drop event.
+ */
+function DataTransfer(){
+  this.data = {};
+}
+DataTransfer.prototype = {
+  // copy: A copy of the source item is made at the new location.
+  // move: An item is moved to a new location.
+  // link: A link is established to the source at the new location.
+  // none: The item may not be dropped.
+  dropEffect: 'none', //'copy',
+  // copy: A copy of the source item may be made at the new location.
+  // move: An item may be moved to a new location.
+  // link: A link may be established to the source at the new location.
+  // copyLink: A copy or link operation is permitted.
+  // copyMove: A copy or move operation is permitted.
+  // linkMove: A link or move operation is permitted.
+  // all: All operations are permitted.
+  // none: the item may not be dropped.
+  // uninitialized: the default value when the effect has not been set, equivalent to all.
+  effectAllowed: '',
+  setData: function(key, value){
+    this.data[key] = value;
+  },
+  getData: function(key){
+    return this.data[key];
+  },
+  clearData: function(){
+    this.data = {};
+  },
+  setDragImage: function(img, x, y){
+    throw 'Unimplemented.'
+  },
+  addElement: function(){
+    throw 'Unimplemented.'
   }
 };
 
-function ontouchstart( e, opt ){
-  e.preventDefault();
-  
-  if(this._draggable !== true) return;
-  var dragged = this;
-  var startT = new Date();
-  var startX = getPageX(e);
-  var startY = getPageY(e);
-  var offset = findPosition(this);
-  var style = window.getComputedStyle(this, null);
-  var isAbsolute = style['position'] === 'absolute';
-  var offsetX = isAbsolute ? this.offsetLeft : (parseInt(style['left']) || 0); 
-  var offsetY = isAbsolute ? this.offsetTop : (parseInt(style['top']) || 0);
-  var endT = new Date();
-  var endX;
-  var endY;
-  var thisX;
-  var thisY;
-  var shadowX = offset.x;
-  var shadowY = offset.y;
-  
-  function touchmove(e){
-    e.preventDefault();
-    
-    endX = getPageX(e);
-    endY = getPageY(e);
-    thisX = endX - startX + offsetX;
-    thisY = endY - startY + offsetY;
-    if(opt.touchmove){
-      var result = opt.touchmove.call(dragged, e, thisX, thisY, 
-        endX-startX, endY-startY, new Date()-(endT||startT));
-      endT = new Date();
-    }
-    if((opt.helper === void 0) || (opt.helper === 'shadow')){
-      shadowX = endX - startX + offset.x;
-      shadowY = endY - startY + offset.y;
-      (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
-    }else if(result !== false){
-      dragged.style.left = thisX + 'px';
-      dragged.style.top = thisY + 'px';
-    }
-  }
-  function touchend(e){
-    e.preventDefault();
-    
-    document.removeEventListener(g.event.touchmove, touchmove);
-    document.removeEventListener(g.event.touchend, touchend);
-    endX = getPageX(e);
-    endY = getPageY(e);
-    thisX = endX - startX + offsetX;
-    thisY = endY - startY + offsetY;
-    if(opt.touchend){
-      var result = opt.touchend.call(dragged, e, thisX, thisY, 
-        endX-startX, endY-startY, endX, endY);
-    }
-    if((opt.helper === void 0) || (opt.helper === 'clone')){
-      document.body.removeChild(shadow);
-    }
-    if(result === false) return;
-    dragged.style.left = thisX + 'px';
-    dragged.style.top = thisY + 'px';
-  }
-  document.addEventListener(g.event.touchmove, touchmove, false);
-  document.addEventListener(g.event.touchend, touchend, false);
-  
-  if(opt.touchstart){
-    var result = opt.touchstart.call(this, e, startX, startY, offsetX, offsetY);
-  }
-  if((opt.helper === void 0) || (opt.helper === 'shadow')){
-    var shadow = this.cloneNode(true);
-    shadow.className = this.className;
-    (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
-    document.body.appendChild(shadow);
-  }
-  if(result === false) return;
-}
+var touchstart = g.event.touchstart;
+var touchmove  = g.event.touchmove;
+var touchend   = g.event.touchend;
 
-var getPageX = g.util.getPageX;
-var getPageY = g.util.getPageY;
+function noop(){};
 
-function findPosition( obj ){
-   var left =0, top = 0;
-   while(obj.offsetParent){
-      left += obj.offsetLeft;
-      top += obj.offsetTop;
-      obj = obj.offsetParent;
-   }
-   return {x: left, y: top};
-}
+/*
+ * @desc Check if html5 draggable api supported.
+ */
+var draggableSupported = (function(){
+  var div = document.createElement('div');
+  return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
+})();
 
-function positionShadow(left, top){
-  this.style.cssText = [
-    'position: absolute',
-    'top: ' + top + 'px',
-    'left: ' + left + 'px',
-    'z-index: 999999',
-    'opacity: 0.5'
-  ].join(';');
-}
-
-})(g);
+})();
