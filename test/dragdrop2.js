@@ -1,103 +1,124 @@
+/*
+ * @overview Regiester draggable & dropable action. 
+ * If the target browser supports the HTML5 draggable api, then uses it directly, otherwise simulate it with mouse/touch event. 
+ * @requires gesture.js
+ */
 (function(){
 
-var draggableSupported = (function(){
-  var div = document.createElement('div');
-  return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
-})();
-
-g.prototype.draggable = draggableSupported ? function(dragstart, drag, dragend){
+/**
+ * @member g.prototype.draggable
+ * @desc 
+ */
+g.prototype.draggable = function(dragstart, drag, dragend){
+  dragstart = dragstart || noop;
+  drag      = drag      || noop;
+  dragend   = dragend   || noop;
   for(var i = 0; i < this.elems.length; i++){
     var elem = this.elems[i];
-    elem.draggable = true;
-    dragstart && elem.addEventListener('dragstart', dragstart, false);
-    drag      && elem.addEventListener('drag'     , drag     , false);
-    dragend   && elem.addEventListener('dragend'  , dragend  , false);
+    if(draggableSupported){
+      elem.draggable = true;
+      elem.addEventListener('dragstart', dragstart, false);
+      elem.addEventListener('drag'     , drag     , false);
+      elem.addEventListener('dragend'  , dragend  , false);
+    }else{
+      draggable(elem, dragstart, drag, dragend);
+    }
   }
   return this;
-} : function(dragstart, drag, dragend){
-  for(var i = 0; i < this.elems.length; i++){
-    draggable(this.elems[i], dragstart, drag, dragend);
-  }
-  return;
 };
 
+/*
+ * @member g.prototype.dropable
+ * @desc 
+ */
 g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
+  dragenter  = dragenter || noop;
+  dragover   = dragover  || noop;
+  dragleave  = dragleave || noop;
+  drop       = drop      || noop;
   for(var i = 0; i < this.elems.length; i++){
-    dropable(this.elems[i], dragenter, dragover, dragleave, drop);
+    var elem = this.elems[i];
+    if(draggableSupported){
+      dragenter && elem.addEventListener('dragenter', dragenter, false);
+      dragover  && elem.addEventListener('dragover' , dragover , false);
+      dragleave && elem.addEventListener('dragleave', dragleave, false);
+      drop      && elem.addEventListener('drop'     , drop     , false);
+    }else{
+      elem.gdrop = {
+        dragenter: dragenter,
+        dragover : dragover,
+        dragleave: dragleave,
+        drop     : drop
+      }
+    }
   }
   return this;
 };
 
+/*
+ * @desc Simulate HTML5 draggable with the basic mouse/touch event.
+ */
 function draggable(elem, dragstart, drag, dragend){
   elem.addEventListener(touchstart, function(e){
     e.preventDefault();
-    this.drag = {};
-    this.drag.timeout = setTimeout(function(){
-      elem.drag.start = new Date();
-      elem.drag.dataTransfer = new DataTransfer();
-      dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
+    var dragData = {};
+    drag.timeout = setTimeout(function(){
+      dragData.start = new Date();
+      dragData.dataTransfer = new DataTransfer();
+      dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      if( dataDrag.effectAllowed === 'copy' ){
+        // @TODO 
+      }
     }, 300);
 
     function ontouchmove(e){
       e.preventDefault();
-      if( !elem.drag.start ) return;
+      if( !dragData.start ) return;
       drag.call(elem);
       var pageX = g.util.getPageX(e);
       var pageY = g.util.getPageY(e);
-      var from = elem.drag.target;
+      var from = dragData.target;
       var to = document.elementFromPoint(pageX, pageY);
       if( from !== to ){
         if(to && to.gdrop){
-          to.gdrop.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
-          elem.drag.target = to;
+          to.gdrop.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+          dragData.target = to;
         }else{
-          elem.drag.target = null;
+          dragData.target = null;
         }
         if(from && from.gdrop){
-          from.gdrop.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
+          from.gdrop.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
         }
       }else{
-        to.gdrop.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
+        to.gdrop.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
     }
+
     function ontouchend(e){
       document.removeEventListener(touchmove, ontouchmove);
-      document.removeEventListener(touchend, ontouchend);
+      document.removeEventListener(touchend , ontouchend);
       e.preventDefault();
-      if( !elem.drag.start ){
-        clearTimeout(elem.drag.timeout);
+      if( !dragData.start ){
+        clearTimeout(dragData.timeout);
         return;
       }
       var pageX = g.util.getPageX(e);
       var pageY = g.util.getPageY(e);
       var to = document.elementFromPoint(pageX, pageY);
       if( to && to.gdrop ){
-        to.gdrop.drop.call(to, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
+        to.gdrop.drop.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
-      dragend.call(elem, new g.util.Event(elem, e, {dataTransfer: elem.drag.dataTransfer}));
+      dragend.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
     }
     document.addEventListener(touchmove, ontouchmove, false);
-    document.addEventListener(touchend, ontouchend, false);
+    document.addEventListener(touchend , ontouchend , false);
   }, false);
 }
 
-function dropable(elem, dragenter, dragover, dragleave, drop){
-  if(draggableSupported){
-    dragenter && elem.addEventListener('dragenter', dragenter, false);
-    dragover  && elem.addEventListener('dragover' , dragover , false);
-    dragleave && elem.addEventListener('dragleave', dragleave, false);
-    drop      && elem.addEventListener('drop'     , drop     , false);
-    elem.ondragenter = dragenter;
-  }else{
-    elem.gdrop = {
-      dragenter: dragenter,
-      dragover : dragover,
-      dragleave: dragleave,
-      drop     : drop
-    }
-  }
-}
-
+/*
+ * @constructor DataTransfer
+ * @desc Simulate the e.dataTransfer in the HTML5 drag & drop event.
+ */
 function DataTransfer(){
   this.data = {};
 }
@@ -127,15 +148,25 @@ DataTransfer.prototype = {
     this.data = {};
   },
   setDragImage: function(img, x, y){
-
+    throw 'Unimplemented.'
   },
   addElement: function(){
-
+    throw 'Unimplemented.'
   }
 };
 
 var touchstart = g.event.touchstart;
 var touchmove  = g.event.touchmove;
 var touchend   = g.event.touchend;
+
+function noop(){};
+
+/*
+ * @desc Check if html5 draggable api supported.
+ */
+var draggableSupported = (function(){
+  var div = document.createElement('div');
+  return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
+})();
 
 })();
