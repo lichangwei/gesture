@@ -44,7 +44,7 @@ g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
       dragleave && elem.addEventListener('dragleave', dragleave, false);
       drop      && elem.addEventListener('drop'     , drop     , false);
     }else{
-      elem.gdrop = {
+      elem.dropData = {
         dragenter: dragenter,
         dragover : dragover,
         dragleave: dragleave,
@@ -66,7 +66,7 @@ function draggable(elem, dragstart, drag, dragend){
       dragData.start = new Date();
       dragData.dataTransfer = new DataTransfer();
       dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
-      if( dataDrag.effectAllowed === 'copy' ){
+      if( dragData.effectAllowed === 'copy' ){
         // @TODO 
       }
     }, 300);
@@ -80,17 +80,17 @@ function draggable(elem, dragstart, drag, dragend){
       var from = dragData.target;
       var to = document.elementFromPoint(pageX, pageY);
       if( from !== to ){
-        if(to && to.gdrop){
-          to.gdrop.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        if(to && to.dropData){
+          to.dropData.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
           dragData.target = to;
         }else{
           dragData.target = null;
         }
-        if(from && from.gdrop){
-          from.gdrop.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        if(from && from.dropData){
+          from.dropData.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
         }
       }else{
-        to.gdrop.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        to.dropData.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
     }
 
@@ -105,8 +105,8 @@ function draggable(elem, dragstart, drag, dragend){
       var pageX = g.util.getPageX(e);
       var pageY = g.util.getPageY(e);
       var to = document.elementFromPoint(pageX, pageY);
-      if( to && to.gdrop ){
-        to.gdrop.drop.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      if( to && to.dropData ){
+        to.dropData.drop.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
       dragend.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
     }
@@ -165,6 +165,11 @@ function noop(){};
  * @desc Check if html5 draggable api supported.
  */
 var draggableSupported = (function(){
+  // iOS claims draggable but dosen't allow drag & drop
+  // http://stackoverflow.com/a/6221626/1376981
+  if( /(iPhone|iPod|iPad)/.test(navigator.userAgent) ){
+    return false;
+  }
   var div = document.createElement('div');
   return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
 })();
