@@ -1,14 +1,16 @@
 /**
- * http://jsfiddle.net/lichangwei/hLJH3/
+ * @file touch-alink.js
+ * @refer http://jsfiddle.net/lichangwei/hLJH3/
+ * @overview  
  */
 
 (function(){
   
-  if ( !/(iPhone|iPod|iPad)/.test(navigator.userAgent) ) return;
+  if ( g.support.touch ) return;
 
   var tapped = {};
 
-  g(document).on('tap', 'a', function(){
+  g(document).on('touchend', 'a', function(){
     tapped[this._gesture_id] = true;
   }).on('click', 'a', function(e){
     if( !tapped[this._gesture_id] ){

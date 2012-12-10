@@ -99,6 +99,9 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 8. dragdrop.js  
 引入drag和drop**行为**类型，注意不是事件类型。对于支持HTML5 drag & drop API的浏览器，直接使用该API。对于不支持该API的浏览器，则会通过touch或者mouse事件模拟该API。使用方法参见[Sample](#Sample);
 
+9. plugin/touch-alink.js
+修正这样一个[issue](http://jsfiddle.net/lichangwei/hLJH3/)，在iOS和Android设备中点击某元素X，在touchend事件触发时，隐藏元素X，如果此时手指下面还有一个链接元素A，那么很可能会触发A的click事件，即便在touchend事件中调用了```e.preventDefault(); e.stopPropagation();```。解决办法是：如果A链接元素上没有触发touchend事件，而直接触发click事件，那么取消其默认行为（跳转或者打开某个页面）。
+
 # Sample  
 ``` javascript  
 // 支持事件代理，支持同时绑定多个事件，支持namespace，支持链式调用
