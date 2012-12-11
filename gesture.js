@@ -5,7 +5,7 @@
  * @version dev
  * @author Li Chang Wei <lichangwei@love.com>
  * @see https://github.com/lichangwei/gesture
- * @license MIT License
+ * @license The MIT License
  */
 (function(){
 

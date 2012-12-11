@@ -102,7 +102,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 9. plugin/touch-alink.js
 修正这样一个[issue](http://jsfiddle.net/lichangwei/hLJH3/)，在iOS和Android设备中点击某元素X，在touchend事件触发时，隐藏元素X，如果此时手指下面还有一个链接元素A，那么很可能会触发A的click事件，即便在touchend事件中调用了```e.preventDefault(); e.stopPropagation();```。解决办法是：如果A链接元素上没有触发touchend事件，而直接触发click事件，那么取消其默认行为（跳转或者打开某个页面）。
 
-# Sample  
+# 示例 Sample  
 ``` javascript  
 // 支持事件代理，支持同时绑定多个事件，支持namespace，支持链式调用
 // 支持的事件包括tap，doubletap，taphold，flick，zoomin和zoomout。
@@ -115,6 +115,13 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 g('.removable').draggable(ondragstart, ondrag, ondragend);
 g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
 ```
+
+# 压缩脚本 Minimize gesture script  
+只需要按照以下步骤即可自定义压缩gesture。  
+(1) 执行命令 'npm install webtools'  
+(2) 打开tools/minimize.js，注释掉你不需要的脚本文件，并修改initScript内容（比如删除，如果不需要的话）  
+(3) 执行命令 'node minimize.js'，此步骤会生成一个新文件gesture-min.js  
+(4) 将gesture-min.js引入到网站中  
 
 # Q && A  
 1. Q：如何实现iOS中的效果：快速点击（tap）正常响应相应动作，按住不放（taphold）会出现拷贝，打开链接等选项卡，双击（doubletap）会放大或者缩小页面？  
