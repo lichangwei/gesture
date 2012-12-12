@@ -362,7 +362,7 @@ function init(elem){
         if(e.touches.length < 2) return;
         start = getInfo(e);
         rotation = 0;
-        g.createEvent(gesturestart, e, {
+        createCustomEvent(gesturestart, e, {
           scale: 1,
           rotation: rotation
         });
@@ -378,7 +378,7 @@ function init(elem){
           _rotation = _rotation + 180;
         }
         rotation = _rotation;
-        g.createEvent(gesturechange, e, {
+        createCustomEvent(gesturechange, e, {
           scale: end.distance/start.distance,
           rotation: _rotation
         });
@@ -386,7 +386,7 @@ function init(elem){
       elem.addEventListener(touchend, function(e){
         if(e.touches.length > 1) return;
         if(!start) return;
-        g.createEvent(gestureend, e, {
+        createCustomEvent(gestureend, e, {
           scale: end.distance/start.distance,
           rotation: rotation
         });
