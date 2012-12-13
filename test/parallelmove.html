@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Parallel Move Tester</title>
+  </head>
+  <body>
+    <div id="result" style="height: 500px; background: #E2E2E2;"></div>
+    <script src="../gesture.js"></script>
+    <script src="../zoom.js"></script>
+    <script src="../extend/parallelmove.js"></script>
+    <script src="../plugin/adjust.js"></script>
+    <script>
+      var result = document.getElementById('result');
+
+      g(result).parallelmove(function(e){
+        console.info(e.type);
+      }).on('zoomin zoomout', function(e){
+        console.info(e.type);
+      });
+      
+      console.info = console.log = function(a){
+        result.innerHTML += a + ', ';
+      }
+    </script>
+  </body>
+</html>
