@@ -1,13 +1,13 @@
 /*
- * @overview Regiester draggable & dropable action. 
- * If the target browser supports the HTML5 draggable api, then uses it directly, otherwise simulate it with mouse/touch event. 
+ * @overview Regiester draggable & dropable action.
+ * If the target browser supports the HTML5 draggable api, then uses it directly, otherwise simulate it with mouse/touch event.
  * @requires gesture.js
  */
 (function(){
 
 /**
  * @member g.prototype.draggable
- * @desc 
+ * @desc
  */
 g.prototype.draggable = function(dragstart, drag, dragend){
   dragstart = dragstart || noop;
@@ -29,7 +29,7 @@ g.prototype.draggable = function(dragstart, drag, dragend){
 
 /*
  * @member g.prototype.dropable
- * @desc 
+ * @desc
  */
 g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
   dragenter  = dragenter || noop;
@@ -49,7 +49,7 @@ g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
         dragover : dragover,
         dragleave: dragleave,
         drop     : drop
-      }
+      };
     }
   }
   return this;
@@ -67,7 +67,7 @@ function draggable(elem, dragstart, drag, dragend){
       dragData.dataTransfer = new DataTransfer();
       dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       if( dragData.effectAllowed === 'copy' ){
-        // @TODO 
+        // @TODO
       }
     }, 300);
 
@@ -148,10 +148,10 @@ DataTransfer.prototype = {
     this.data = {};
   },
   setDragImage: function(img, x, y){
-    throw 'Unimplemented.'
+    throw 'Unimplemented.';
   },
   addElement: function(){
-    throw 'Unimplemented.'
+    throw 'Unimplemented.';
   }
 };
 
@@ -159,15 +159,15 @@ var touchstart = g.event.touchstart;
 var touchmove  = g.event.touchmove;
 var touchend   = g.event.touchend;
 
-function noop(){};
+function noop(){}
 
 /*
  * @desc Check if html5 draggable api supported.
  */
 var draggableSupported = (function(){
-  // iOS claims draggable but dosen't allow drag & drop
+  // iOS & Android claims draggable but dosen't allow drag & drop
   // http://stackoverflow.com/a/6221626/1376981
-  if( /(iPhone|iPod|iPad)/.test(navigator.userAgent) ){
+  if( /(iPhone|iPod|iPad|Android)/.test(navigator.userAgent) ){
     return false;
   }
   var div = document.createElement('div');
