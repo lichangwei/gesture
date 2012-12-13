@@ -372,11 +372,11 @@ function init(elem){
         if(!start) return;
         end = getInfo(e);
         var _rotation = end.angle - start.angle;
-        if(_rotation - rotation > 90){
-          _rotation = _rotation - 180;
-        }else if(_rotation - rotation < -90){
-          _rotation = _rotation + 180;
-        }
+        // if(_rotation - rotation > 90){
+        //   _rotation = _rotation - 180;
+        // }else if(_rotation - rotation < -90){
+        //   _rotation = _rotation + 180;
+        // }
         rotation = _rotation;
         createCustomEvent(gesturechange, e, {
           scale: end.distance/start.distance,
@@ -384,7 +384,7 @@ function init(elem){
         });
       }, false);
       elem.addEventListener(touchend, function(e){
-        if(e.touches.length > 1) return;
+        if(e.touches.length > 0) return;
         if(!start) return;
         createCustomEvent(gestureend, e, {
           scale: end.distance/start.distance,
@@ -500,7 +500,7 @@ function getAngle(p0, p1){
  * @memberof! g
  */
 function getDistance(p0, p1){
-  return Math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0]) + (p1[1]-p0[1])*(p1[1]-p0[1]));
+  return Math.sqrt( Math.pow(p1[0]-p0[0], 2) + Math.pow(p1[1]-p0[1], 2) );
 }
 
 /**
