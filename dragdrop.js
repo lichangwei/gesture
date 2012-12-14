@@ -65,7 +65,7 @@ function draggable(elem, dragstart, drag, dragend){
     drag.timeout = setTimeout(function(){
       dragData.start = new Date();
       dragData.dataTransfer = new DataTransfer();
-      dragstart.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      dragstart.call(elem, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       if( dragData.effectAllowed === 'copy' ){
         // @TODO
       }
@@ -81,16 +81,16 @@ function draggable(elem, dragstart, drag, dragend){
       var to = document.elementFromPoint(pageX, pageY);
       if( from !== to ){
         if(to && to.dropData){
-          to.dropData.dragenter.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+          to.dropData.dragenter.call(to, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
           dragData.target = to;
         }else{
           dragData.target = null;
         }
         if(from && from.dropData){
-          from.dropData.dragleave.call(from, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+          from.dropData.dragleave.call(from, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
         }
       }else{
-        to.dropData.dragover.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        to.dropData.dragover.call(to, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
     }
 
@@ -106,9 +106,9 @@ function draggable(elem, dragstart, drag, dragend){
       var pageY = g.util.getPageY(e);
       var to = document.elementFromPoint(pageX, pageY);
       if( to && to.dropData ){
-        to.dropData.drop.call(to, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+        to.dropData.drop.call(to, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
       }
-      dragend.call(elem, new g.util.Event(elem, e, {dataTransfer: dragData.dataTransfer}));
+      dragend.call(elem, new Event(elem, e, {dataTransfer: dragData.dataTransfer}));
     }
     document.addEventListener(touchmove, ontouchmove, false);
     document.addEventListener(touchend , ontouchend , false);
@@ -173,5 +173,7 @@ var draggableSupported = (function(){
   var div = document.createElement('div');
   return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
 })();
+
+var Event = g.util.Event;
 
 })();
