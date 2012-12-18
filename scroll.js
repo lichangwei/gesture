@@ -31,6 +31,7 @@ g.register('scroll scrollhorizontal scrollvertical', {
   touchstart: function(e, startT, startX, startY){
     // if user don't handle scroll event, the same below.
     if( !this[attrname] ) return;
+    e.preventDefault();
     var data = getData(this);
     
     var style = window.getComputedStyle(this, null);
@@ -48,6 +49,7 @@ g.register('scroll scrollhorizontal scrollvertical', {
   },
   touchmove: function(e, endT, endX, endY, deltaT, deltaX, deltaY){
     if( !this[attrname] ) return;
+    e.preventDefault();
     var data = getData(this);
     var lefttop = getLeftTop(this, data, deltaX, deltaY, false);
     var need = needMove(data, lefttop);
@@ -58,6 +60,7 @@ g.register('scroll scrollhorizontal scrollvertical', {
   },
   touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     if( !this[attrname] ) return;
+    e.preventDefault();
     var data = getData(this);
     var lefttop = getLeftTop(this, data, deltaX, deltaY, true);
     var need = needMove(data, lefttop);

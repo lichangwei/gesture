@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rotate &amp; Zoom Sample</title>
+    <style rel="stylesheet">
+      #rotate{
+        margin: 0 auto;
+        background: #E2E2E2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rotate" style="width: 250px; height: 250px;"></div>
+    <div id="result"></div>
+    <script src="../gesture.js"></script>
+    <script src="../extend/rotate.js"></script>
+    <script src="../extend/zoom.js"></script>
+    <script>
+      g('#rotate').rotateStart(function(){
+        var base = 0;
+        var match = /rotate\((\d+)deg\)/.exec(this.style.WebkitTransform);
+        if( match ){
+          base = parseInt(match[1]);
+        }
+        this.base = base;
+      }).rotate(function(e){
+        this.style.WebkitTransform = 'rotate(' + parseInt(e.rotation + this.base) + 'deg)';
+      }).zoomStart(function(e){
+        this.width  = parseInt(this.style.width);
+        this.height = parseInt(this.style.height);
+      }).zoom(function(e){
+        var width = this.width * e.scale;
+        if( width < 150 ) return ;
+        this.style.width  = width + 'px';
+        this.style.height = this.height * e.scale + 'px';
+      });
+
+      var result = document.getElementById('result');
+      console.log = function( a ){
+        result.innerHTML += a + '<br/>';
+      }
+    </script>
+  </body>
+</html>

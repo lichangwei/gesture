@@ -99,6 +99,7 @@ g.prototype.off = function(type, selector, callback){
         && ( !callback  || (callback  === cb.original)) ){
         elem.removeEventListener(cb.type, cb.callback);
         cbs.splice(j, 1);
+        cbs._counter[type]--;
       }
     }
   }
@@ -124,17 +125,17 @@ g.prototype.trigger = function(type){
 /**
  * @method g.register
  * @desc Regiester an event type. used to extend this framework.
- * @param {string} event The event type to regiester.
+ * @param {string} type The event type to regiester.
  * @param {object} handler A object contains 3 methods named 'touchstart', 'toucmove', 'touchend'
  * @param {function} ifBind This function will be executed when bind this event to an element.
  * @return g class
  */
-g.register = function(event, handler, ifBind){
-  if( events[event] ) return console.error('"' + event + '" cannot be regiested twice.');
-  events[event] = handler;
-  event = event.split(/\s/);
-  for(var i = 0; i < event.length; i++){
-    register(event[i], ifBind);
+g.register = function(type, handler, ifBind){
+  if( events[type] ) return console.error('"' + type + '" cannot be regiested twice.');
+  events[type] = handler;
+  var types = handler.types = type.split(/\s/);
+  for(var i = 0; i < types.length; i++){
+    register(types[i], ifBind);
   }
   return this;
 };
@@ -212,7 +213,7 @@ function register(type, ifBind){
       var elem = this.elems[i];
       ifBind && ifBind.call(elem, type);
       elem.addEventListener(type, cb, false);
-      var cbs = callbacks[elem._gesture_id] = (callbacks[elem._gesture_id] || []);
+      var cbs = callbacks[elem._gesture_id];
       cbs.push({
         type: type,
         selector: selector,
@@ -221,6 +222,7 @@ function register(type, ifBind){
         original: callback,
         data: data
       });
+      cbs._counter[type] = (cbs._counter[type] || 0) + 1;
     }
     return this;
   };
@@ -274,7 +276,10 @@ var opt = {
 
 function init(elem){
   elem._gesture_id = ++gesture_id;
-  
+
+  var cbs = callbacks[elem._gesture_id] = [];
+  var counter = cbs._counter = {};
+
   var status = 0;
   var startT, startX, startY;
   var endT, endX, endY;
@@ -290,6 +295,7 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.touchstart !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.touchstart.call(this, e, startT, startX, startY);
       if(result === false) break;
     }
@@ -305,6 +311,7 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.touchmove !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
       if(result === false) break;
     }
@@ -319,12 +326,16 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.touchend !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
       if(result === false) break;
     }
     status = 0;
   }, false);
-  elem.addEventListener(touchleave, function(e){
+  elem.addEventListener(touchleave, function(e){console.info('--1--')
+    status = 0;
+  }, false);
+  elem.addEventListener('touchcancel', function(e){console.info('--2--')
     status = 0;
   }, false);
   
@@ -333,6 +344,7 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.gesturestart !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.gesturestart.call(this, e);
       if(result === false) break;
     }
@@ -342,6 +354,7 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.gesturechange !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.gesturechange.call(this, e);
       if(result === false) break;
     }
@@ -351,6 +364,7 @@ function init(elem){
     for(var k in events){
       var ek = events[k];
       if(typeof ek.gestureend !== 'function') continue;
+      if( !checkIfBind(ek.types, counter) ) continue;
       var result = ek.gestureend.call(this, e);
       if(result === false) break;
     }
@@ -372,11 +386,6 @@ function init(elem){
         if(!start) return;
         end = getInfo(e);
         var _rotation = end.angle - start.angle;
-        // if(_rotation - rotation > 90){
-        //   _rotation = _rotation - 180;
-        // }else if(_rotation - rotation < -90){
-        //   _rotation = _rotation + 180;
-        // }
         rotation = _rotation;
         createCustomEvent(gesturechange, e, {
           scale: end.distance/start.distance,
@@ -394,6 +403,15 @@ function init(elem){
       }, false);
     })();
   }
+}
+
+function checkIfBind(types, counter){
+  for(var i = 0; i < types.length; i++){
+    if( counter[types[i]] > 0 ){
+      return true;
+    }
+  }
+  return false;
 }
 
 var is_customer_event_supported = !!window.CustomEvent;
@@ -444,7 +462,8 @@ g.util = {
   getPageY   : getPageY,
   getDistance: getDistance,
   extend     : extend,
-  Event      : Event
+  Event      : Event,
+  preventDefault: preventDefault
 };
 
 /**
@@ -629,6 +648,10 @@ function returnTrue(){
 
 function returnFalse(){
   return false;
+}
+
+function preventDefault(e){
+  e.preventDefault();
 }
 
 })();
