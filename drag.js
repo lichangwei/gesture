@@ -18,10 +18,10 @@ g.prototype.draggable = function(opt){
       this._drag_timeout = setTimeout(function(){
         ontouchstart.call(_t, e, opt);
       }, g.opt('tap_max_duration'));
-    });
+    }, false);
     elem.addEventListener(g.event.touchend, function(e){
       clearTimeout( this._drag_timeout );
-    });
+    }, false);
   }
 };
 
