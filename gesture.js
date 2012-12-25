@@ -229,7 +229,10 @@ function register(type, ifBind){
 }
 
 function arrayify( elem ){
-  if(elem.jquery) return elem.get();
+  // don't use elem.jquery any more.
+  if(typeof jQuery !== 'undefined' && elem instanceof jQuery){
+    return elem.get();
+  }
   // document is instance of HTMLDocument(but Document in IE)
   if(elem instanceof HTMLElement || elem === document) return [elem];
   if(typeof elem === 'string'){
