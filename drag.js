@@ -69,16 +69,10 @@ function ontouchstart( e, opt ){
     absoluteElemY = touchY - startTouchY + rect.top;
 
     if(container){
-      if(container.left > absoluteElemX){
-        absoluteElemX = container.left;
-      }else if(container.right < absoluteElemX + rect.width){
-        absoluteElemX = container.right - rect.width;
-      }
-      if(container.top > absoluteElemY){
-        absoluteElemY = container.top;
-      }else if(container.bottom < absoluteElemY + rect.height){
-        absoluteElemY = container.bottom - rect.height;
-      }
+      absoluteElemX = Math.min(absoluteElemX, container.right - rect.width);
+      absoluteElemX = Math.max(absoluteElemX, container.left);
+      absoluteElemY = Math.min(absoluteElemY, container.bottom - rect.height);
+      absoluteElemY = Math.max(absoluteElemY, container.top);
     }
 
     // get left and top of the target element
