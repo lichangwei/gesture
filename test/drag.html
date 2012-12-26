@@ -34,8 +34,20 @@
             }
             .f{
                 position: absolute;
-                left: 200px;
+                left: 73px;
                 top: -1px;
+            }
+            #container{
+                position: relative;
+                width: 200px;
+                height: 100px;
+                background: #E2E2E2;
+            }
+            #item{
+                position: relative;
+                width: 50px;
+                height:50px;
+                background: #333;
             }
             .playground{
                 position: relative;
@@ -49,25 +61,28 @@
     </head>
     <body>
         <ul class="candidate">
-            <li class="item a">AAAAAA</li>
-            <li class="item b">BBBBBB</li>
+            <li class="item a">A</li>
+            <li class="item b">B</li>
             <li class="item c">
                 <img src="circle.png">
                 <div>Div</div>
                 <span>Span</span>
-                CCC
+                C
             </li>
-            <li class="item d">undraggable</li>
+            <li class="item d">undraggable D</li>
         </ul>
-        <ul class="selected">
-            <li class="item e">EEEEEE</li>
+        <ul>
+            <li class="item e">E</li>
             <li class="item f">
                 <img src="circle.png">
                 <div>Div</div>
                 <span>Span</span>
-                FFF
+                F
             </li>
         </ul>
+        <div id="container">
+            <div id="item"></div>
+        </div>
         <div class="playground"></div>
         <script src="../../base/jquery-1.7.2.min.js"></script>
         <script src="../gesture.js"></script>
@@ -129,6 +144,10 @@
                 touchend: function(e){
                     console.log('dragend');
                 }
+            });
+            g('#item').draggable({
+                container: '#container',
+                helper: 'no'
             });
             if(navigator.userAgent.indexOf('Android') > -1){
                 console = console || {};

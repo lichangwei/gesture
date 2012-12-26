@@ -10,6 +10,9 @@ g.opt('tap_max_duration', 300);
 
 g.prototype.draggable = function(opt){
   opt = opt || {};
+  if(typeof opt.container === 'string'){
+    opt.container = document.querySelector(opt.container);
+  }
   for(var i = 0; i < this.elems.length; i++){
     var elem = this.elems[i];
     elem.addEventListener(g.event.touchstart, function(e){
@@ -41,7 +44,11 @@ function ontouchstart( e, opt ){
   var touchY;
   var elemX;
   var elemY;
+  var absoluteElemX;
+  var absoluteElemY;
   var returnValue;
+
+  var container = opt.container instanceof HTMLElement ? opt.container.getBoundingClientRect() : opt.container;
 
   if(opt.touchstart){
     returnValue = opt.touchstart.call(me, e, startTouchX, startTouchY, startElemX, startElemY);
@@ -55,17 +62,34 @@ function ontouchstart( e, opt ){
   
   function touchmove(e){
     e.preventDefault();
+    // get left and top of touch/mouse
     touchX = getPageX(e);
     touchY = getPageY(e);
-    elemX = touchX - startTouchX + startElemX;
-    elemY = touchY - startTouchY + startElemY;
+    absoluteElemX = touchX - startTouchX + rect.left;
+    absoluteElemY = touchY - startTouchY + rect.top;
+
+    if(container){
+      if(container.left > absoluteElemX){
+        absoluteElemX = container.left;
+      }else if(container.right < absoluteElemX + rect.width){
+        absoluteElemX = container.right - rect.width;
+      }
+      if(container.top > absoluteElemY){
+        absoluteElemY = container.top;
+      }else if(container.bottom < absoluteElemY + rect.height){
+        absoluteElemY = container.bottom - rect.height;
+      }
+    }
+
+    // get left and top of the target element
+    elemX = absoluteElemX - rect.left + startElemX;
+    elemY = absoluteElemY - rect.top  + startElemY;
+    
     if(opt.touchmove){
-      returnValue = opt.touchmove.call(me, e, elemX, elemY, touchX-startTouchX, touchY-startTouchY, e.timeStamp-startT);
+      returnValue = opt.touchmove.call(me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
     }
     if((opt.helper === void 0) || (opt.helper === 'shadow')){
-      var shadowX = touchX - startTouchX + rect.left;
-      var shadowY = touchY - startTouchY + rect.top;
-      (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
+      (opt.positionShadow || positionShadow).call(shadow, absoluteElemX, absoluteElemY);
     }else if(returnValue !== false){
       me.style.left = elemX + 'px';
       me.style.top  = elemY + 'px';
@@ -75,12 +99,8 @@ function ontouchstart( e, opt ){
     e.preventDefault();
     document.removeEventListener(g.event.touchmove, touchmove);
     document.removeEventListener(g.event.touchend,  touchend);
-    touchX = getPageX(e);
-    touchY = getPageY(e);
-    elemX = touchX - startTouchX + startElemX;
-    elemY = touchY - startTouchY + startElemY;
     if(opt.touchend){
-      returnValue = opt.touchend.call(me, e, elemX, elemY, touchX-startTouchX, touchY-startTouchY, e.timeStamp-startT);
+      returnValue = opt.touchend.call(me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
     }
     if((opt.helper === void 0) || (opt.helper === 'clone')){
       document.body.removeChild(shadow);
