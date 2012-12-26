@@ -12,7 +12,6 @@ g.prototype.draggable = function(opt){
   opt = opt || {};
   for(var i = 0; i < this.elems.length; i++){
     var elem = this.elems[i];
-    elem._draggable = true;
     elem.addEventListener(g.event.touchstart, function(e){
       var _t = this;
       this._drag_timeout = setTimeout(function(){
@@ -26,94 +25,76 @@ g.prototype.draggable = function(opt){
 };
 
 function ontouchstart( e, opt ){
-  e.preventDefault();
-  
-  if(this._draggable !== true) return;
-  var dragged = this;
+  var me = this;
+  // cannot use e.timeStamp, because of the setTimeout above.
   var startT = new Date();
-  var startX = getPageX(e);
-  var startY = getPageY(e);
-  var offset = findPosition(this);
-  var style = window.getComputedStyle(this, null);
+  var startTouchX = getPageX(e);
+  var startTouchY = getPageY(e);
+  var rect = me.getBoundingClientRect();
+
+  var style = window.getComputedStyle(me, null);
   var isAbsolute = style['position'] === 'absolute';
-  var offsetX = isAbsolute ? this.offsetLeft : (parseInt(style['left']) || 0); 
-  var offsetY = isAbsolute ? this.offsetTop : (parseInt(style['top']) || 0);
-  var endT = new Date();
-  var endX;
-  var endY;
-  var thisX;
-  var thisY;
-  var shadowX = offset.x;
-  var shadowY = offset.y;
+  var startElemX = isAbsolute ? me.offsetLeft : (parseInt(style['left'], 10) || 0);
+  var startElemY = isAbsolute ? me.offsetTop :  (parseInt(style['top'] , 10) || 0);
+  var time;
+  var touchX;
+  var touchY;
+  var elemX;
+  var elemY;
+  var returnValue;
+
+  if(opt.touchstart){
+    returnValue = opt.touchstart.call(me, e, startTouchX, startTouchY, startElemX, startElemY);
+  }
+  if((opt.helper === void 0) || (opt.helper === 'shadow')){
+    var shadow = me.cloneNode(true);
+    shadow.className = me.className;
+    (opt.positionShadow || positionShadow).call(shadow, rect.left, rect.top);
+    document.body.appendChild(shadow);
+  }
   
   function touchmove(e){
     e.preventDefault();
-    
-    endX = getPageX(e);
-    endY = getPageY(e);
-    thisX = endX - startX + offsetX;
-    thisY = endY - startY + offsetY;
+    touchX = getPageX(e);
+    touchY = getPageY(e);
+    elemX = touchX - startTouchX + startElemX;
+    elemY = touchY - startTouchY + startElemY;
     if(opt.touchmove){
-      var result = opt.touchmove.call(dragged, e, thisX, thisY, 
-        endX-startX, endY-startY, new Date()-(endT||startT));
-      endT = new Date();
+      returnValue = opt.touchmove.call(me, e, elemX, elemY, touchX-startTouchX, touchY-startTouchY, e.timeStamp-startT);
     }
     if((opt.helper === void 0) || (opt.helper === 'shadow')){
-      shadowX = endX - startX + offset.x;
-      shadowY = endY - startY + offset.y;
+      var shadowX = touchX - startTouchX + rect.left;
+      var shadowY = touchY - startTouchY + rect.top;
       (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
-    }else if(result !== false){
-      dragged.style.left = thisX + 'px';
-      dragged.style.top = thisY + 'px';
+    }else if(returnValue !== false){
+      me.style.left = elemX + 'px';
+      me.style.top  = elemY + 'px';
     }
   }
   function touchend(e){
     e.preventDefault();
-    
     document.removeEventListener(g.event.touchmove, touchmove);
-    document.removeEventListener(g.event.touchend, touchend);
-    endX = getPageX(e);
-    endY = getPageY(e);
-    thisX = endX - startX + offsetX;
-    thisY = endY - startY + offsetY;
+    document.removeEventListener(g.event.touchend,  touchend);
+    touchX = getPageX(e);
+    touchY = getPageY(e);
+    elemX = touchX - startTouchX + startElemX;
+    elemY = touchY - startTouchY + startElemY;
     if(opt.touchend){
-      var result = opt.touchend.call(dragged, e, thisX, thisY, 
-        endX-startX, endY-startY, endX, endY);
+      returnValue = opt.touchend.call(me, e, elemX, elemY, touchX-startTouchX, touchY-startTouchY, e.timeStamp-startT);
     }
     if((opt.helper === void 0) || (opt.helper === 'clone')){
       document.body.removeChild(shadow);
     }
-    if(result === false) return;
-    dragged.style.left = thisX + 'px';
-    dragged.style.top = thisY + 'px';
+    if(returnValue === false) return;
+    me.style.left = elemX + 'px';
+    me.style.top  = elemY + 'px';
   }
   document.addEventListener(g.event.touchmove, touchmove, false);
-  document.addEventListener(g.event.touchend, touchend, false);
-  
-  if(opt.touchstart){
-    var result = opt.touchstart.call(this, e, startX, startY, offsetX, offsetY);
-  }
-  if((opt.helper === void 0) || (opt.helper === 'shadow')){
-    var shadow = this.cloneNode(true);
-    shadow.className = this.className;
-    (opt.positionShadow || positionShadow).call(shadow, shadowX, shadowY);
-    document.body.appendChild(shadow);
-  }
-  if(result === false) return;
+  document.addEventListener(g.event.touchend,  touchend,  false);
 }
 
 var getPageX = g.util.getPageX;
 var getPageY = g.util.getPageY;
-
-function findPosition( obj ){
-   var left =0, top = 0;
-   while(obj.offsetParent){
-      left += obj.offsetLeft;
-      top += obj.offsetTop;
-      obj = obj.offsetParent;
-   }
-   return {x: left, y: top};
-}
 
 function positionShadow(left, top){
   this.style.cssText = [
