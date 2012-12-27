@@ -84,14 +84,11 @@
             <div id="item"></div>
         </div>
         <div class="playground"></div>
-        <script src="../../base/jquery-1.8.2.min.js"></script>
         <script src="../gesture.js"></script>
         <script src="../drag.js"></script>
         <script defer>
-            var $candidate = $('.candidate li');
-            var $selected = $('.selected');
             
-            g($('.a')).drag({
+            g('.a').drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -99,7 +96,7 @@
                     console.log('dragend');
                 }
             });
-            g($('.b')).drag({
+            g('.b').drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -108,7 +105,7 @@
                 },
                 helper: 'no'
             });
-            g($('.c')).drag({
+            g('.c').drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -120,7 +117,7 @@
                         + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
                 }
             });
-            g($('.e')).drag({
+            g('.e').drag({
                 touchstart: function(e){
                     this._left = parseInt(this.style.left) || 0;
                     console.log('dragstart');
@@ -135,7 +132,7 @@
                 },
                 helper: 'no'
             });
-            g($('.f')).drag({
+            g('.f').drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -151,9 +148,10 @@
             });
             if(navigator.userAgent.indexOf('Android') > -1){
                 console = console || {};
-                var $pg = $('.playground').show();
+                var playground = document.querySelector('.playground');
+                playground.style.display = 'block';
                 console.log = function(){
-                    $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+                    playground.innerHTML = ' ' + Array.prototype.splice.call(arguments, 0).join(', ');
                 }
             }
             
