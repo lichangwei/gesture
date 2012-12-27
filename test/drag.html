@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Draggable Sample</title>
+        <title>Drag Sample</title>
         <style type="text/css" rel="stylesheet">
             html{
                 -webkit-user-select: none;
@@ -91,7 +91,7 @@
             var $candidate = $('.candidate li');
             var $selected = $('.selected');
             
-            g($('.a')).draggable({
+            g($('.a')).drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -99,7 +99,7 @@
                     console.log('dragend');
                 }
             });
-            g($('.b')).draggable({
+            g($('.b')).drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -108,7 +108,7 @@
                 },
                 helper: 'no'
             });
-            g($('.c')).draggable({
+            g($('.c')).drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -120,7 +120,7 @@
                         + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
                 }
             });
-            g($('.e')).draggable({
+            g($('.e')).drag({
                 touchstart: function(e){
                     this._left = parseInt(this.style.left) || 0;
                     console.log('dragstart');
@@ -135,7 +135,7 @@
                 },
                 helper: 'no'
             });
-            g($('.f')).draggable({
+            g($('.f')).drag({
                 touchstart: function(e){
                     console.log('dragstart');
                 },
@@ -145,7 +145,7 @@
                     console.log('dragend');
                 }
             });
-            g('#item').draggable({
+            g('#item').drag({
                 container: '#container',
                 helper: 'no'
             });
