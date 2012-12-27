@@ -19,12 +19,11 @@
     <script src="../extend/zoom.js"></script>
     <script>
       g('#rotate').rotateStart(function(){
-        var base = 0;
-        var match = /rotate\((\d+)deg\)/.exec(this.style.WebkitTransform);
+        this.base = 0;
+        var match = /rotate\((-?\d+)deg\)/.exec(this.style.WebkitTransform);
         if( match ){
-          base = parseInt(match[1]);
+          this.base = parseInt(match[1]);
         }
-        this.base = base;
       }).rotate(function(e){
         this.style.WebkitTransform = 'rotate(' + parseInt(e.rotation + this.base) + 'deg)';
       }).zoomStart(function(e){
