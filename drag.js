@@ -20,10 +20,11 @@ g.opt('tap_max_duration', 300);
  *      'clone': default value. Clone the draggable element.
  *      'no': Move the draggable element in real time.
  *    {function} opt.positionShadow.
- *    {string, element, object} opt.container. the darggable element cannot move out of this element/area.
- *      string means it's container's selector of the element.
- *      element.
- *      object means it's the boundary of the area. typically it contains top, left, width(or right), height(or bottom).
+ *    {element, string, object} opt.container. the darggable element cannot move out of this element/area.
+ *      element specify the container element.
+ *      string specify the css selector of the container element.
+ *      object specify it's the boundary of the area. typically it contains top, left, width(or right),
+ *        height(or bottom).
  */
 g.prototype.drag = function(opt){
   opt = opt || {};
@@ -122,7 +123,8 @@ function ontouchstart( e, opt ){
     elemY = absoluteElemY - rect.top  + startElemY;
     
     if(opt.touchmove){
-      returnValue = opt.touchmove.call(me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
+      returnValue = opt.touchmove.call(
+        me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
     }
     if(opt.helper === 'clone'){
       opt.positionShadow.call(shadow, absoluteElemX, absoluteElemY);
@@ -136,7 +138,8 @@ function ontouchstart( e, opt ){
     document.removeEventListener(touchmove, ontouchmove);
     document.removeEventListener(touchend,  ontouchend);
     if(opt.touchend){
-      returnValue = opt.touchend.call(me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
+      returnValue = opt.touchend.call(
+        me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);
     }
     if(opt.helper === 'clone'){
       document.body.removeChild(shadow);
