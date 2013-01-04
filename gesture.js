@@ -335,10 +335,10 @@ function init(elem){
     }
     status = 0;
   }, false);
-  elem.addEventListener(touchleave, function(e){console.info('--1--')
+  elem.addEventListener(touchleave, function(e){
     status = 0;
   }, false);
-  elem.addEventListener('touchcancel', function(e){console.info('--2--')
+  elem.addEventListener('touchcancel', function(e){
     status = 0;
   }, false);
   
