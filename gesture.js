@@ -131,11 +131,14 @@ g.prototype.trigger = function(type){
  * @return g class
  */
 g.register = function(type, handler, ifBind){
-  if( events[type] ) return console.error('"' + type + '" cannot be regiested twice.');
-  events[type] = handler;
-  var types = handler.types = type.split(/\s/);
-  for(var i = 0; i < types.length; i++){
-    register(types[i], ifBind);
+  if( events[type] ){
+    console.error('"' + type + '" cannot be regiested twice.');
+  }else{
+    events[type] = handler;
+    var types = handler.types = type.split(/\s/);
+    for(var i = 0; i < types.length; i++){
+      register(types[i], ifBind);
+    }
   }
   return this;
 };
@@ -431,7 +434,7 @@ var gesturechange = 'gesturechange';
 var gestureend    = 'gestureend';
 
 // allow user bind some standard events.
-g.register([touchstart, touchmove, touchend, 'click'].join(' '), {});
+g.register('touchstart touchmove touchend mousedown mousemove mouseup click', {});
 
 /**
  * @member g.event

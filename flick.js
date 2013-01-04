@@ -7,8 +7,6 @@
 'use strict';
 
 g.register('flick', {
-  touchstart: g.util.preventDefault,
-  touchmove : g.util.preventDefault,
   touchend  : function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     var direction;
     var threshold = g.opt('flick_min_x_or_y');

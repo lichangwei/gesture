@@ -9,11 +9,13 @@
         height: 100%;
         overflow: hidden;
         -webkit-user-select: none;
+           -moz-user-select: none;
+                user-select: none;
       }
       ul.list{
         list-style: none;
       }
-      ul.list li{
+      li{
         display: inline;
         border: 1px solid black;
       }
@@ -34,48 +36,55 @@
     </ul>
     <input id="clear" value="Clear" type="button">
     <div class="playground"></div>
-    <script src="../../base/jquery-1.7.2.min.js"></script>
     <script src="../gesture.js"></script>
+    <script src="../plugin/ios-preventDefault.js"></script>
+    <script src="../tap.js"></script>
     <script src="../dragdrop.js"></script>
+    <script src="../flick.js"></script>
     <script defer>
-      $(function(){
-        var $lis = $('.list li');
-        var $pg = $('.playground');
-        
-        g($lis).draggable(function(e){
-          e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-          e.dataTransfer.setData('Text', this.id); // required otherwise doesn't work
+      window.onload = function(){
+
+        g.support.draggable = false;
+
+        var pg = document.querySelector('.playground');
+
+        g('.list li').draggable(function(e){
+          //e.dataTransfer.effectAllowed = 'copy';
+          e.dataTransfer.setData('Text', this.id); // required in FireFox otherwise doesn't work
           console.log('dragstart');
         }, function(e){
           console.log('drag');
         }, function(e){
           console.log('dragend');
         });
+
+        g('ul').flick(function(e){
+          console.log(e.type + '-' + e.direction);
+        });
         
-        g($pg).dropable(function(e){
+        g(pg).dropable(function(e){
           console.log('dragenter');
         }, function(e){
           e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy';
+          //e.dataTransfer.dropEffect = 'copy';
           console.log('dragover');
         }, function(e){
           console.log('dragleave');
         }, function(e){
-          if (e.stopPropagation) e.stopPropagation();
           console.log('drop');
         });
 
-        document.getElementById('clear').addEventListener('click', function(){
-          $pg.html('');
-        }, false);
+        g('#clear').tap(function(){
+          pg.innerHTML = '';
+        });
         
         //if(navigator.userAgent.indexOf('Android') > -1){
           //console = console || {};
           console.log = function(){
-            $pg.append(' ' + Array.prototype.splice.call(arguments, 0).join(', '));
+            pg.innerHTML += ' ' + Array.prototype.splice.call(arguments, 0).join(', ');
           }
         //}
-      });
+      };
     </script>
   </body>
 </html>
