@@ -6,8 +6,6 @@
 
 'use strict';
 
-g.opt('tap_max_duration', 300);
-
 /*
  * @desc define the drag action.
  * @param {object} opt optinal.
@@ -59,7 +57,7 @@ function bindEvents(elem, opt){
     timeout = setTimeout(function(){
       elem.removeEventListener(touchmove, ontouchmove);
       ontouchstart.call(_t, e, opt);
-    }, g.opt('tap_max_duration'));
+    }, g.opt('dragstart_after_touchstart'));
 
     document.addEventListener(touchmove, ontouchmove, false);
   }, false);

@@ -274,6 +274,8 @@ var opt = {
   'doubletap_max_interval': 250,
   
   'flick_min_x_or_y': 30,
+
+  'dragstart_after_touchstart': 300,
   
   'zoomout_max_scale': 0.83,
   'zoomin_min_scale': 1.2

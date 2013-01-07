@@ -7,8 +7,6 @@
 
 'use strict';
 
-g.opt('tap_max_duration', 300);
-
 /**
  * @member g.prototype.draggable
  * @desc
@@ -94,7 +92,7 @@ function draggable(elem, dragstart, drag, dragend){
       shadow.style.left     = left + 'px';
       shadow.style.opacity  = '0.5';
       document.body.appendChild(shadow);
-    }, g.opt('tap_max_duration'));
+    }, g.opt('dragstart_after_touchstart'));
 
     function ontouchmove(e){
       endX = g.util.getPageX(e);

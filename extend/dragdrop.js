@@ -4,8 +4,6 @@
  */
 (function(g){
 
-g.opt('tap_max_duration', 300);
-
 var dragData = {};
 
 g.register('dragstart drag dragend', {
@@ -22,7 +20,7 @@ g.register('dragstart drag dragend', {
       if(distance > g.opt('tap_max_distance')) return;
       if(data.start === false) return;
       ondragstart(e, data);
-    }, g.opt('tap_max_duration'));
+    }, g.opt('dragstart_after_touchstart'));
   },
   touchmove: function(e, endT, endX, endY){
     // @TODO what if no touchmove fired but mouseleave??
