@@ -10,6 +10,8 @@ var dragData = {};
 
 g.register('dragstart drag dragend', {
   touchstart: function(e, startT, startX, startY){
+    // preventDefault is necessary for FF17 & IE10, or a html5 drag event dragstart will be fired.
+    e.preventDefault();
     var gid = e.target.gid;
     var data = dragData[gid] = {};
     data.currentTarget = e.currentTarget;
