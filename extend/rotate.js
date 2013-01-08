@@ -12,9 +12,6 @@ var rotateMinStep;
 g.opt('rotate_min_step', 1);
 
 g.register('rotate rotateStart', {
-  touchstart: g.util.preventDefault,
-  touchmove : g.util.preventDefault,
-  touchend  : g.util.preventDefault,
   gesturestart: function(e){
     var gid = this._gesture_id;
     rotations[gid] = e.rotation;
