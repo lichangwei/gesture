@@ -1,6 +1,7 @@
 /**
  * @overview Regiester zoom event.
  * @requires gesture.js
+ * @desc g.opt('zoom_min_step', 1.1); trigger a zoom event only if
  */
 (function(g){
 
