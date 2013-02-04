@@ -25,7 +25,7 @@ g.register('tap doubletap', {
 var handler = {};
 
 handler.tap = function(e){
-  g.createEvent(events[0], e);
+  g.createEvent('tap', e);
 };
 
 handler.doubletap = function(e){

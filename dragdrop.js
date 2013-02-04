@@ -88,6 +88,7 @@ function draggable(elem, dragstart, drag, dragend){
       shadow.className      = target.className;
       shadow.style.cssText  = target.style.cssText;
       shadow.style.position = 'absolute';
+      shadow.style.pointerEvents = 'none';
       shadow.style.top      = top + 'px';
       shadow.style.left     = left + 'px';
       shadow.style.opacity  = '0.5';
