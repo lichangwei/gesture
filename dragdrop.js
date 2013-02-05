@@ -9,7 +9,7 @@
 
 /**
  * @member g.prototype.draggable
- * @desc
+ * @desc draggable
  */
 g.prototype.draggable = function(dragstart, drag, dragend){
   dragstart = dragstart || noop;
@@ -31,7 +31,7 @@ g.prototype.draggable = function(dragstart, drag, dragend){
 
 /*
  * @member g.prototype.dropable
- * @desc
+ * @desc dropable
  */
 g.prototype.dropable = function(dragenter, dragover, dragleave, drop){
   dragenter  = dragenter || noop;
