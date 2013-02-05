@@ -231,35 +231,6 @@ function register(type, ifBind){
   };
 }
 
-function arrayify( elem ){
-  // don't use elem.jquery any more.
-  if(typeof jQuery !== 'undefined' && elem instanceof jQuery){
-    return elem.get();
-  }
-  // document is instance of HTMLDocument(but Document in IE)
-  if(elem instanceof HTMLElement || elem === document) return [elem];
-  if(typeof elem === 'string'){
-    elem = document.querySelectorAll(elem);
-  }
-  // Here we recommend to use below methods to get an element collection.
-  // getElementsByClassName
-  // getElementsByTagName
-  // getElementsByName
-  // querySelectorAll
-  // children attribute
-  
-  // and we don't handle these collections:
-  // HTMLOptionsCollection, HTMLSelectElement
-  // HTMLFormElement, HTMLAllCollection
-  if(elem instanceof NodeList || elem instanceof HTMLCollection){
-    var array = [];
-    for(var i = 0; i < elem.length; i++){
-      array.push(elem[i]);
-    }
-    return array;
-  }
-  return elem;
-}
 var events = {};
 var callbacks = {};
 var gesture_id = 0;
@@ -466,6 +437,7 @@ g.support = {
  * @property {function}  g.util.extend @see .util.extend
  */
 g.util = {
+  arrayify   : arrayify,
   getPageX   : getPageX,
   getPageY   : getPageY,
   getDistance: getDistance,
@@ -473,6 +445,42 @@ g.util = {
   Event      : Event,
   preventDefault: preventDefault
 };
+
+/**
+ * @function To convert the element(s) specified by the parameter 'elem' into an array.
+ * @param {jQuery, HTMLElement, String, NodeList, HTMLCollection, Array}
+ * @return {Array} an array contains some dom node element(HTMLElement).
+ * @memberof! g
+ */
+function arrayify( elem ){
+  if(typeof jQuery !== 'undefined' && elem instanceof jQuery){
+    // don't use elem.jquery any more.
+    elem = elem.get();
+  }else if(elem instanceof HTMLElement || elem === document){
+    // document is instance of HTMLDocument(but Document in IE)
+    elem = [elem];
+  }else if(typeof elem === 'string'){
+    elem = document.querySelectorAll(elem);
+  }
+  // Here we recommend to use below methods to get an element collection.
+  // getElementsByClassName
+  // getElementsByTagName
+  // getElementsByName
+  // querySelectorAll
+  // children attribute
+  
+  // and we don't handle these collections:
+  // HTMLOptionsCollection, HTMLSelectElement
+  // HTMLFormElement, HTMLAllCollection
+  if(elem instanceof NodeList || elem instanceof HTMLCollection){
+    var array = [];
+    for(var i = 0; i < elem.length; i++){
+      array.push(elem[i]);
+    }
+    elem = array;
+  }
+  return elem;
+}
 
 /**
  * @function g.util.getPageX
