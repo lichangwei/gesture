@@ -6,7 +6,7 @@
 
 (function(){
   
-  if ( g.support.touch ) return;
+  if(g.support.touch) return;
 
   var tapped = {};
 
