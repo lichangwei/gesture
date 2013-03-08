@@ -127,3 +127,7 @@ g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
 # Q && A  
 1. Q：如何实现iOS中的效果：快速点击（tap）正常响应相应动作，按住不放（taphold）会出现拷贝，打开链接等选项卡，双击（doubletap）会放大或者缩小页面？  
 A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）设置tap持续最大时间g.opt('tap_max_duration', 300)，其中300可以适当调整.（4）绑定tap事件即可。
+
+# Change Log
+**V1.0 (Initial Version)**  
+
