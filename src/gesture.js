@@ -28,6 +28,8 @@ var g = window.g = function(elem){
   }
 };
 
+g.version = '1.0';
+
 /**
  * @method g.prototype.on
  * @desc bind events.

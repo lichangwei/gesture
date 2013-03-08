@@ -1,1 +1,1 @@
-E:\node_modules\jsdoc>jsdoc e:/github/gesture
+E:\node_modules\jsdoc>jsdoc e:/github/gesture/src

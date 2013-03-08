@@ -8,15 +8,15 @@
 require('webtools')
   .uglifyjs({
     'input': [
-      '../gesture.js',
-      // '../tap.js',
-      // '../doubletap.js',
-      '../tap-doubletap.js',
-      // '../taphold.js ',
-      // '../flick.js ',
-      // '../zoom.js ',
-      // '../dragdrop.js ',
-      // '../drag.js ',
+      '../src/gesture.js',
+      // '../src/tap.js',
+      // '../src/doubletap.js',
+      '../src/tap-doubletap.js',
+      // '../src/taphold.js ',
+      // '../src/flick.js ',
+      // '../src/zoom.js ',
+      // '../src/dragdrop.js ',
+      // '../src/drag.js ',
 
       // '../plugin/touch-alink.js',
     ],
