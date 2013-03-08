@@ -12,11 +12,11 @@ var rotations = {};
 var rotateMinStep;
 g.opt('rotate_min_step', 1);
 
-g.register('rotate rotateStart', {
+g.register('rotatestart rotate rotateend', {
   gesturestart: function(e){
     var gid = this._gesture_id;
     rotations[gid] = e.rotation;
-    g.createEvent('rotateStart', e);
+    g.createEvent('rotatestart', e);
     rotateMinStep = g.opt('rotate_min_step');
   },
   gesturechange: function(e){
@@ -30,6 +30,12 @@ g.register('rotate rotateStart', {
     rotations[gid] = current;
     g.createEvent('rotate', e, {
       rotation: current
+    });
+  },
+  gestureend: function(e){
+    var gid = this._gesture_id;
+    g.createEvent('rotateend', e, {
+      rotation: rotations[gid]
     });
   }
 });

@@ -5,29 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rotate &amp; Zoom Sample</title>
     <style rel="stylesheet">
-      #rotate{
-        margin: 0 auto;
+      html {
+        height: 100%;
+      }
+      body {
+        position: relative;
+        height: 100%;
         background: #E2E2E2;
+        top: 50%;
+      }
+      #rotatezoom {
+        position: relative;
+        top: -50%;
+        height: 250px;
+        margin-left: auto;
+        margin-right: auto;
+        background: #AAA;
       }
     </style>
   </head>
   <body>
-    <div id="rotate" style="width: 250px; height: 250px;"></div>
+    <div id="rotatezoom" style="width: 250px; height: 250px;"></div>
     <div id="result"></div>
     <script src="../src/gesture.js"></script>
-    <script src="../src/extend/rotate.js"></script>
-    <script src="../src/extend/zoom.js"></script>
+    <script src="../src/rotate.js"></script>
+    <script src="../src/zoom.js"></script>
     <script src="../src/plugin/preventDefault.js"></script>
     <script>
-      g('#rotate').rotateStart(function(){
+      g('#rotatezoom').rotatestart(function(){
         this.base = 0;
         var match = /rotate\((-?\d+)deg\)/.exec(this.style.WebkitTransform);
         if( match ){
           this.base = parseInt(match[1]);
         }
+        this.style.border = 'solid 1px green';
       }).rotate(function(e){
         this.style.WebkitTransform = 'rotate(' + parseInt(e.rotation + this.base) + 'deg)';
-      }).zoomStart(function(e){
+      }).rotateend(function(){
+        this.style.border = '';
+      });
+
+      g('#rotatezoom').zoomstart(function(e){
         this.width  = parseInt(this.style.width);
         this.height = parseInt(this.style.height);
       }).zoom(function(e){
@@ -35,6 +53,8 @@
         if( width < 150 ) return ;
         this.style.width  = width + 'px';
         this.style.height = this.height * e.scale + 'px';
+      }).zoomend(function(){
+        // console.log('zoom end.');
       });
 
       var result = document.getElementById('result');
