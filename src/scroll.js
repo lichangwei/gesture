@@ -35,14 +35,14 @@ g.register('scroll scrollhorizontal scrollvertical', {
     var data = getData(this);
     
     var style = window.getComputedStyle(this, null);
-    data.left = data.curr_left = parseInt(style.left) || 0;
-    data.top = data.curr_top = parseInt(style.top) || 0;
-    data.width = parseInt(style.width) || 0;
-    data.height = parseInt(style.height) || 0;
+    data.left = data.curr_left = parseInt(style.left, 10) || 0;
+    data.top = data.curr_top = parseInt(style.top, 10) || 0;
+    data.width = parseInt(style.width, 10) || 0;
+    data.height = parseInt(style.height, 10) || 0;
     
     style = window.getComputedStyle(this.parentNode, null);
-    data.p_width = parseInt(style.width) || 0;
-    data.p_height = parseInt(style.height) || 0;
+    data.p_width = parseInt(style.width, 10) || 0;
+    data.p_height = parseInt(style.height, 10) || 0;
     
     data.prevX = startX;
     data.prevY = startY;
@@ -86,17 +86,18 @@ g.register('scroll scrollhorizontal scrollvertical', {
 
 function getLeftTop(elem, data, deltaX, deltaY, checkBoundaries){
   var lefttop = {};
+  var min;
   if(data.scroll === all || data.scroll === horizontal){
     var left = data.left + deltaX;
     if(left > 0) left = checkBoundaries ? 0 : left / 3;
-    var min = data.p_width - data.width;
+    min = data.p_width - data.width;
     if(left < min) left = checkBoundaries ? min : left;
     lefttop.left = Math.floor(left);
   }
   if(data.scroll === all || data.scroll === vertical){
     var top = data.top + deltaY;
     if(top > 0) top = checkBoundaries ? 0 : top / 3;
-    var min = data.p_height - data.height;
+    min = data.p_height - data.height;
     if(top < min) top = checkBoundaries ? min : top;
     lefttop.top = Math.floor(top);
   }
