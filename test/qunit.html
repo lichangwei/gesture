@@ -1,157 +1,157 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Qunit for Gesture</title>
-        <link rel="stylesheet" href="../../base/qunit-1.10.0.css" type="text/css"/>
-    </head>
-    <body>
-        <h1 id="qunit-header" class="header">QUnit example</h1>
-        <h2 id="qunit-banner"></h2>
-        <div id="qunit-testrunner-toolbar"></div>
-        <h2 id="qunit-userAgent"></h2>
-        <ol id="qunit-tests"></ol>
-        <div id="qunit-fixture">
-            test markup, will be hidden
-        </div>
-        <script src="../../base/jquery-1.8.2.js"></script>
-        <script src="../../base/qunit-1.10.0.js"></script>
-        <script src="eventsimulator.js"></script>
-        <script src="../src/gesture.js"></script>
-        <script src="../src/tap.js"></script>
-        <script src="../src/doubletap.js"></script>
-        <script src="../src/taphold.js"></script>
-        <script src="../src/flick.js"></script>
-        <script src="../src/zoom.js"></script>
-        <script>
-            $(function(){
-                var $header = $('#qunit-header');
-                var $banner = $('#qunit-banner');
-                var h2s_q = document.querySelectorAll('h2');
-                var divs_t = document.getElementsByTagName('div');
-                var classname = document.getElementsByClassName('header');
-                var header = $header[0];
-                var banner = $banner[0];
-                var fixture = document.getElementById('qunit-fixture');
-                
-                var statistics = {
-                    'qunit-header': {},
-                    'qunit-banner': {},
-                    'qunit-fixture': {}
-                };
-                var events = ['tap', 'doubletap'/*, 'tripletap'*/, 'taphold', 'flick', 'zoomin', 'zoomout'];
-                for(var i = 0; i < events.length; i++){
-                    statistics['qunit-header'][events[i]] = 0;
-                    statistics['qunit-banner'][events[i]] = 0;
-                    statistics['qunit-fixture'][events[i]] = 0;
-                }
-                g($header).tap(function(e){
-                    statistics[this.id][e.type]++;
-                });
-                g($header[0]).taphold(function(e){
-                    statistics[this.id][e.type]++;
-                });
-                g(h2s_q).doubletap(function(e){
-                    statistics[this.id][e.type]++;
-                });
-                // g(divs_t).tripletap(function(e){
-                //     statistics[this.id][e.type]++;
-                // });
-                g(classname).flick(function(e){
-                    statistics[this.id][e.type]++;
-                });
-                g(fixture).zoomin(function(e){
-                    statistics[this.id][e.type]++;
-                });
-                module("Gesture");
-                
-                var startEvent = g.event.touchstart;
-                var moveEvent = g.event.touchmove;
-                var endEvent = g.event.touchend;
-                
-                function startend(target, callback, s2e, e2c){
-                    es[startEvent](target);
-                    setTimeout(function(){
-                        es[endEvent](target);
-                        setTimeout(callback, e2c);
-                    }, s2e);
-                }
-                
-                function startmoveend(target, callback, s2m, m2e, e2c){
-                    es[startEvent](target);
-                    setTimeout(function(){
-                        es[moveEvent](target, {clientX: 100});
-                        setTimeout(function(){
-                            es[endEvent](target, {clientX: 180});
-                            setTimeout(callback, e2c);
-                        }, m2e);
-                    }, s2m);
-                }
-                
-                var es = eventsimulator;
-                
-                asyncTest("tap", function(){
-                    startend(header, function(){
-                        equal(statistics['qunit-header']['tap'], 1);
-                        start();
-                    }, 50, 2000);
-                });
-                
-                asyncTest("taphold", function(){
-                    startend(header, function(){
-                        equal(statistics['qunit-header']['taphold'], 1);
-                        start();
-                    }, 400, 2000);
-                });
-                
-                asyncTest("doubletap", function(){
-                    startend(banner, function(){
-                        startend(banner, function(){
-                            equal(statistics['qunit-banner']['doubletap'], 1);
-                            start();
-                        }, 100, 2000);
-                    }, 100, 100);
-                });
-                
-                /*
-                asyncTest("tripletap", function(){
-                    startend(fixture, function(){
-                        startend(fixture, function(){
-                            startend(fixture, function(){
-                                equal(statistics['qunit-fixture']['tripletap'], 1);
-                                start();
-                            }, 100, 2000);
-                        }, 100, 100);
-                    }, 100, 100);
-                });
-                */
-                asyncTest("flick", function(){
-                    startmoveend(header, function(){
-                        equal(statistics['qunit-header']['flick'], 1);
-                        start();
-                    }, 100, 100, 2000);
-                });
-                
-                if('ontouchend' in fixture){
-                    asyncTest("zoomin", function(){
-                        es[startEvent](fixture, {touches: [{pageX:0, pageY:0}]});
-                        setTimeout(function(){
-                            es[startEvent](fixture, {touches: [{pageX:0, pageY:0}, {pageX:100, pageY:100}]});
-                            setTimeout(function(){
-                                es[moveEvent](fixture, {touches: [{pageX:40, pageY:40}, {pageX:60, pageY:60}]});
-                                setTimeout(function(){
-                                    es[endEvent](fixture, {touches: []});
-                                    setTimeout(function(){
-                                        equal(statistics['qunit-fixture']['zoomin'], 1);
-                                        start();
-                                    }, 500);
-                                }, 10);
-                            }, 10);
-                        }, 10);
-                    });
-                }
-                
-            });
-        </script>
-    </body>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Qunit for Gesture</title>
+    <link rel="stylesheet" href="../../base/qunit-1.10.0.css" type="text/css"/>
+  </head>
+  <body>
+    <h1 id="qunit-header" class="header">QUnit example</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">
+      test markup, will be hidden
+    </div>
+    <script src="../../base/jquery-1.8.2.js"></script>
+    <script src="../../base/qunit-1.10.0.js"></script>
+    <script src="eventsimulator.js"></script>
+    <script src="../src/gesture.js"></script>
+    <script src="../src/tap.js"></script>
+    <script src="../src/doubletap.js"></script>
+    <script src="../src/taphold.js"></script>
+    <script src="../src/flick.js"></script>
+    <script src="../src/zoom.js"></script>
+    <script>
+      $(function(){
+        var $header = $('#qunit-header');
+        var $banner = $('#qunit-banner');
+        var h2s_q = document.querySelectorAll('h2');
+        var divs_t = document.getElementsByTagName('div');
+        var classname = document.getElementsByClassName('header');
+        var header = $header[0];
+        var banner = $banner[0];
+        var fixture = document.getElementById('qunit-fixture');
+        
+        var statistics = {
+          'qunit-header': {},
+          'qunit-banner': {},
+          'qunit-fixture': {}
+        };
+        var events = ['tap', 'doubletap'/*, 'tripletap'*/, 'taphold', 'flick', 'zoomin', 'zoomout'];
+        for(var i = 0; i < events.length; i++){
+          statistics['qunit-header'][events[i]] = 0;
+          statistics['qunit-banner'][events[i]] = 0;
+          statistics['qunit-fixture'][events[i]] = 0;
+        }
+        g($header).tap(function(e){
+          statistics[this.id][e.type]++;
+        });
+        g($header[0]).taphold(function(e){
+          statistics[this.id][e.type]++;
+        });
+        g(h2s_q).doubletap(function(e){
+          statistics[this.id][e.type]++;
+        });
+        // g(divs_t).tripletap(function(e){
+        //   statistics[this.id][e.type]++;
+        // });
+        g(classname).flick(function(e){
+          statistics[this.id][e.type]++;
+        });
+        g(fixture).zoomin(function(e){
+          statistics[this.id][e.type]++;
+        });
+        module("Gesture");
+        
+        var startEvent = g.event.touchstart;
+        var moveEvent = g.event.touchmove;
+        var endEvent = g.event.touchend;
+        
+        function startend(target, callback, s2e, e2c){
+          es[startEvent](target);
+          setTimeout(function(){
+            es[endEvent](target);
+            setTimeout(callback, e2c);
+          }, s2e);
+        }
+        
+        function startmoveend(target, callback, s2m, m2e, e2c){
+          es[startEvent](target);
+          setTimeout(function(){
+            es[moveEvent](target, {clientX: 100});
+            setTimeout(function(){
+              es[endEvent](target, {clientX: 180});
+              setTimeout(callback, e2c);
+            }, m2e);
+          }, s2m);
+        }
+        
+        var es = eventsimulator;
+        
+        asyncTest("tap", function(){
+          startend(header, function(){
+            equal(statistics['qunit-header']['tap'], 1);
+            start();
+          }, 50, 2000);
+        });
+        
+        asyncTest("taphold", function(){
+          startend(header, function(){
+            equal(statistics['qunit-header']['taphold'], 1);
+            start();
+          }, 400, 2000);
+        });
+        
+        asyncTest("doubletap", function(){
+          startend(banner, function(){
+            startend(banner, function(){
+              equal(statistics['qunit-banner']['doubletap'], 1);
+              start();
+            }, 100, 2000);
+          }, 100, 100);
+        });
+        
+        /*
+        asyncTest("tripletap", function(){
+          startend(fixture, function(){
+            startend(fixture, function(){
+              startend(fixture, function(){
+                equal(statistics['qunit-fixture']['tripletap'], 1);
+                start();
+              }, 100, 2000);
+            }, 100, 100);
+          }, 100, 100);
+        });
+        */
+        asyncTest("flick", function(){
+          startmoveend(header, function(){
+            equal(statistics['qunit-header']['flick'], 1);
+            start();
+          }, 100, 100, 2000);
+        });
+        
+        if('ontouchend' in fixture){
+          asyncTest("zoomin", function(){
+            es[startEvent](fixture, {touches: [{pageX:0, pageY:0}]});
+            setTimeout(function(){
+              es[startEvent](fixture, {touches: [{pageX:0, pageY:0}, {pageX:100, pageY:100}]});
+              setTimeout(function(){
+                es[moveEvent](fixture, {touches: [{pageX:40, pageY:40}, {pageX:60, pageY:60}]});
+                setTimeout(function(){
+                  es[endEvent](fixture, {touches: []});
+                  setTimeout(function(){
+                    equal(statistics['qunit-fixture']['zoomin'], 1);
+                    start();
+                  }, 500);
+                }, 10);
+              }, 10);
+            }, 10);
+          });
+        }
+        
+      });
+    </script>
+  </body>
 </html>

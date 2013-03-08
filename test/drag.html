@@ -1,165 +1,165 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Drag Sample</title>
-        <style type="text/css" rel="stylesheet">
-            html{
-                -webkit-user-select: none;
-                   -moz-user-select: none;
-                        user-select: none;
-            }
-            ul{
-                position: relative;
-                list-style: none;
-                border: 1px solid black;
-                height: auto;
-            }
-            .item{
-                position: relative;
-                top: 1px;
-                display: inline;
-                border: 1px solid black;
-                font: 36px arial;
-                cursor: pointer;
-            }
-            .item div{
-                display: inline;
-            }
-            .e{
-                position: relative;
-                left: 0;
-                top: 1px;
-            }
-            .f{
-                position: absolute;
-                left: 73px;
-                top: -1px;
-            }
-            #container{
-                position: relative;
-                width: 200px;
-                height: 100px;
-                background: #E2E2E2;
-            }
-            #item{
-                position: relative;
-                width: 50px;
-                height:50px;
-                background: #333;
-            }
-            .playground{
-                position: relative;
-                top: 30px;
-                width: 100%;
-                height: 300px;
-                background: #E2E2E2;
-                display: none;
-            }
-        </style>
-    </head>
-    <body>
-        <ul class="candidate">
-            <li class="item a">A</li>
-            <li class="item b">B</li>
-            <li class="item c">
-                <img src="circle.png">
-                <div>Div</div>
-                <span>Span</span>
-                C
-            </li>
-            <li class="item d">undraggable D</li>
-        </ul>
-        <ul>
-            <li class="item e">E</li>
-            <li class="item f">
-                <img src="circle.png">
-                <div>Div</div>
-                <span>Span</span>
-                F
-            </li>
-        </ul>
-        <div id="container">
-            <div id="item"></div>
-        </div>
-        <div class="playground"></div>
-        <script src="../gesture.js"></script>
-        <script src="../drag.js"></script>
-        <script defer>
-            
-            g('.a').drag({
-                touchstart: function(e){
-                    console.log('dragstart');
-                },
-                touchend: function(e){
-                    console.log('dragend');
-                }
-            });
-            g('.b').drag({
-                touchstart: function(e){
-                    console.log('dragstart');
-                },
-                touchend: function(e){
-                    console.log('dragend');
-                },
-                helper: 'no'
-            });
-            g('.c').drag({
-                touchstart: function(e){
-                    console.log('dragstart');
-                },
-                touchend: function(e){
-                    console.log('dragend');
-                },
-                positionShadow: function (left, top){
-                    this.style.cssText = 'position: absolute; top: '
-                        + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
-                }
-            });
-            g('.e').drag({
-                touchstart: function(e){
-                    this._left = parseInt(this.style.left) || 0;
-                    console.log('dragstart');
-                },
-                touchmove: function(e, x, y, dx, dy, dt){
-                    this.style.left = this._left + dx + 'px';
-                    return false;
-                },
-                touchend: function(e){
-                    console.log('dragend');
-                    return false;
-                },
-                helper: 'no'
-            });
-            g('.f').drag({
-                touchstart: function(e){
-                    console.log('dragstart');
-                },
-                touchmove: function(e, x, y, dx, dy, dt){
-                },
-                touchend: function(e){
-                    console.log('dragend');
-                }
-            });
-            g('#item').drag({
-                container: '#container',
-                helper: 'no'
-            });
-            if(navigator.userAgent.indexOf('Android') > -1){
-                console = console || {};
-                var playground = document.querySelector('.playground');
-                playground.style.display = 'block';
-                console.log = function(){
-                    playground.innerHTML = ' ' + Array.prototype.splice.call(arguments, 0).join(', ');
-                }
-            }
-            
-            if(!window.console){
-                console = {
-                    log: function(){}
-                }
-            }
-        </script>
-    </body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drag Sample</title>
+    <style type="text/css" rel="stylesheet">
+      html{
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            user-select: none;
+      }
+      ul{
+        position: relative;
+        list-style: none;
+        border: 1px solid black;
+        height: auto;
+      }
+      .item{
+        position: relative;
+        top: 1px;
+        display: inline;
+        border: 1px solid black;
+        font: 36px arial;
+        cursor: pointer;
+      }
+      .item div{
+        display: inline;
+      }
+      .e{
+        position: relative;
+        left: 0;
+        top: 1px;
+      }
+      .f{
+        position: absolute;
+        left: 73px;
+        top: -1px;
+      }
+      #container{
+        position: relative;
+        width: 200px;
+        height: 100px;
+        background: #E2E2E2;
+      }
+      #item{
+        position: relative;
+        width: 50px;
+        height:50px;
+        background: #333;
+      }
+      .playground{
+        position: relative;
+        top: 30px;
+        width: 100%;
+        height: 300px;
+        background: #E2E2E2;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <ul class="candidate">
+      <li class="item a">A</li>
+      <li class="item b">B</li>
+      <li class="item c">
+        <img src="circle.png">
+        <div>Div</div>
+        <span>Span</span>
+        C
+      </li>
+      <li class="item d">undraggable D</li>
+    </ul>
+    <ul>
+      <li class="item e">E</li>
+      <li class="item f">
+        <img src="circle.png">
+        <div>Div</div>
+        <span>Span</span>
+        F
+      </li>
+    </ul>
+    <div id="container">
+      <div id="item"></div>
+    </div>
+    <div class="playground"></div>
+    <script src="../src/gesture.js"></script>
+    <script src="../src/drag.js"></script>
+    <script defer>
+      
+      g('.a').drag({
+        touchstart: function(e){
+          console.log('dragstart');
+        },
+        touchend: function(e){
+          console.log('dragend');
+        }
+      });
+      g('.b').drag({
+        touchstart: function(e){
+          console.log('dragstart');
+        },
+        touchend: function(e){
+          console.log('dragend');
+        },
+        helper: 'no'
+      });
+      g('.c').drag({
+        touchstart: function(e){
+          console.log('dragstart');
+        },
+        touchend: function(e){
+          console.log('dragend');
+        },
+        positionShadow: function (left, top){
+          this.style.cssText = 'position: absolute; top: '
+            + top + 'px; left: ' + left + 'px; z-index: 999999; opacity: 0.1;';
+        }
+      });
+      g('.e').drag({
+        touchstart: function(e){
+          this._left = parseInt(this.style.left) || 0;
+          console.log('dragstart');
+        },
+        touchmove: function(e, x, y, dx, dy, dt){
+          this.style.left = this._left + dx + 'px';
+          return false;
+        },
+        touchend: function(e){
+          console.log('dragend');
+          return false;
+        },
+        helper: 'no'
+      });
+      g('.f').drag({
+        touchstart: function(e){
+          console.log('dragstart');
+        },
+        touchmove: function(e, x, y, dx, dy, dt){
+        },
+        touchend: function(e){
+          console.log('dragend');
+        }
+      });
+      g('#item').drag({
+        container: '#container',
+        helper: 'no'
+      });
+      if(navigator.userAgent.indexOf('Android') > -1){
+        console = console || {};
+        var playground = document.querySelector('.playground');
+        playground.style.display = 'block';
+        console.log = function(){
+          playground.innerHTML = ' ' + Array.prototype.splice.call(arguments, 0).join(', ');
+        }
+      }
+      
+      if(!window.console){
+        console = {
+          log: function(){}
+        }
+      }
+    </script>
+  </body>
 </html>

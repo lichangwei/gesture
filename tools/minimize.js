@@ -18,7 +18,7 @@ require('webtools')
       // '../src/dragdrop.js ',
       // '../src/drag.js ',
 
-      // '../plugin/touch-alink.js',
+      // '../src/plugin/touch-alink.js',
     ],
     'licence': '@license The MIT License, @author Li Chang Wei <lichangwei@love.com>, @see https://github.com/lichangwei/gesture',
     'initScript': 'g.opt(\'tap_max_duration\', 300);',

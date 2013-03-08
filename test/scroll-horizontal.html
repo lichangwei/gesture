@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Gesture Scroll Tester</title>
-        <style rel="stylesheet" type="text/css">
-            * {
-                margin: 0;
-                padding: 0;
-            }
-            html, body{
-                height: 100%;
-            }
-            #viewport{
-                height: 100%;
-                overflow: hidden;
-            }
-            #pages{
-                position: relative;
-                width: 400%;
-                height: 100%;
-                list-style: none;
-                font-size: 0;
-                overflow: hidden;
-            }
-            #pages li{
-                width: 25%;
-                height: 100%;
-                display: inline-block;
-                font-size: 20px;
-                background: #E2E2E2;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="viewport">
-            <ul id="pages">
-                <li>Page 1</li>
-                <li>Page 2</li>
-                <li>Page 3</li>
-                <li>Page 4</li>
-            </ul>
-        </div>
-        <script src="../src/gesture.js"></script>
-        <script src="../src/scroll.js"></script>
-        <script>
-            var pages = document.getElementById('pages');
-            g(pages).scrollhorizontal(function(e){
-                console.log(e.type);
-            });
-        </script>
-    </body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gesture Scroll Tester</title>
+    <style rel="stylesheet" type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      html, body{
+        height: 100%;
+      }
+      #viewport{
+        height: 100%;
+        overflow: hidden;
+      }
+      #pages{
+        position: relative;
+        width: 400%;
+        height: 100%;
+        list-style: none;
+        font-size: 0;
+        overflow: hidden;
+      }
+      #pages li{
+        width: 25%;
+        height: 100%;
+        display: inline-block;
+        font-size: 20px;
+        background: #E2E2E2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="viewport">
+      <ul id="pages">
+        <li>Page 1</li>
+        <li>Page 2</li>
+        <li>Page 3</li>
+        <li>Page 4</li>
+      </ul>
+    </div>
+    <script src="../src/gesture.js"></script>
+    <script src="../src/scroll.js"></script>
+    <script>
+      var pages = document.getElementById('pages');
+      g(pages).scrollhorizontal(function(e){
+        console.log(e.type);
+      });
+    </script>
+  </body>
 </html>

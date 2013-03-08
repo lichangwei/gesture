@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Touch Tester</title>
-    </head>
-    <body>
-        <p>PPPPPP <span>Span</span> PPPPPP</p>
-        <input id="btn" type="button" value="Button">
-        <a id="alink" href="http://g.cn" target="_blank">Google</a>
-        <div id="result"></div>
-        <script src="../src/gesture.js"></script>
-        <script src="../src/tap-doubletap.js"></script>
-        <script>
-            var btn = document.getElementById('btn');
-            var alink = document.getElementById('alink');
-            var result = document.getElementById('result');
-            
-            g(btn).on('tap doubletap', function(e){
-                log( 'Button', e.target.tagName, e.type );
-            });
-            
-            g(alink).on('tap doubletap', function(e){
-                log( 'A link', e.target.tagName, e.type );
-            });
-            
-            g(document).on('tap doubletap', 'input, a, p', function(e){
-                log( 'Delegate', e.target.tagName, e.type );
-            });
-            
-            function log(){
-                result.innerHTML += Array.prototype.join.call(arguments, ' ') + '<br/>';
-            }
-        </script>
-    </body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Touch Tester</title>
+  </head>
+  <body>
+    <p>PPPPPP <span>Span</span> PPPPPP</p>
+    <input id="btn" type="button" value="Button">
+    <a id="alink" href="http://g.cn" target="_blank">Google</a>
+    <div id="result"></div>
+    <script src="../src/gesture.js"></script>
+    <script src="../src/tap-doubletap.js"></script>
+    <script>
+      var btn = document.getElementById('btn');
+      var alink = document.getElementById('alink');
+      var result = document.getElementById('result');
+      
+      g(btn).on('tap doubletap', function(e){
+        log( 'Button', e.target.tagName, e.type );
+      });
+      
+      g(alink).on('tap doubletap', function(e){
+        log( 'A link', e.target.tagName, e.type );
+      });
+      
+      g(document).on('tap doubletap', 'input, a, p', function(e){
+        log( 'Delegate', e.target.tagName, e.type );
+      });
+      
+      function log(){
+        result.innerHTML += Array.prototype.join.call(arguments, ' ') + '<br/>';
+      }
+    </script>
+  </body>
 </html>
