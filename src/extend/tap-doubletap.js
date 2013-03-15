@@ -1,5 +1,17 @@
 /**
- * Cannot be used with tap.js & doubletap.js
+ * @overview Regiester tap & doubletap event. 
+ *
+ *  Cannot be used with tap.js, doubletap.js or tap-doubletap.js. <br/>
+ *
+ *  The difference between me and tap-doubletap.js is:
+ *  If a element bind a doubletap event, after a tap event occured, it won't be fired. if another tap occured in 250ms, 
+ *  then a doubletap event fired, otherwise a tap event fired.
+ *  If a element only bind tap events, after a tap event occured, fire a tap event immediately.
+ *
+ *  Note: Please pay a attention to use event delegation.
+ *
+ * @requires gesture.js
+ *
  */
 (function(g){
 
@@ -23,11 +35,16 @@ g.register('tap doubletap', {
 });
 
 var handler = {};
-
+/*
+ * If a element only bind tap events, fire immediately.
+ */
 handler.tap = function(e){
   g.createEvent('tap', e);
 };
 
+/*
+ * If a element bind at least one doubletap event, waiting for doubletap_max_interval(default 250) ms.
+ */
 handler.doubletap = function(e){
   var gid = this._gesture_id;
   var ts = targets[gid] || (targets[gid] = []);
