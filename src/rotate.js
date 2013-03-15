@@ -1,5 +1,5 @@
 /**
- * @overview Regiester rotate event.
+ * @overview Regiester rotatestart rotate rotateend event.
  * @requires gesture.js
  * @desc g.opt('rotate_min_step', 1); to trigger a rotate event only if
  */

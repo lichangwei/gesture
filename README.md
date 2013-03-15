@@ -1,4 +1,4 @@
-gesture，一个适用于移动终端和桌面浏览器的事件库，事件包括tap，doubletap，taphold，flick，zoomin和zoomout，动作包括dragdrop和scroll。  
+gesture，一个适用于移动终端和桌面浏览器的事件库，事件包括tap, doubletap, taphold, flick等，动作包括dragdrop和scroll。  
 优点：  
 * 类似jQuery的API，使用方便。  
 * 可以现在桌面浏览器上开发，然后在移动终端调试。  
@@ -94,25 +94,58 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 4. tap-doubletap.js
 引入tap和doubletap事件类型，也许你对tap.js和doubeltap.js的组合不够满意，不希望doubletap事件触发时，会触发两次tap事件，那么这个脚本就是为你准备的。每一个tap事件发生时，总要等待一段时间，直到250ms之后或者另一个tap事件发生，如果是前者，则触发一个tap事件，否则触发一个doubeltap事件。  
 
-5. taphold.js  
+5. extend/tap-doubletap.js
+引入4. tap-doubletap.js文件以后，所有的tap事件都要延时250ms（可配置），但是有时候我们希望，如果一个元素同时绑定了tap和doubletap时，tap事件才会延时。如果一个元素仅仅绑定了tap事件，那么tap事件会立即触发。   
+
+6. taphold.js  
 引入taphold事件类型，首先修改tap事件最大持续时间为300ms，此时原本的tap事件就会被区分为两种，持续时间大于300ms的，则会定义为taphold事件。  
 
-6. flick.js  
-引入flick事件类型，条件是移动距离必须大于30px。flick仅仅是事件，即手指或鼠标移动过程中不会对元素产生影响，比如，不会拖动元素。这点是和drag区分开的。flick有一个属性direction，取值为up，down，left和right。  
+7. flick.js  
+引入flick事件类型，条件是移动距离必须大于30px。flick仅仅是事件，即手指或鼠标移动过程中不会对元素产生影响，比如，不会拖动元素。这点是和drag区分开的。flick有一个属性direction，表示向哪个方向滑动，可能取值为up，down，left和right。  
 
-7. zoomin-zoomout.js  
-引入zoomin和zoomout事件类型，分别表示两个手指向中点移动以及背离中点移动。默认地zoomin需要touch结束时两手指距离是开始时的至少1.2倍，zoomout最大是0.83倍。此事件只适用于支持multi-touch的移动设备。  
+8. zoomin-zoomout.js  
+引入zoomin和zoomout事件类型，分别表示两个手指背离中点移动，向中点移动。默认地zoomin需要touch结束时两手指距离是开始时的至少1.2倍，zoomout最大是0.83倍。此事件只适用于支持multi-touch的移动设备，比如在Android2.X中是不支持的。  
 
-8. zoom.js  
+9. zoom.js  
 引入zoomstart，zoom和zoomend事件，可以通过```e.scale```来获取相对zoomstart（gesturestart）事件时的缩放比例。如果发现zoom事件触发过于频繁，可以通过```g.opt('zoom_min_step', 1.1);```来设置，只有当相对上一次zoom/zoomstart事件缩放比例达到1.1倍时才会触发zoom事件。  
 
-9. rotate.js  
+10. rotate.js  
 引入rotatestart，rotate和rotateend事件，可以通过```e.rotation```来获取相对rotatestart（gesturestart）事件时的旋转角度。如果发现rotate事件触发过于频繁，可以通过```g.opt('rotate_min_step', 1);```来设置，只有当相对上一次rotate/rotatestart事件旋转大于1°时才会触发rotate事件。
 
-10. dragdrop.js  
-引入drag和drop **行为**，注意不是事件。对于支持HTML5 drag & drop API的浏览器，直接使用该API。对于不支持该API的浏览器，则会通过touch或者mouse事件模拟该API。使用方法参见[Sample](#Sample)。
+11. drag.js  
+引入drag **行为**。
+``` javascript
+g('#item').drag({
+  touchstart: function(){},
+  touchmove : function(){},
+  touchend  : function(){},
+  container : '#container', //设置拖动范围
+  helper    : 'no' //实时拖动该元素
+});
+```
 
-11. plugin/touch-alink.js
+12. dragdrop-delegatable.js  
+引入dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop事件。
+``` javascript
+g('#container')
+  .on('dragstart', '.removable', function(){})
+  .on('drag',      '.removable', function(){})
+  .on('dragend',   '.removable', function(){});
+g('#container')
+  .on('dragenter', '.recyclebin', function(){})
+  .on('dragover',  '.recyclebin', function(){})
+  .on('dragleave', '.recyclebin', function(){})
+  .on('drop',      '.recyclebin', function(){});
+```
+
+13. dragdrop-html5.js  
+引入drag和drop **行为**。对于支持HTML5 drag & drop API的浏览器，直接使用该API。对于不支持该API的浏览器，则会通过touch或者mouse事件模拟该API。有些浏览器需要调用```e.preventDefault()```，如FireFox，有些不需要，如Chrome，关于这点是需要你来做的。如果你不想关心这些，那么可以使用```g.support.draggable = false```来强制不使用HTML5 drag & drop API。
+``` javascript
+g('.removable').draggable(ondragstart, ondrag, ondragend);
+g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
+```
+
+14. plugin/touch-alink.js
 修正这样一个[issue](http://jsfiddle.net/lichangwei/hLJH3/)，在iOS和Android设备中点击某元素X，在touchend事件触发时，隐藏元素X，如果此时手指下面还有一个链接元素A，那么很可能会触发A的click事件，即便在touchend事件中调用了```e.preventDefault(); e.stopPropagation();```。解决办法是：如果A链接元素上没有触发touchend事件，而直接触发click事件，那么取消其默认行为（跳转或者打开某个页面）。
 
 # 示例 Sample  
@@ -124,17 +157,6 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 }).doubletap(function(e){
   console.info(e.type);
 });
-
-// dragdrop.js
-g('.removable').draggable(ondragstart, ondrag, ondragend);
-g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
-
-// extend/dragdrop.js
-g('#container')
-  .on('dragstart', '.removable', function(){})
-  .on('drag',      '.removable', function(){})
-  .on('dragend',   '.removable', function(){});
-
 ```
 
 # 压缩脚本 Minimize gesture script  
@@ -149,5 +171,6 @@ g('#container')
 A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）设置tap持续最大时间g.opt('tap_max_duration', 300)，其中300可以适当调整.（4）绑定tap事件即可。
 
 # Change Log
-**V1.0 (Initial Version)**  
+**V1.0.1** dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。
+**V1.0.0 (Initial Version)**  
 
