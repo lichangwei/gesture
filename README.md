@@ -109,7 +109,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 
 9. zoom.js(需要多点触控支持)  
 引入zoomstart，zoom和zoomend事件，可以通过`e.scale`来获取相对zoomstart（gesturestart）事件时的缩放比例。如果发现zoom事件触发过于频繁，可以通过`g.opt('zoom_min_step', 1.1);`来设置，只有当相对上一次zoom/zoomstart事件缩放比例达到1.1倍时才会触发zoom事件。示例/test/rotate-zoom.html  
-``` javasript
+```js
 g('#zoom').zoomstart(function(e){
 }).zoom(function(e){
   // e.scale
