@@ -7,7 +7,7 @@
 'use strict';
 
 g.register('flick', {
-  touchend  : function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+  touchend  : function(e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     var direction;
     var threshold = g.opt('flick_min_x_or_y');
     if( Math.abs(deltaX) >= Math.abs(deltaY) ){

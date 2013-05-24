@@ -28,7 +28,7 @@ var datahub = {
 };
 
 g.register('scroll scrollhorizontal scrollvertical', {
-  touchstart: function(e, startT, startX, startY){
+  touchstart: function(e, data, startT, startX, startY){
     // if user don't handle scroll event, the same below.
     if( !this[attrname] ) return;
     e.preventDefault();
@@ -47,7 +47,7 @@ g.register('scroll scrollhorizontal scrollvertical', {
     data.prevX = startX;
     data.prevY = startY;
   },
-  touchmove: function(e, endT, endX, endY, deltaT, deltaX, deltaY){
+  touchmove: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY){
     if( !this[attrname] ) return;
     e.preventDefault();
     var data = getData(this);
@@ -58,7 +58,7 @@ g.register('scroll scrollhorizontal scrollvertical', {
     data.prevX = endX;
     data.prevY = endY;
   },
-  touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+  touchend: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     if( !this[attrname] ) return;
     e.preventDefault();
     var data = getData(this);

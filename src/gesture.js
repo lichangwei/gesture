@@ -266,6 +266,9 @@ function init(elem){
   var endT, endX, endY;
   var deltaT, deltaX, deltaY;
   var distance;
+  var data = {
+    targets: []
+  };
   
   elem.addEventListener(touchstart, function(e){
     status = 1;
@@ -277,7 +280,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchstart !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchstart.call(this, e, startT, startX, startY);
+      var result = ek.touchstart.call(this, e, data, startT, startX, startY);
       if(result === false) break;
     }
   }, false);
@@ -293,7 +296,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchmove !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
+      var result = ek.touchmove.call(this, e, data, endT, endX, endY, deltaT, deltaX, deltaY);
       if(result === false) break;
     }
   }, false);
@@ -308,7 +311,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchend !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
+      var result = ek.touchend.call(this, e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance);
       if(result === false) break;
     }
     status = 0;
@@ -326,7 +329,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gesturestart !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gesturestart.call(this, e);
+      var result = ek.gesturestart.call(this, e, data);
       if(result === false) break;
     }
   }, false);
@@ -336,7 +339,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gesturechange !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gesturechange.call(this, e);
+      var result = ek.gesturechange.call(this, e, data);
       if(result === false) break;
     }
   }, false);
@@ -346,7 +349,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gestureend !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gestureend.call(this, e);
+      var result = ek.gestureend.call(this, e, data);
       if(result === false) break;
     }
   }, false);

@@ -22,14 +22,14 @@ var timeout = {};
 var attr_name = '_g_tap';
 
 g.register('tap doubletap', {
-  touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+  touchend: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     if(distance > g.opt('tap_max_distance') || deltaT > g.opt('tap_max_duration'))
       return;
     var tap_type = this[attr_name] || 'doubletap';
-    handler[tap_type].call(this, e);
+    handler[tap_type].call(this, e, data);
   }
 }, function(event){
-  if( event === 'doubletap' ){
+  if(event === 'doubletap'){
     this[attr_name] = 'doubletap';
   }
 });
@@ -45,27 +45,27 @@ handler.tap = function(e){
 /*
  * If a element bind at least one doubletap event, waiting for doubletap_max_interval(default 250) ms.
  */
-handler.doubletap = function(e){
-  var gid = this._gesture_id;
-  var ts = targets[gid] || (targets[gid] = []);
-  ts.push(e.target);
-  if(ts.length >= 2){
-    clearTimeout(timeout[gid]);
+handler.doubletap = function(e, data){
+  var targets = data.targets;
+  targets.push(e.target);
+
+  if(targets.length >= 2){
+    clearTimeout(data.timerTapDoubletap);
     g.createEvent('doubletap', e, {
-      targets: targets[gid]
+      targets: data.targets
     });
-    targets[gid] = null;
-  }else if(ts.length === 1){
-    (function(e, gid){
+    targets.length = 0;
+  }else if(targets.length === 1){
+    (function(e, data){
       var currentTarget = e.currentTarget;
-      timeout[gid] = setTimeout(function(){
+      data.timerTapDoubletap = setTimeout(function(){
         g.createEvent('tap', e, {
           eventTarget: currentTarget,
-          targets: targets[gid]
+          targets: data.targets
         });
-        targets[gid] = null;
+        data.targets.length = 0;
       }, g.opt('doubletap_max_interval'));
-    })(e, gid);
+    })(e, data);
   }
 };
 

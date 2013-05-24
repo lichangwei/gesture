@@ -7,35 +7,31 @@
 
 'use strict';
 
-var rotations = {};
-
-var rotateMinStep;
 g.opt('rotate_min_step', 1);
 
+var rotateMinStep;
+
 g.register('rotatestart rotate rotateend', {
-  gesturestart: function(e){
-    var gid = this._gesture_id;
-    rotations[gid] = e.rotation;
+  gesturestart: function(e, data){
+    data.rotation = e.rotation;
     g.createEvent('rotatestart', e);
     rotateMinStep = g.opt('rotate_min_step');
   },
-  gesturechange: function(e){
-    var gid = this._gesture_id;
-    var before  = rotations[gid];
+  gesturechange: function(e, data){
+    var before  = data.rotation;
     var current = e.rotation;
     current = adjust(current, before);
     if(Math.abs(current - before) < rotateMinStep){
       return;
     }
-    rotations[gid] = current;
+    data.rotation = current;
     g.createEvent('rotate', e, {
-      rotation: current
+      rotation: data.rotation
     });
   },
-  gestureend: function(e){
-    var gid = this._gesture_id;
+  gestureend: function(e, data){
     g.createEvent('rotateend', e, {
-      rotation: rotations[gid]
+      rotation: data.rotation
     });
   }
 });

@@ -68,7 +68,7 @@ function bindEvents(elem, opt){
   }, false);
 }
 
-function ontouchstart( e, opt ){
+function ontouchstart(e, opt){
   var me = this;
   // cannot use e.timeStamp, because of the setTimeout above.
   var startT = new Date();

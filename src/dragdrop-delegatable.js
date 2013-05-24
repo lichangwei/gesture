@@ -4,39 +4,35 @@
  */
 (function(g){
 
-var dragData = {};
-
 g.register('dragstart drag dragend', {
-  touchstart: function(e, startT, startX, startY){
+  touchstart: function(e, data, startT, startX, startY){
     // preventDefault is necessary for FF17 & IE10, or a html5 drag event dragstart will be fired.
     e.preventDefault();
-    var gid = e.target.gid;
-    var data = dragData[gid] = {};
-    data.currentTarget = e.currentTarget;
-    data.startX = startX;
-    data.startY = startY;
-    data.timeout = setTimeout(function(){
-      var distance = g.util.getDistance([data.endX, data.endY], [startX, startY]);
+    var dragData = data.dragData = {};
+    dragData.currentTarget = e.currentTarget;
+    dragData.startX = startX;
+    dragData.startY = startY;
+    dragData.timeout = setTimeout(function(){
+      var distance = g.util.getDistance([dragData.endX, dragData.endY], [startX, startY]);
       if(distance > g.opt('tap_max_distance')) return;
-      if(data.start === false) return;
-      ondragstart(e, data);
+      if(dragData.start === false) return;
+      ondragstart(e, dragData);
     }, g.opt('dragstart_after_touchstart'));
   },
-  touchmove: function(e, endT, endX, endY){
-    // @TODO what if no touchmove fired but mouseleave??
-    var gid = e.target.gid;
-    var data = dragData[gid];
-    if(!data || data.start) return;
-    data.endX = endX;
-    data.endY = endY;
+  touchmove: function(e, data, endT, endX, endY){
+    // @TODO what if no mousemove fired but mouseleave??
+    var dragData = data.dragData;
+    if(!dragData || dragData.start) return;
+    dragData.endX = endX;
+    dragData.endY = endY;
   },
-  touchend: function(e){
-    var gid = e.target.gid;
-    var data = dragData[gid];
-    if(!data || data.start) return;
-    data.start = false;
+  touchend: function(e, data){
+    var dragData = data.dragData;
+    if(!dragData || dragData.start) return;
+    dragData.start = false;
   }
 });
+
 g.register('dragenter dragover dragleave drop', {}, function(event){
   this._g_dropable_ancestor = true;
 });
