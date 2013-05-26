@@ -186,6 +186,7 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）设置tap持续最大时间`g.opt('tap_max_duration', 300)`，其中300可以适当调整.（4）绑定tap事件即可。
 
 # Change Log
-**V1.0.1** dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。  
-**V1.0.0 (Initial Version)**  
+######1.0.2 修正on(event.namespace, selector, callback)方法中未能正确设置namespace的问题 [#2](https://github.com/lichangwei/gesture/issues/2).
+######1.0.1 dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。
+####1.0.0 (Initial Version)
 

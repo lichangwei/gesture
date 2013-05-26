@@ -54,7 +54,12 @@ g.prototype.on = function(type, selector, data, callback){
     type = array[0];
     var namespace = array[1];
   }
-  _t[type](selector, data, callback, namespace);
+  var params = [];
+  if(selector) params.push(selector);
+  if(data) params.push(data);
+  if(callback) params.push(callback);
+  if(namespace) params.push(namespace);
+  _t[type].apply(_t, params);
   return this;
 };
 

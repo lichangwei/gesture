@@ -54,7 +54,12 @@ g.prototype.on = function(type, selector, data, callback){
     type = array[0];
     var namespace = array[1];
   }
-  _t[type](selector, data, callback, namespace);
+  var params = [];
+  if(selector) params.push(selector);
+  if(data) params.push(data);
+  if(callback) params.push(callback);
+  if(namespace) params.push(namespace);
+  _t[type].apply(_t, params);
   return this;
 };
 
@@ -266,6 +271,9 @@ function init(elem){
   var endT, endX, endY;
   var deltaT, deltaX, deltaY;
   var distance;
+  var data = {
+    targets: []
+  };
   
   elem.addEventListener(touchstart, function(e){
     status = 1;
@@ -277,7 +285,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchstart !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchstart.call(this, e, startT, startX, startY);
+      var result = ek.touchstart.call(this, e, data, startT, startX, startY);
       if(result === false) break;
     }
   }, false);
@@ -293,7 +301,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchmove !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchmove.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY);
+      var result = ek.touchmove.call(this, e, data, endT, endX, endY, deltaT, deltaX, deltaY);
       if(result === false) break;
     }
   }, false);
@@ -308,7 +316,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.touchend !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.touchend.call(this, e, endT, endX, endY, deltaT, deltaX, deltaY, distance);
+      var result = ek.touchend.call(this, e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance);
       if(result === false) break;
     }
     status = 0;
@@ -326,7 +334,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gesturestart !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gesturestart.call(this, e);
+      var result = ek.gesturestart.call(this, e, data);
       if(result === false) break;
     }
   }, false);
@@ -336,7 +344,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gesturechange !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gesturechange.call(this, e);
+      var result = ek.gesturechange.call(this, e, data);
       if(result === false) break;
     }
   }, false);
@@ -346,7 +354,7 @@ function init(elem){
       var ek = events[k];
       if(typeof ek.gestureend !== 'function') continue;
       if( !checkIfBind(ek.types, counter) ) continue;
-      var result = ek.gestureend.call(this, e);
+      var result = ek.gestureend.call(this, e, data);
       if(result === false) break;
     }
   }, false);
@@ -685,38 +693,35 @@ function preventDefault(e){
 
 'use strict';
 
-var targets = {};
-var timeout = {};
-
 g.register('tap doubletap', {
-  touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+  touchend: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     if(distance > g.opt('tap_max_distance') || deltaT > g.opt('tap_max_duration'))
       return;
-    handler(this, e);
+    handler(this, e, data);
   }
 });
 
-function handler(elem, e){
-  var gid = elem._gesture_id;
-  var ts = targets[gid] || (targets[gid] = []);
-  ts.push(e.target);
-  if(ts.length >= 2){
-    clearTimeout(timeout[gid]);
+function handler(elem, e, data){
+  var targets = data.targets;
+  targets.push(e.target);
+
+  if(targets.length >= 2){
+    clearTimeout(data.timerTapDoubletap);
     g.createEvent('doubletap', e, {
-      targets: targets[gid]
+      targets: data.targets
     });
-    targets[gid] = null;
-  }else if(ts.length === 1){
-    (function(e, gid){
+    targets.length = 0;
+  }else if(targets.length === 1){
+    (function(e, data){
       var currentTarget = e.currentTarget;
-      timeout[gid] = setTimeout(function(){
+      data.timerTapDoubletap = setTimeout(function(){
         g.createEvent('tap', e, {
           eventTarget: currentTarget,
-          targets: targets[gid]
+          targets: data.targets
         });
-        targets[gid] = null;
+        data.targets.length = 0;
       }, g.opt('doubletap_max_interval'));
-    })(e, gid);
+    })(e, data);
   }
 }
 
@@ -732,10 +737,22 @@ function handler(elem, e){
 g.opt('tap_max_duration', 300);
 
 g.register('taphold', {
-  touchend: function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
-    if(distance > g.opt('tap_max_distance') || deltaT <= g.opt('tap_max_duration'))
-      return;
-    g.createEvent('taphold', e);
+  touchstart: function(e, data){
+    var currentTarget = e.currentTarget;
+    data.timerTaphold = setTimeout(function(){
+      g.createEvent('taphold', e, {
+        eventTarget: currentTarget
+      });
+    }, g.opt('tap_max_duration'));
+  },
+  touchmove: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY){
+    var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    if(distance > g.opt('tap_max_distance')){
+      clearTimeout(data.timerTaphold);
+    }
+  },
+  touchend: function(e, data, endT, endX, endY, deltaT, deltaX, deltaY){
+    clearTimeout(data.timerTaphold);
   }
 });
 
@@ -750,7 +767,7 @@ g.register('taphold', {
 'use strict';
 
 g.register('flick', {
-  touchend  : function(e, endT, endX, endY, deltaT, deltaX, deltaY, distance){
+  touchend  : function(e, data, endT, endX, endY, deltaT, deltaX, deltaY, distance){
     var direction;
     var threshold = g.opt('flick_min_x_or_y');
     if( Math.abs(deltaX) >= Math.abs(deltaY) ){
