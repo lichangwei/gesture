@@ -6,17 +6,18 @@ module.exports = function(grunt) {
       // './src/doubletap.js',
       './src/tap-doubletap.js',
       // './src/extend/tap-doubletap.js',
-      './src/taphold.js ',
-      './src/flick.js ',
+      './src/taphold.js',
+      //'./src/flick.js ',
+      './src/swipe.js',
       // './src/zoom.js ',
       // './src/zoomin-zoomout.js ',
       // './src/rotate.js ',
       // './src/drag.js ',
-      // './src/dragdrop-delegatable.js ',
+      './src/dragdrop-delegatable.js',
       // './src/dragdrop-html5.js ',
       // './src/scroll.js',
 
-      './src/plugin/touch-alink.js'
+      //'./src/plugin/touch-alink.js'
   ];
 
   grunt.initConfig({

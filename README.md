@@ -1,7 +1,7 @@
 gesture，一个适用于移动终端和桌面浏览器的事件库，事件包括tap, doubletap, taphold, flick, zoom(zoomstart, zoom, zoomend, zoomin以及zoomout), rotate(rotatestart, ratate以及rotateend), drag & drop(dragstart, drag, dragend, dragenter, dragover, dragleave以及drop)等。  
 优点：  
 * 使用方便：类似jQuery的事件绑定API，支持链式调用，支持事件代理。  
-* 扩展方便：根据gesture.js对原生mouse/touch事件的封装，很容易写出一个新的事件类型。
+* 扩展方便：根据gesture.js对原生mouse/touch事件的封装，很容易写出一个新的事件类型。  
 * 调试方便：可以现代桌面浏览器上开发，然后在移动终端调试。  
 
 # API：  
@@ -32,7 +32,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 
 **g.prototype.tap([selector, ][data, ]callback[, namespace])**  
 绑定tap事件。  
-@param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。 
+@param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。  
 @param data: 对象，可选。绑定事件时将一些数据传递给处理函数。   
 @param callback: 函数，必选。绑定在tap事件上的某个处理函数。  
 @param namespace: 字符串，可选。命名空间。    
@@ -40,7 +40,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 同样地，有doubletap，taphold，zoomin，zoomout，flick，scroll等方法。  
 
 **g.opt(k, v)**  
-设置或者获取时间判断的条件。
+设置或者获取时间判断的条件。  
 @param k: 字符串，必选。  
 @param v: 字符串，可选。为空表示获取该@k值，否则设置@k=@v。  
 @return 当前系统中@param k的值。  
@@ -104,13 +104,28 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 7. flick.js  
 引入flick事件类型，条件是移动距离必须大于30px。flick仅仅是事件，即手指或鼠标移动过程中不会对元素产生影响，比如，不会拖动元素。这点是和drag区分开的。flick有一个属性direction，表示向哪个方向滑动，可能取值为up，down，left和right。  
 
+8. swipe.js  
+引入了swipestart，swipe和swipeend三个事件。和flick事件类似，但是flick关注的滑动结果，而swipe关注的滑动过程。  
+``` javascript
+gElemPages.swipestart(function(e){
+  left = parseInt(elemPages.style.left, 10) || 0;
+}).swipe(function(e){
+  elemPages.style.left = left + e.deltaX + 'px';
+  // 可以通过e.deltaX, e.deltaY获得X和Y方向上相对初始位置的偏移量
+}).swipeend(function(e){
+  // 可以通过e.speedX, e.speedY获得X和Y方向上的平均速度
+  // 可以通过e.deltaX, e.deltaY获得X和Y方向上相对初始位置的偏移量
+});
+```
+
 8. zoomin-zoomout.js(需要多点触控支持)  
 引入zoomin和zoomout事件类型，分别表示两个手指背离中点移动，向中点移动。默认地zoomin需要touch结束时两手指距离是开始时的至少1.2倍，zoomout最大是0.83倍。此事件只适用于支持multi-touch的移动设备，比如在Android2.X中是不支持的。  
 
 9. zoom.js(需要多点触控支持)  
 引入zoomstart，zoom和zoomend事件，可以通过`e.scale`来获取相对zoomstart（gesturestart）事件时的缩放比例。如果发现zoom事件触发过于频繁，可以通过`g.opt('zoom_min_step', 1.1);`来设置，只有当相对上一次zoom/zoomstart事件缩放比例达到1.1倍时才会触发zoom事件。示例/test/rotate-zoom.html  
-```js
+``` js
 g('#zoom').zoomstart(function(e){
+  // do something
 }).zoom(function(e){
   // e.scale
 }).zoomend(function(e){
@@ -119,7 +134,7 @@ g('#zoom').zoomstart(function(e){
 ```
 10. rotate.js(需要多点触控支持)  
 引入rotatestart，rotate和rotateend事件，可以通过`e.rotation`来获取相对rotatestart（gesturestart）事件时的旋转角度。如果发现rotate事件触发过于频繁，可以通过`g.opt('rotate_min_step', 1);`来设置，只有当相对上一次rotate/rotatestart事件旋转大于1°时才会触发rotate事件。示例/test/rotate-zoom.html 
-```javascript
+``` javascript
 g('#rotatezoom').rotatestart(function(){
 }).rotate(function(e){
   // e.rotation
@@ -129,7 +144,7 @@ g('#rotatezoom').rotatestart(function(){
 ```
 11. drag.js  
 引入drag **行为**。示例/test/drag.html
-``` javascript
+``` javascript  
 g('#item').drag({
   touchstart: function(){},
   touchmove : function(){},
@@ -180,6 +195,8 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 (2) 打开tools/minimize.js，注释掉你不需要的脚本文件，并修改initScript内容（比如删除，如果不需要的话）  
 (3) 执行命令 'node minimize.js'，此步骤会生成一个新文件gesture-min.js  
 (4) 将gesture-min.js引入到网站中  
+  
+或者使用`grunt`命令。  
 
 # Q && A  
 1. Q：如何实现iOS中的效果：快速点击（tap）正常响应相应动作，按住不放（taphold）会出现拷贝，打开链接等选项卡，双击（doubletap）会放大或者缩小页面？  
