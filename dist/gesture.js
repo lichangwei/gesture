@@ -815,10 +815,11 @@ g.register('dragstart drag dragend', {
     dragData.currentTarget = e.currentTarget;
     dragData.startX = startX;
     dragData.startY = startY;
+    clearTimeout(dragData.timeout);
     dragData.timeout = setTimeout(function(){
+      // if it moved more than XX px
       var distance = g.util.getDistance([dragData.endX, dragData.endY], [startX, startY]);
       if(distance > g.opt('tap_max_distance')) return;
-      if(dragData.start === false) return;
       ondragstart(e, dragData);
     }, g.opt('dragstart_after_touchstart'));
   },
@@ -831,8 +832,12 @@ g.register('dragstart drag dragend', {
   },
   touchend: function(e, data){
     var dragData = data.dragData;
-    if(!dragData || dragData.start) return;
-    dragData.start = false;
+    // Maybe drag events were bound after touchstart and before touchend,
+    // so dragData meybe null or undefined.
+    if(dragData){
+      clearTimeout(data.dragData.timeout);
+      data.dragData = null;
+    }
   }
 });
 
