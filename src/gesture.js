@@ -100,13 +100,16 @@ g.prototype.off = function(type, selector, callback){
     // remove the callbacks that match the condition
     for(var j = cbs.length - 1; j >= 0; j--){
       var cb = cbs[j];
-      if(    ( !type      || (type      === cb.type     ) )
-        && ( !selector  || (selector  === cb.selector ) )
-        && ( !namespace || (namespace === cb.namespace) )
-        && ( !callback  || (callback  === cb.original)) ){
+      if(( !type      || (type      === cb.type     ) ) &&
+         ( !selector  || (selector  === cb.selector ) ) && 
+         ( !namespace || (namespace === cb.namespace) ) &&
+         ( !callback  || (callback  === cb.original)) ){
+        // remove these events bound by addEventListener too.
         elem.removeEventListener(cb.type, cb.callback);
         cbs.splice(j, 1);
-        cbs._counter[type]--;
+        // reduce the count of listener, if reduce to 0, then won't execute its event handler
+        // @see checkIfBind
+        cbs._counter[cb.type]--;
       }
     }
   }
