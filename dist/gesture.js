@@ -882,6 +882,7 @@ function ondragstart(e, data){
     shadow.style.top      = rect.top + 'px';
     shadow.style.left     = rect.left + 'px';
     shadow.style.opacity  = '0.5';
+    shadow.style.pointerEvents = 'none';
     shadow.removeAttribute('drag');
     document.body.appendChild(shadow);
   }
