@@ -41,6 +41,7 @@ g.version = '1.0';
  */
 g.prototype.on = function(type, selector, data, callback){
   var _t = this;
+  var namespace;
   // allow to bind 2+ events at the same time
   if(type.search(/\s/) >= 0){
     type.replace(/\S+/g, function(evt){
@@ -52,7 +53,7 @@ g.prototype.on = function(type, selector, data, callback){
   if(type.indexOf('.') !== -1){
     var array = type.split('.');
     type = array[0];
-    var namespace = array[1];
+    namespace = array[1];
   }
   var params = [];
   if(selector) params.push(selector);
@@ -73,6 +74,7 @@ g.prototype.on = function(type, selector, data, callback){
  */
 g.prototype.off = function(type, selector, callback){
   var _t = this;
+  var namespace;
   if(typeof selector === 'function'){ // case: off('tap', fn)
     callback = selector;
     selector = null;
@@ -88,11 +90,8 @@ g.prototype.off = function(type, selector, callback){
   if(type.indexOf('.') !== -1){
     var array = type.split('.');
     type = array[0];
-    var namespace = array[1];
+    namespace = array[1];
   }
-  //if( selector ){
-  //    callback = getDelegateCallback(type, selector, callback);
-  //};
   for(var i = 0; i < this.elems.length; i++){
     var elem = this.elems[i];
     var cbs = callbacks[elem._gesture_id];
@@ -502,9 +501,9 @@ function arrayify( elem ){
  * @memberof! g
  */
 function getPageX(e){
-  return e.pageX || e.clientX 
-    || (e.touches && e.touches[0] ? e.touches[0].pageX : 0)
-    || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
+  return e.pageX || e.clientX ||
+    (e.touches && e.touches[0] ? e.touches[0].pageX : 0) ||
+    (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageX : 0);
 }
 
 /**
@@ -514,9 +513,9 @@ function getPageX(e){
  * @memberof! g
  */
 function getPageY(e){
-  return e.pageY || e.clientY 
-    || (e.touches && e.touches[0] ? e.touches[0].pageY : 0)
-    || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
+  return e.pageY || e.clientY ||
+    (e.touches && e.touches[0] ? e.touches[0].pageY : 0) ||
+    (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].pageY : 0);
 }
 
 function getInfo(e){
@@ -578,9 +577,9 @@ function createDelegateCallback( type, selector, callback ){
         list.push(_list[i]);
       }
       var target;
-      var targets = e.targets 
-        || (e.target && [e.target]) 
-        || (e.eventTarget && [e.eventTarget]);
+      var targets = e.targets ||
+        (e.target && [e.target]) ||
+        (e.eventTarget && [e.eventTarget]);
       for(var i = 0; targets && i < targets.length; i++){
         for(var o = targets[i]; o !== this; o = o.parentNode){
           if( !o ) return;
@@ -590,12 +589,12 @@ function createDelegateCallback( type, selector, callback ){
         if(target && (target !== o)) return;
         target = o;
       }
-      if( e.isSimulated ){
+      if(e.isSimulated){
         e.target = target;
       }
       target && callback.call(target, e);
     };
-  };
+  }
   return cbs[id];
 }
 
@@ -655,14 +654,15 @@ function createCustomEvent(type, e, attrs){
   attrs = attrs || {};
   e = e || {};
   // some browsers don't support CustomEvent
+  var evt;
   if(is_customer_event_supported){
-    var evt = document.createEvent('CustomEvent');
+    evt = document.createEvent('CustomEvent');
     evt.initCustomEvent(type, attrs.canBubble, true, 1);
   }else{
-    var evt = document.createEvent('UIEvent');
+    evt = document.createEvent('UIEvent');
     evt.initUIEvent(type, attrs.canBubble, true, document.defaultView, 1);
   }
-  extend( evt, attrs );
+  extend(evt, attrs);
   evt.originalEvent = e;
   evt.isSimulated = true;
   evt.px = getPageX(e);
