@@ -88,6 +88,8 @@
       }).on('dragleave', 'li', function(e){
         this.style.opacity = 1.0;
       }).on('drop', 'li', function(e){
+        // here you can stop moving it by call e.preventDefault();
+        // e.preventDefault();
         this.style.opacity = 1.0;
         console.log(e.dataTransfer.getData('class'));
       });

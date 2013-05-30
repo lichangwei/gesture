@@ -134,22 +134,36 @@ function ondragstart(e, data){
   }
 
   function ondragend(e){
+    e.preventDefault();
     document.removeEventListener(g.event.touchmove, ondrag);
     document.removeEventListener(g.event.touchend, ondragend);
-    e.preventDefault();
     if(effect === 'copy'){
       document.body.removeChild(shadow);
-      target.style.top = startElemY + deltaY + 'px';
-      target.style.left = startElemX + deltaX + 'px';
     }
-    g.createEvent('dragend', e, {
+    var dropE = trigger('drop', e, {dataTransfer: dataTransfer}, to);
+    var dragE = g.createEvent('dragend', e, {
       deltaX: deltaX,
       deltaY: deltaY,
       targets: [target],
       eventTarget: data.currentTarget,
       dataTransfer: dataTransfer
     });
-    trigger('drop', e, {dataTransfer: dataTransfer}, to);
+    var defaultPrevented = dropE ? dropE.defaultPrevented : true;
+    // the default action is moving the draged element to somehwere.
+    // if the default action is prevented, then it should noe be moved.
+    if(defaultPrevented){
+      // if it has been moved, then reset it's position.
+      if(effect === 'move'){
+        target.style.top = startElemY + 'px';
+        target.style.left = startElemX + 'px';
+      }
+    }else{
+      // if the default action is not prevented, and it has not been moved
+      if(effect === 'copy'){
+        target.style.top = startElemY + deltaY + 'px';
+        target.style.left = startElemX + deltaX + 'px';
+      }
+    }
   }
 
   document.addEventListener(g.event.touchmove, ondrag, false);
@@ -179,15 +193,11 @@ function getDropableElement(target){
 }
 
 function trigger(type, originalEvent, attrs, dropableElement){
-  attrs = attrs || {};
-  attrs.targets = [dropableElement.dropable];
-  if(dropableElement.dropable && dropableElement.ancestor){
-    attrs.eventTarget = dropableElement.ancestor;
-    g.createEvent(type, originalEvent, attrs);
-  }
-  if(dropableElement.dropable && !dropableElement.ancestor){
-    attrs.eventTarget = dropableElement.dropable;
-    g.createEvent(type, originalEvent, attrs);
+  if(dropableElement.dropable){
+    attrs = attrs || {};
+    attrs.targets = [dropableElement.dropable];
+    attrs.eventTarget = dropableElement.ancestor || dropableElement.dropable;
+    return g.createEvent(type, originalEvent, attrs);
   }
 }
 

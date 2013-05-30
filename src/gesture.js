@@ -188,7 +188,7 @@ g.opt = function(k, v){
  * @param {string} type required. Event type.
  * @param {event} e optional. The relatived original event. touchend or mouseup normally.
  * @param {object} attrs optional. Some additional attribute. such as 'currentTarget', 'targets', 'direction'(flick)
- * @return g class.
+ * @return A customize Event.
  */
 g.createEvent = function(type, e, attrs){
   attrs = attrs || {};
@@ -204,7 +204,7 @@ g.createEvent = function(type, e, attrs){
       cb.callback.call( target, evt );
     }
   }
-  return this;
+  return evt;
 };
 
 function register(type, ifBind){
@@ -625,6 +625,7 @@ function Event(type, e, attrs){
 }
 Event.prototype = {
   preventDefault: function(){
+    this.defaultPrevented = true;
     var e = this.originalEvent;
     if( !e ) return;
     if( e.preventDefault ){
@@ -647,7 +648,8 @@ Event.prototype = {
     this.stopPropagation();
   },
   isImmediatePropagationStopped: returnFalse,
-  isSimulated: true
+  isSimulated: true,
+  defaultPrevented: false
 };
 
 function createCustomEvent(type, e, attrs){
