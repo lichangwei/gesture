@@ -49,13 +49,13 @@ function bindEvents(elem, opt){
       var endY = getPageY(e);
       var distance = g.util.getDistance([endX, endY], [startX, startY]);
       if(distance > g.opt('tap_max_distance')){
-        document.removeEventListener(touchmove, ontouchmove);
+        document.removeEventListener(touchmove, ontouchmove, false);
         clearTimeout( timeout );
       }
     };
 
     timeout = setTimeout(function(){
-      elem.removeEventListener(touchmove, ontouchmove);
+      elem.removeEventListener(touchmove, ontouchmove, false);
       ontouchstart.call(_t, e, opt);
     }, g.opt('dragstart_after_touchstart'));
 
@@ -63,7 +63,7 @@ function bindEvents(elem, opt){
   }, false);
   
   elem.addEventListener(touchend, function(e){
-    document.removeEventListener(touchmove, ontouchmove);
+    document.removeEventListener(touchmove, ontouchmove, false);
     clearTimeout( timeout );
   }, false);
 }
@@ -133,8 +133,8 @@ function ontouchstart(e, opt){
   }
   function ontouchend(e){
     e.preventDefault();
-    document.removeEventListener(touchmove, ontouchmove);
-    document.removeEventListener(touchend,  ontouchend);
+    document.removeEventListener(touchmove, ontouchmove, false);
+    document.removeEventListener(touchend,  ontouchend, false);
     if(opt.touchend){
       returnValue = opt.touchend.call(
         me, e, elemX, elemY, absoluteElemX - rect.left, absoluteElemY - rect.top, e.timeStamp-startT);

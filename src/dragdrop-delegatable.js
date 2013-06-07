@@ -135,8 +135,8 @@ function ondragstart(e, data){
 
   function ondragend(e){
     e.preventDefault();
-    document.removeEventListener(g.event.touchmove, ondrag);
-    document.removeEventListener(g.event.touchend, ondragend);
+    document.removeEventListener(g.event.touchmove, ondrag, false);
+    document.removeEventListener(g.event.touchend, ondragend, false);
     if(effect === 'copy'){
       document.body.removeChild(shadow);
     }

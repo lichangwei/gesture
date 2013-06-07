@@ -104,7 +104,7 @@ g.prototype.off = function(type, selector, callback){
          ( !namespace || (namespace === cb.namespace) ) &&
          ( !callback  || (callback  === cb.original)) ){
         // remove these events bound by addEventListener too.
-        elem.removeEventListener(cb.type, cb.callback);
+        elem.removeEventListener(cb.type, cb.callback, false);
         cbs.splice(j, 1);
         // reduce the count of listener, if reduce to 0, then won't execute its event handler
         // @see checkIfBind

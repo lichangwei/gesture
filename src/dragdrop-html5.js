@@ -122,8 +122,8 @@ function draggable(elem, dragstart, drag, dragend){
     }
 
     function ontouchend(e){
-      document.removeEventListener(touchmove, ontouchmove);
-      document.removeEventListener(touchend , ontouchend);
+      document.removeEventListener(touchmove, ontouchmove, false);
+      document.removeEventListener(touchend , ontouchend, false);
       if( !dragData.start ){
         clearTimeout(dragData.timeout);
         return;
