@@ -454,8 +454,7 @@ g.util = {
   getPageY   : getPageY,
   getDistance: getDistance,
   extend     : extend,
-  Event      : Event,
-  preventDefault: preventDefault
+  Event      : Event
 };
 
 /**
@@ -627,21 +626,11 @@ Event.prototype = {
   preventDefault: function(){
     this.defaultPrevented = true;
     var e = this.originalEvent;
-    if( !e ) return;
-    if( e.preventDefault ){
-      e.preventDefault();
-    }else{
-      e.returnValue = false;
-    }
+    e && e.preventDefault();
   },
   stopPropagation: function(){
     var e = this.originalEvent;
-    if( !e ) return;
-    if( e.stopPropagation ){
-      e.stopPropagation();
-    }else{
-      e.cancelBubble = true;
-    }
+    e && e.stopPropagation();
   },
   stopImmediatePropagation: function() {
     this.isImmediatePropagationStopped = returnTrue;
@@ -679,10 +668,6 @@ function returnTrue(){
 
 function returnFalse(){
   return false;
-}
-
-function preventDefault(e){
-  e.preventDefault();
 }
 
 })();
