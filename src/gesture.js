@@ -134,15 +134,16 @@ g.prototype.trigger = function(type){
 /**
  * @method g.register
  * @desc Regiester an event type. used to extend this framework.
- * @param {string} type The event type to regiester.
- * @param {object} handler A object contains 3 methods named 'touchstart', 'toucmove', 'touchend'
- * @param {function} ifBind This function will be executed when bind this event to an element.
+ * @param {string} type required. The event type to regiester.
+ * @param {object} handler optional. A object may contains 3 methods named 'touchstart', 'toucmove', 'touchend'
+ * @param {function} ifBind optional. This function will be executed when bind this event to an element.
  * @return g class
  */
 g.register = function(type, handler, ifBind){
-  if( events[type] ){
+  if(events[type]){
     console.error('"' + type + '" cannot be regiested twice.');
   }else{
+    handler = handler || {};
     events[type] = handler;
     var types = handler.types = type.split(/\s/);
     for(var i = 0; i < types.length; i++){
@@ -419,7 +420,7 @@ var gesturechange = 'gesturechange';
 var gestureend    = 'gestureend';
 
 // allow user bind some standard events.
-g.register('touchstart touchmove touchend mousedown mousemove mouseup click', {});
+g.register('touchstart touchmove touchend mousedown mousemove mouseup click');
 
 /**
  * @member g.event
