@@ -25,7 +25,7 @@
     </style>
   </head>
   <body>
-    <input type="button" name="remove" value="Remove EventListener on nav">
+    <input type="button" name="removeEvent" value="Remove EventListener on nav">
     <div class="nav">
       <ol class="menus">
         <li class="home">Home</li>
@@ -40,57 +40,62 @@
     <script src="../src/doubletap.js"></script>
     <script src="../src/taphold.js"></script>
     <script src="../src/flick.js"></script>
-    <script src="../src/zoom.js"></script>
+    <script src="../src/zoomin-zoomout.js"></script>
     <script>
       $(function(){
-        var $nav = $('.nav');
-        var $menus = $('.menus');
-        var $lis = $nav.find('li');
-        var $pg = $('.playground');
+        var gNav = g('.nav');
+        var gMenus = g('.menus');
+        var gLis = g('.nav li');
+        var gPg = g('.playground');
         
         var namespace = 'namespace';
-        g($lis).tap(function(e){
-          console.info('g.prototype.tap ' + this.className + ', namespace = ' + namespace);
-        }, namespace);
-        
         function tap(e){
           console.info('HTMLElement.addEventListener ' + e.type + ' ' + this.className);
         }
-        $lis[0].addEventListener('tap', tap, false);
-        
-        g($lis).on('tap taphold', function(e){
+
+        gLis.on('tap taphold', function(e){
           console.info('g.prototype.on ' + e.type + ' ' + this.className);
-        });
+
+        }).tap(function(e){
+          console.info('g.prototype.tap ' + this.className + ', namespace = ' + namespace);
+        }, namespace);
+
+        $('.nav li')[0].addEventListener('tap', tap, false);
+
         
-        g($nav).on('tap taphold', 'li', function(e){
+        gNav.on('tap taphold', 'li', function(e){
           console.info('delegate ' + e.type + ' event on li element.');
-        });
-        
-        g($('input[name=remove]')).on('tap taphold', function(){
-          g($lis).off('.namespace');
-          $lis[0].removeEventListener('tap', tap);
-          g($lis).off('tap taphold');
-          g($nav).off('tap taphold', 'li');
-          g($nav).off(g.event.touchend, '.nav li');
-        });
-        
-        g($nav).on('taphold', 'li.notexisted', function(e){
+
+        }).on('taphold', 'li.notexisted', function(e){
           console.info('you should not find out me.');
+
+        }).on('doubletap', '.nav li', function(e){
+          console.info('g.prototype.on ' + e.type + ' ' + this.className);
+
+        }).on('touchend', '.nav li', function(e){
+          console.info('Standard Event: ' + e.type + ' ' + this.className);
         });
         
-        g($nav).on('doubletap', '.nav li', function(e){
+
+        gPg.on('flick', {test: 1}, function(e){
+          console.info( 'e.data.test=' + e.data.test);
+          console.info('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
+
+        }).on('zoomin zoomout', function(e){
           console.info('g.prototype.on ' + e.type + ' ' + this.className);
-        }).on(g.event.touchend, '.nav li', function(e){
+
+        }).on('touchstart touchend', function(e){
           console.info('Standard Event: ' + e.type + ' ' + this.className);
         });
 
-        g($pg).on('flick', {test: 1}, function(e){
-          console.info( 'e.data.test=' + e.data.test);
-          console.info('g.prototype.on ' + e.type + ' ' + e.direction + ' ' + this.className);
-        }).on('zoomin zoomout', function(e){
-          console.info('g.prototype.on ' + e.type + ' ' + this.className);
-        }).on(g.event.touchstart + ' ' + g.event.touchend, function(e){
-          console.info('Standard Event: ' + e.type + ' ' + this.className);
+        g('input[name=removeEvent]').on('tap taphold', function(){
+          gLis.off('.namespace')
+            .off('tap taphold');
+          
+          gNav.off('tap taphold', 'li')
+            .off('touchend', '.nav li');
+
+          $('.nav li')[0].removeEventListener('tap', tap);
         });
         
         
@@ -100,17 +105,17 @@
         // e.preventDefault();
         
         /*
-        $pg[0].addEventListener('touchstart', function(e){
+        gPg.touchstart(function(e){
           console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
-        }, false);
-        $pg[0].addEventListener('touchmove', function(e){
-          console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
-          e.preventDefault();
-        }, false);
-        $pg[0].addEventListener('touchend', function(e){
+
+        }).touchmove(function(e){
           console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
           e.preventDefault();
-        }, false);
+
+        }).touchend(function(e){
+          console.info(e.type + '[' + e.pageX + ',' + e.pageY + ']');
+          e.preventDefault();
+        });
         */
         
         if(navigator.userAgent.indexOf('Android') > -1){

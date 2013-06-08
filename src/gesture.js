@@ -104,7 +104,10 @@ g.prototype.off = function(type, selector, callback){
          ( !namespace || (namespace === cb.namespace) ) &&
          ( !callback  || (callback  === cb.original)) ){
         // remove these events bound by addEventListener too.
-        elem.removeEventListener(cb.type, cb.callback, false);
+        var types = aliases[cb.type] || [cb.type];
+        for(var k = 0; k < types.length; k++){
+          elem.removeEventListener(types[k], cb.callback, false);
+        }
         cbs.splice(j, 1);
         // reduce the count of listener, if reduce to 0, then won't execute its event handler
         // @see checkIfBind
@@ -166,6 +169,20 @@ g.unregister = function(event){
   }
   return this;
 };
+
+g.alias = function(alias, types){
+  if(!types){
+    types = [];
+  }else if(typeof types === 'string'){
+    types = [types];
+  }
+  if(types.indexOf(alias) === -1){
+    types.push(alias);
+  }
+  aliases[alias] = types;
+  register(alias);
+  return this;
+};
 /**
  * @method g.opt
  * @desc set or get some config data
@@ -225,7 +242,11 @@ function register(type, ifBind){
     for(var i = 0; i < this.elems.length; i++){
       var elem = this.elems[i];
       ifBind && ifBind.call(elem, type);
-      elem.addEventListener(type, cb, false);
+      // bind native events
+      var types = aliases[type];
+      for(var j = 0; types && j < types.length; j++){
+        elem.addEventListener(types[i], cb, false);
+      }
       var cbs = callbacks[elem._gesture_id];
       cbs.push({
         type: type,
@@ -242,6 +263,7 @@ function register(type, ifBind){
 }
 
 var events = {};
+var aliases = {};
 var callbacks = {};
 var gesture_id = 0;
 
@@ -418,9 +440,6 @@ var touchleave = is_touch_supported ? 'touchleave' : 'mouseleave';
 var gesturestart  = 'gesturestart';
 var gesturechange = 'gesturechange';
 var gestureend    = 'gestureend';
-
-// allow user bind some standard events.
-g.register('touchstart touchmove touchend mousedown mousemove mouseup click');
 
 /**
  * @member g.event
@@ -670,5 +689,11 @@ function returnTrue(){
 function returnFalse(){
   return false;
 }
+
+// allow user bind some standard events.
+g.alias('touchstart', 'mousedown')
+  .alias('touchmove', 'mousemove')
+  .alias('touchend', 'mouseup')
+  .alias('click');
 
 })();
