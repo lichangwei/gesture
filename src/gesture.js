@@ -170,6 +170,14 @@ g.unregister = function(event){
   return this;
 };
 
+/*
+ * @method g.alias
+ * @desc allow using native events just like tap etc.
+ * @param {string} alias required. 
+ * @param {string array} type optional.
+ * @return g class
+ * @sample g.alias('touchstart', 'mousedown').alias('click');
+ */
 g.alias = function(alias, types){
   if(!types){
     types = [];
@@ -183,6 +191,7 @@ g.alias = function(alias, types){
   register(alias);
   return this;
 };
+
 /**
  * @method g.opt
  * @desc set or get some config data
