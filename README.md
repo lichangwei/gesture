@@ -83,6 +83,17 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @param attrs: 对象，可选。用于设置一些特殊属性，如flick事件中表示方向的属性direction。  
 @return 无。  
 
+**g.enableNativeEvent(type, alias)**
+@param type: 字符串，必选。启用的原生DOM事件。  
+@param alias: 字符串，字符串数组。该原生事件的同类事件，比如mousemove和touchamove是同类事件，transitionend和webkitTransitionEnd是同类事件。  
+@return g函数。
+```js
+g.enableNativeEvent('transitionend', 'webkitTransitionEnd');
+gElemPages.transitionend(function(e){
+  // e maybe a transitionend or webkitTransitionEnd event
+});
+```  
+
 # File List
 1. gesture.js  
 
@@ -191,18 +202,19 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 
 # 压缩脚本 Minimize gesture script  
 只需要按照以下步骤即可自定义压缩gesture。  
-(1) 执行命令 'npm install webtools'  
-(2) 打开tools/minimize.js，注释掉你不需要的脚本文件，并修改initScript内容（比如删除，如果不需要的话）  
-(3) 执行命令 'node minimize.js'，此步骤会生成一个新文件gesture-min.js  
-(4) 将gesture-min.js引入到网站中  
+(1) 执行命令`npm install webtools`   
+(2) 打开`tools/minimize.js`，注释掉你不需要的脚本文件，并修改`initScript`内容（比如删除，如果不需要的话）  
+(3) 执行命令`node minimize.js`，此步骤会生成一个新文件`gesture.min.js`  
+(4) 将`gesture.min.js`引入到网站中  
   
-或者使用`grunt`命令。  
+或者使用`grunt uglify`命令。  
 
 # Q && A  
 1. Q：如何实现iOS中的效果：快速点击（tap）正常响应相应动作，按住不放（taphold）会出现拷贝，打开链接等选项卡，双击（doubletap）会放大或者缩小页面？  
-A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）设置tap持续最大时间`g.opt('tap_max_duration', 300)`，其中300可以适当调整.（4）绑定tap事件即可。
+A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）引入taphold.js（4）绑定tap， doubeltap或者taphold事件即可。
 
 # Change Log
+######1.0.3 新增方法g.enbaleNativeEvent(type, alias), dragdrop-delegatable.js中使用move事件使用捕获阶段。  
 ######1.0.2 修正on(event.namespace, selector, callback)方法中未能正确设置namespace的问题 [#2](https://github.com/lichangwei/gesture/issues/2).
 ######1.0.1 dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。
 ####1.0.0 (Initial Version)

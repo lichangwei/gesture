@@ -19,6 +19,8 @@ module.exports = function(grunt) {
 
       //'./src/plugin/touch-alink.js'
   ];
+  var dest_dir = 'dist/';
+  var uglify_dest = '<%= pkg.name %>.min.js';
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -37,7 +39,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: source,
-        dest: 'dist/<%= pkg.name %>.min.js'
+        dest: dest_dir + uglify_dest
       }
     },
     qunit: {
@@ -56,6 +58,13 @@ module.exports = function(grunt) {
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint', 'qunit']
+    },
+    copy: {
+      main: {
+        files: [
+          {expand: true, cwd: dest_dir, src: [uglify_dest], dest: '../webapps/common/scripts/'}
+        ]
+      }
     }
   });
 
@@ -64,6 +73,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('default', ['concat', 'uglify']);
   grunt.registerTask('test', ['qunit']);
