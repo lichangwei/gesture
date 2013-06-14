@@ -88,6 +88,7 @@ function ondragstart(e, data){
   
   function ondrag(e){
     e.preventDefault();
+    e.stopPropagation();
     endX = g.util.getPageX(e);
     endY = g.util.getPageY(e);
     deltaX = endX - data.startX;
@@ -135,7 +136,7 @@ function ondragstart(e, data){
 
   function ondragend(e){
     e.preventDefault();
-    document.removeEventListener(g.event.touchmove, ondrag, false);
+    document.removeEventListener(g.event.touchmove, ondrag, true);
     document.removeEventListener(g.event.touchend, ondragend, false);
     if(effect === 'copy'){
       document.body.removeChild(shadow);
@@ -166,7 +167,7 @@ function ondragstart(e, data){
     }
   }
 
-  document.addEventListener(g.event.touchmove, ondrag, false);
+  document.addEventListener(g.event.touchmove, ondrag, true);
   document.addEventListener(g.event.touchend, ondragend, false);
 }
 
