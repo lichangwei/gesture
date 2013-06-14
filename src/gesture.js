@@ -171,24 +171,24 @@ g.unregister = function(event){
 };
 
 /*
- * @method g.alias
+ * @method g.enableNativeEvent
  * @desc allow using native events just like tap etc.
- * @param {string} alias required. 
- * @param {string array} type optional.
+ * @param {string} type required. 
+ * @param {string array} alias optional.
  * @return g class
- * @sample g.alias('touchstart', 'mousedown').alias('click');
+ * @sample g.enableNativeEvent('touchstart', 'mousedown').enableNativeEvent('click');
  */
-g.alias = function(alias, types){
-  if(!types){
-    types = [];
-  }else if(typeof types === 'string'){
-    types = [types];
+g.enableNativeEvent = function(type, alias){
+  if(!alias){
+    alias = [];
+  }else if(typeof alias === 'string'){
+    alias = [alias];
   }
-  if(types.indexOf(alias) === -1){
-    types.push(alias);
+  if(alias.indexOf(type) === -1){
+    alias.push(type);
   }
-  aliases[alias] = types;
-  register(alias);
+  aliases[type] = alias;
+  register(type);
   return this;
 };
 
@@ -700,9 +700,9 @@ function returnFalse(){
 }
 
 // allow user bind some standard events.
-g.alias('touchstart', 'mousedown')
-  .alias('touchmove', 'mousemove')
-  .alias('touchend', 'mouseup')
-  .alias('click');
+g.enableNativeEvent('touchstart', 'mousedown')
+  .enableNativeEvent('touchmove', 'mousemove')
+  .enableNativeEvent('touchend', 'mouseup')
+  .enableNativeEvent('click');
 
 })();
