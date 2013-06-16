@@ -158,14 +158,14 @@ g.register = function(type, handler, ifBind){
 /**
  * @method g.unregister
  * @desc Unregiester an event type. this function will not be used normally.
- * @param {string} event event type, such as 'tap'.
+ * @param {string} type event type, such as 'tap'.
  * @return g class
  */
-g.unregister = function(event){
-  delete events[event];
-  event = event.split(/\s/);
-  for(var i = 0; i < event.length; i++){
-    delete g.prototype[event[i]];
+g.unregister = function(type){
+  delete events[type];
+  type = type.split(/\s/);
+  for(var i = 0; i < type.length; i++){
+    delete g.prototype[type[i]];
   }
   return this;
 };
