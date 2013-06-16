@@ -254,7 +254,7 @@ function register(type, ifBind){
       // bind native events
       var types = aliases[type];
       for(var j = 0; types && j < types.length; j++){
-        elem.addEventListener(types[i], cb, false);
+        elem.addEventListener(types[j], cb, false);
       }
       var cbs = callbacks[elem._gesture_id];
       cbs.push({
