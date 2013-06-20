@@ -4,6 +4,8 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 * 扩展方便：根据gesture.js对原生mouse/touch事件的封装，很容易写出一个新的事件类型。  
 * 调试方便：可以现代桌面浏览器上开发，然后在移动终端调试。  
 
+首先看个例子吧，模拟[iOS界面](http://lichangwei.github.io/webapps/iospage/index.html)
+
 # API：  
 **g(elem)**  
 创建一个gesture对象，然后可以绑定事件。  
@@ -129,10 +131,10 @@ gElemPages.swipestart(function(e){
 });
 ```
 
-8. zoomin-zoomout.js(需要多点触控支持)  
+9. zoomin-zoomout.js(需要多点触控支持)  
 引入zoomin和zoomout事件类型，分别表示两个手指背离中点移动，向中点移动。默认地zoomin需要touch结束时两手指距离是开始时的至少1.2倍，zoomout最大是0.83倍。此事件只适用于支持multi-touch的移动设备，比如在Android2.X中是不支持的。  
 
-9. zoom.js(需要多点触控支持)  
+10. zoom.js(需要多点触控支持)  
 引入zoomstart，zoom和zoomend事件，可以通过`e.scale`来获取相对zoomstart（gesturestart）事件时的缩放比例。如果发现zoom事件触发过于频繁，可以通过`g.opt('zoom_min_step', 1.1);`来设置，只有当相对上一次zoom/zoomstart事件缩放比例达到1.1倍时才会触发zoom事件。示例/test/rotate-zoom.html  
 ``` js
 g('#zoom').zoomstart(function(e){
@@ -143,7 +145,7 @@ g('#zoom').zoomstart(function(e){
   // e.scale
 });
 ```
-10. rotate.js(需要多点触控支持)  
+11. rotate.js(需要多点触控支持)  
 引入rotatestart，rotate和rotateend事件，可以通过`e.rotation`来获取相对rotatestart（gesturestart）事件时的旋转角度。如果发现rotate事件触发过于频繁，可以通过`g.opt('rotate_min_step', 1);`来设置，只有当相对上一次rotate/rotatestart事件旋转大于1°时才会触发rotate事件。示例/test/rotate-zoom.html 
 ``` javascript
 g('#rotatezoom').rotatestart(function(){
@@ -153,7 +155,7 @@ g('#rotatezoom').rotatestart(function(){
   // e.rotation
 });
 ```
-11. drag.js  
+12. drag.js  
 引入drag **行为**。示例/test/drag.html
 ``` javascript  
 g('#item').drag({
@@ -165,7 +167,7 @@ g('#item').drag({
 });
 ```
 
-12. dragdrop-delegatable.js  
+13. dragdrop-delegatable.js  
 引入dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop事件。示例/test/dragdrop-delegatable.html
 ``` javascript
 g('#container')
@@ -179,14 +181,14 @@ g('#container')
   .on('drop',      '.recyclebin', function(){});
 ```
 
-13. dragdrop-html5.js  
+14. dragdrop-html5.js  
 引入drag和drop **行为**。对于支持HTML5 drag & drop API的浏览器，直接使用该API。对于不支持该API的浏览器，则会通过touch或者mouse事件模拟该API。有些浏览器需要调用`e.preventDefault()`，如FireFox，有些不需要，如Chrome，关于这点是需要你来做的。如果你不想关心这些，那么可以使用`g.support.draggable = false`来强制不使用HTML5 drag & drop API。示例/test/dragdrop-html5.html
 ``` javascript
 g('.removable').draggable(ondragstart, ondrag, ondragend);
 g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
 ```
 
-14. plugin/touch-alink.js
+15. plugin/touch-alink.js
 修正这样一个[issue](http://jsfiddle.net/lichangwei/hLJH3/)，在iOS和Android设备中点击某元素X，在touchend事件触发时，隐藏元素X，如果此时手指下面还有一个链接元素A，那么很可能会触发A的click事件，即便在touchend事件中调用了`e.preventDefault(); e.stopPropagation();`。解决办法是：如果A链接元素上没有触发touchend事件，而直接触发click事件，那么取消其默认行为（跳转或者打开某个页面）。
 
 # 示例 Sample  
