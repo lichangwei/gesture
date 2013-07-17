@@ -7,12 +7,12 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 首先看个例子吧，模拟[iOS界面](http://lichangwei.github.io/webapps/iospage/index.html)
 
 # API：  
-**g(elem)**  
+### g(elem)
 创建一个gesture对象，然后可以绑定事件。  
 @param elem: 需要绑定事件的DOM元素，必选。可以是字符串（selector），DOM元素，DOM元素数组，NodeList，HTMLCollection或者jQuery对象。  
 @return g，拥有了on，tap，doubletap等方法的对象。  
 
-**g.prototype.on(type[, selector][, data], callback)**  
+### g.prototype.on(type[, selector][, data], callback)
 绑定事件。  
 @param type: 字符串，必选。需要绑定的事件类型。支持命名空间。如有多个，用空格分隔，如"tap taphold.namespace"。  
 @param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。  
@@ -20,19 +20,19 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @param callback: 函数，必选。事件触发时的处理函数。  
 @return g对象。  
 
-**g.prototype.off(type[, selector][, callback])**  
+### g.prototype.off(type[, selector][, callback])
 解除事件。由于type参数可以表示事件类型或（和）命名空间，解除事件的时候，需要事件类型，命名空间，选择器和处理函数需要同时相同才能解除，如果存在的话。  
 @param type: 字符串，必选。需要解除的事件类型。支持命名空间。如有多个，用空格分隔，如".namespace"。  
 @param selector: 字符串，可选。解除代理给selector指定的子元素上的事件。  
 @param callback: 函数，可选。解除绑定在某事件上的某个函数。  
 @return g对象。  
 
-**g.prototype.trigger(type)**  
+### g.prototype.trigger(type)
 使用代码触发某类事件。  
 @param type: 字符串，必选。需要触发的事件类型。如"tap"。  
 @return g对象。  
 
-**g.prototype.tap([selector, ][data, ]callback[, namespace])**  
+### g.prototype.tap([selector, ][data, ]callback[, namespace])
 绑定tap事件。  
 @param selector: 字符串，可选。将事件代理给某些子元素=querySelectorAll(selector)。  
 @param data: 对象，可选。绑定事件时将一些数据传递给处理函数。   
@@ -41,7 +41,7 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @return g对象。  
 同样地，有doubletap，taphold，zoomin，zoomout，flick，scroll等方法。  
 
-**g.opt(k, v)**  
+### g.opt(k, v)
 设置或者获取时间判断的条件。  
 @param k: 字符串，必选。  
 @param v: 字符串，可选。为空表示获取该@k值，否则设置@k=@v。  
@@ -56,38 +56,39 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 'zoomin_min_scale': zoomin事件中，两个手指之间的距离最小是初始的1.2倍。  
 'dragstart_after_touchstart': drag事件中，从touchstart到dragstart触发之间的时间间隔。  
 
-**g.util.getPageX(e)**  
+### g.util.getPageX(e)
 @param e: 原生事件e。  
 @return pageX值。  
 
-**g.util.getPageY(e)**  
+### g.util.getPageY(e)
 @param e: 原生事件e。  
 @return pageX值。  
 
-**g.util.getDistance(p1, p2)**  
+### g.util.getDistance(p1, p2)
 @param p1: [x, y]元组。  
 @param p2: [x, y]元组。  
 @return p1和p2两点之间的距离。  
 
-**g.register(event, handler[, ifBind])**  
+### g.register(event, handler[, ifBind])
 @param event: 字符串，必选。注册的事件类型。如有多个，用空格分隔，如"zoomin zoomout"。  
 @param handler: 对象，必选。一个包含touchstart，touchmove，touchend或者gesturestart，gesturechange，gestureend等属性的对象。分别表示这些事件触发时的处理函数，用于判断是否是@event事件。  
 @param ifBind: 函数，可选。绑定该事件时，执行一些设置属性等操作。  
 @return g函数。  
 
-**g.unregister(event)**  
+### g.unregister(event)
 @param event: 字符串，必选。需要注销的事件类型。如有多个，用空格分隔，如"zoomin zoomout"。 
 @return g函数。 
 
-**g.createEvent(name, e[, attrs])**  
+### g.createEvent(name, e[, attrs]) 
 @param name: 字符串，必选。需要新建的事件名称。  
 @param e: 对象，必选。原生对象e，一般是touchend或者gestureend事件。  
 @param attrs: 对象，可选。用于设置一些特殊属性，如flick事件中表示方向的属性direction。  
 @return 无。  
 
-**g.enableNativeEvent(type, alias)**
+### g.enableNativeEvent(type, alias)
+让原生事件比如touchstart、mousedown等也可以通过型为`g().touchstart()`方式使用。
 @param type: 字符串，必选。启用的原生DOM事件。  
-@param alias: 字符串，字符串数组。该原生事件的同类事件，比如mousemove和touchamove是同类事件，transitionend和webkitTransitionEnd是同类事件。  
+@param alias: 字符串，字符串数组。该原生事件的同类事件，比如mousemove和touchamove是同类事件，transitionend和webkitTransitionEnd是同类事件。比如通过下例中可以同时监听transitionend和webkitTransitionEnd事件。  
 @return g函数。
 ```js
 g.enableNativeEvent('transitionend', 'webkitTransitionEnd');
@@ -216,7 +217,7 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）引入taphold.js（4）绑定tap， doubeltap或者taphold事件即可。
 
 # Change Log
-######1.0.3 新增方法g.enbaleNativeEvent(type, alias), dragdrop-delegatable.js中使用move事件使用捕获阶段。  
+######1.0.3 新增方法g.enbaleNativeEvent(type, alias), dragdrop-delegatable.js中的move事件使用捕获阶段。  
 ######1.0.2 修正on(event.namespace, selector, callback)方法中未能正确设置namespace的问题 [#2](https://github.com/lichangwei/gesture/issues/2).
 ######1.0.1 dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。
 ####1.0.0 (Initial Version)

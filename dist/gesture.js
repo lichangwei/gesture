@@ -171,24 +171,20 @@ g.unregister = function(type){
 };
 
 /*
- * @method g.enableNativeEvent
+ * @method g.enableNativeEvents
  * @desc allow using native events just like tap etc.
- * @param {string} type required. 
- * @param {string array} alias optional.
+ * @param {string} types required.
  * @return g class
- * @sample g.enableNativeEvent('touchstart', 'mousedown').enableNativeEvent('click');
+ * @sample g.enableNativeEvents('touchstart mousedown', 'click');
+ *   After above code was executed, you can listen touchstart and mousedown event by using code `g().touchstart()`,
+ *   and listen click event by using code 'g().click()'
  */
-g.enableNativeEvent = function(type, alias){
-  if(!alias){
-    alias = [];
-  }else if(typeof alias === 'string'){
-    alias = [alias];
+g.enableNativeEvents = function(){
+  for(var i = 0; i < arguments.length; i++){
+    var types = arguments[i].split(/\s+/);
+    aliases[types[0]] = types;
+    register(types[0]);
   }
-  if(alias.indexOf(type) === -1){
-    alias.push(type);
-  }
-  aliases[type] = alias;
-  register(type);
   return this;
 };
 
@@ -700,10 +696,7 @@ function returnFalse(){
 }
 
 // allow user bind some standard events.
-g.enableNativeEvent('touchstart', 'mousedown')
-  .enableNativeEvent('touchmove', 'mousemove')
-  .enableNativeEvent('touchend', 'mouseup')
-  .enableNativeEvent('click');
+g.enableNativeEvents('touchstart mousedown', 'touchmove mousemove', 'touchend mouseup', 'click');
 
 })();
 
