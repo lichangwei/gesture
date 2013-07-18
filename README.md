@@ -85,13 +85,15 @@ gesture，一个适用于移动终端和桌面浏览器的事件库，事件包�
 @param attrs: 对象，可选。用于设置一些特殊属性，如flick事件中表示方向的属性direction。  
 @return 无。  
 
-### g.enableNativeEvent(type, alias)
-让原生事件比如touchstart、mousedown等也可以通过型为`g().touchstart()`方式使用。
-@param type: 字符串，必选。启用的原生DOM事件。  
-@param alias: 字符串，字符串数组。该原生事件的同类事件，比如mousemove和touchamove是同类事件，transitionend和webkitTransitionEnd是同类事件。比如通过下例中可以同时监听transitionend和webkitTransitionEnd事件。  
+### g.enableNativeEvents(types1[, types2, ...])
+让原生事件比如touchstart、keydown等也可以通过型为`g().touchstart()`方式使用。  
+@param types: （不定数目的）字符串，必选。一个事件名称比如`'keydown'`，或者使用空格分隔的多个同类型事件，比如`'transitionend webkitTransitionEnd'`。如果是后者，则可以通过第一个事件名称来监听这几种类型事件。同类型是指不同系统（比如Windows和iOS）中对同一（或相似）事件有着不同事件名，比如mousedown和touchstart，也可以是不同浏览器对W3C规范中的事件加了浏览器厂商前缀，比如webkitTransitionEnd和transitionend。  
 @return g函数。
 ```js
-g.enableNativeEvent('transitionend', 'webkitTransitionEnd');
+g.enableNativeEvents('keydown', 'transitionend webkitTransitionEnd');
+gElemPages.keydown(function(e){
+  // e should be a keydown event
+});
 gElemPages.transitionend(function(e){
   // e maybe a transitionend or webkitTransitionEnd event
 });
@@ -217,6 +219,7 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）引入taphold.js（4）绑定tap， doubeltap或者taphold事件即可。
 
 # Change Log
+######1.0.4 修改方法g.enbaleNativeEvent(type, alias)变成g.enbaleNativeEvents(types1[, types2, ...])
 ######1.0.3 新增方法g.enbaleNativeEvent(type, alias), dragdrop-delegatable.js中的move事件使用捕获阶段。  
 ######1.0.2 修正on(event.namespace, selector, callback)方法中未能正确设置namespace的问题 [#2](https://github.com/lichangwei/gesture/issues/2).
 ######1.0.1 dragdrop-delegatable.js文件中的dragstart, drag, dragend 和 dragenter, dragover, dragleave, drop支持代理方式调用。更新文件，添加注释。
