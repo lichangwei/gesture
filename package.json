@@ -1,7 +1,7 @@
 {
   "name": "gesture",
   "description": "A gesture library for desk/mobile browsers.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "author": {
     "name": "Li Chang Wei",

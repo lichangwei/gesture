@@ -104,7 +104,10 @@ g.prototype.off = function(type, selector, callback){
          ( !namespace || (namespace === cb.namespace) ) &&
          ( !callback  || (callback  === cb.original)) ){
         // remove these events bound by addEventListener too.
-        elem.removeEventListener(cb.type, cb.callback);
+        var types = aliases[cb.type] || [cb.type];
+        for(var k = 0; k < types.length; k++){
+          elem.removeEventListener(types[k], cb.callback, false);
+        }
         cbs.splice(j, 1);
         // reduce the count of listener, if reduce to 0, then won't execute its event handler
         // @see checkIfBind
@@ -134,15 +137,16 @@ g.prototype.trigger = function(type){
 /**
  * @method g.register
  * @desc Regiester an event type. used to extend this framework.
- * @param {string} type The event type to regiester.
- * @param {object} handler A object contains 3 methods named 'touchstart', 'toucmove', 'touchend'
- * @param {function} ifBind This function will be executed when bind this event to an element.
+ * @param {string} type required. The event type to regiester.
+ * @param {object} handler optional. A object may contains 3 methods named 'touchstart', 'toucmove', 'touchend'
+ * @param {function} ifBind optional. This function will be executed when bind this event to an element.
  * @return g class
  */
 g.register = function(type, handler, ifBind){
-  if( events[type] ){
+  if(events[type]){
     console.error('"' + type + '" cannot be regiested twice.');
   }else{
+    handler = handler || {};
     events[type] = handler;
     var types = handler.types = type.split(/\s/);
     for(var i = 0; i < types.length; i++){
@@ -154,17 +158,36 @@ g.register = function(type, handler, ifBind){
 /**
  * @method g.unregister
  * @desc Unregiester an event type. this function will not be used normally.
- * @param {string} event event type, such as 'tap'.
+ * @param {string} type event type, such as 'tap'.
  * @return g class
  */
-g.unregister = function(event){
-  delete events[event];
-  event = event.split(/\s/);
-  for(var i = 0; i < event.length; i++){
-    delete g.prototype[event[i]];
+g.unregister = function(type){
+  delete events[type];
+  type = type.split(/\s/);
+  for(var i = 0; i < type.length; i++){
+    delete g.prototype[type[i]];
   }
   return this;
 };
+
+/*
+ * @method g.enableNativeEvents
+ * @desc allow using native events just like tap etc.
+ * @param {string...} types required.
+ * @return g class
+ * @sample g.enableNativeEvents('touchstart mousedown', 'click');
+ *   After above code was executed, you can listen touchstart and mousedown event by using code `g().touchstart()`,
+ *   and listen click event by using code 'g().click()'
+ */
+g.enableNativeEvents = function(){
+  for(var i = 0; i < arguments.length; i++){
+    var types = arguments[i].split(/\s+/);
+    aliases[types[0]] = types;
+    register(types[0]);
+  }
+  return this;
+};
+
 /**
  * @method g.opt
  * @desc set or get some config data
@@ -224,7 +247,11 @@ function register(type, ifBind){
     for(var i = 0; i < this.elems.length; i++){
       var elem = this.elems[i];
       ifBind && ifBind.call(elem, type);
-      elem.addEventListener(type, cb, false);
+      // bind native events
+      var types = aliases[type];
+      for(var j = 0; types && j < types.length; j++){
+        elem.addEventListener(types[j], cb, false);
+      }
       var cbs = callbacks[elem._gesture_id];
       cbs.push({
         type: type,
@@ -241,6 +268,7 @@ function register(type, ifBind){
 }
 
 var events = {};
+var aliases = {};
 var callbacks = {};
 var gesture_id = 0;
 
@@ -418,9 +446,6 @@ var gesturestart  = 'gesturestart';
 var gesturechange = 'gesturechange';
 var gestureend    = 'gestureend';
 
-// allow user bind some standard events.
-g.register('touchstart touchmove touchend mousedown mousemove mouseup click', {});
-
 /**
  * @member g.event
  * @property {string} g.event.touchstart 'touchstart' or 'mousedown'.<br/>
@@ -454,8 +479,7 @@ g.util = {
   getPageY   : getPageY,
   getDistance: getDistance,
   extend     : extend,
-  Event      : Event,
-  preventDefault: preventDefault
+  Event      : Event
 };
 
 /**
@@ -627,21 +651,11 @@ Event.prototype = {
   preventDefault: function(){
     this.defaultPrevented = true;
     var e = this.originalEvent;
-    if( !e ) return;
-    if( e.preventDefault ){
-      e.preventDefault();
-    }else{
-      e.returnValue = false;
-    }
+    e && e.preventDefault();
   },
   stopPropagation: function(){
     var e = this.originalEvent;
-    if( !e ) return;
-    if( e.stopPropagation ){
-      e.stopPropagation();
-    }else{
-      e.cancelBubble = true;
-    }
+    e && e.stopPropagation();
   },
   stopImmediatePropagation: function() {
     this.isImmediatePropagationStopped = returnTrue;
@@ -681,9 +695,8 @@ function returnFalse(){
   return false;
 }
 
-function preventDefault(e){
-  e.preventDefault();
-}
+// allow user bind some standard events.
+g.enableNativeEvents('touchstart mousedown', 'touchmove mousemove', 'touchend mouseup', 'click');
 
 })();
 
@@ -893,6 +906,7 @@ function ondragstart(e, data){
   
   function ondrag(e){
     e.preventDefault();
+    e.stopPropagation();
     endX = g.util.getPageX(e);
     endY = g.util.getPageY(e);
     deltaX = endX - data.startX;
@@ -940,8 +954,8 @@ function ondragstart(e, data){
 
   function ondragend(e){
     e.preventDefault();
-    document.removeEventListener(g.event.touchmove, ondrag);
-    document.removeEventListener(g.event.touchend, ondragend);
+    document.removeEventListener(g.event.touchmove, ondrag, true);
+    document.removeEventListener(g.event.touchend, ondragend, false);
     if(effect === 'copy'){
       document.body.removeChild(shadow);
     }
@@ -971,7 +985,7 @@ function ondragstart(e, data){
     }
   }
 
-  document.addEventListener(g.event.touchmove, ondrag, false);
+  document.addEventListener(g.event.touchmove, ondrag, true);
   document.addEventListener(g.event.touchend, ondragend, false);
 }
 
