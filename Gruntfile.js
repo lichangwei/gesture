@@ -62,7 +62,7 @@ module.exports = function(grunt) {
     copy: {
       main: {
         files: [
-          {expand: true, cwd: dest_dir, src: [uglify_dest], dest: '../webapps/common/scripts/'}
+          {expand: true, cwd: dest_dir, src: ['*.js'], dest: '../webapps/common/scripts/'}
         ]
       }
     }
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('default', ['concat', 'uglify', 'copy']);
   grunt.registerTask('test', ['qunit']);
 
 };
