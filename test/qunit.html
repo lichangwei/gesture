@@ -150,6 +150,38 @@
             }, 10);
           });
         }
+
+        test('customize event', function(){
+
+          g.register('customizeEventA customizeEventB');
+
+          var gBody = g(document.body);
+          var counter = 0;
+
+          gBody.customizeEventA(function(){
+            counter++;
+          });
+          gBody.on('customizeEventB', function(){
+            counter++;
+          });
+          gBody.on('customizeEventB', '.header', function(){
+            counter++;
+          });
+
+          gBody.trigger('customizeEventA');
+          equal(1, counter);
+          g($header).trigger('customizeEventB');
+          equal(3, counter);
+          gBody.trigger('customizeEventB');
+          equal(4, counter);
+
+          gBody.off('customizeEventA customizeEventB');
+
+          gBody.trigger('customizeEventA');
+          equal(4, counter);
+          g($header).trigger('customizeEventB');
+          equal(4, counter);
+        });
         
       });
     </script>
