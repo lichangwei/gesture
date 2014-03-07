@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rotate &amp; Zoom Sample</title>
     <style rel="stylesheet">
-      html {
-        height: 100%;
-      }
-      body {
-        position: relative;
+      html, body {
         height: 100%;
         background: #E2E2E2;
+      }
+      .container {
+        position: relative;
+        height: 250px;
         top: 50%;
       }
-      #rotatezoom {
+      .rotate-zoom {
         position: relative;
         top: -50%;
-        height: 250px;
         margin-left: auto;
         margin-right: auto;
         background: #AAA;
@@ -25,14 +24,15 @@
     </style>
   </head>
   <body>
-    <div id="rotatezoom" style="width: 250px; height: 250px;"></div>
-    <div id="result"></div>
+    <div class="container">
+      <div class="rotate-zoom" style="width: 250px; height: 250px;"></div>
+    </div>
     <script src="../src/gesture.js"></script>
     <script src="../src/rotate.js"></script>
     <script src="../src/zoom.js"></script>
     <script src="../src/plugin/preventDefault.js"></script>
     <script>
-      g('#rotatezoom').rotatestart(function(){
+      g('.rotate-zoom').rotatestart(function(){
         this.base = 0;
         var match = /rotate\((-?\d+)deg\)/.exec(this.style.WebkitTransform);
         if( match ){
@@ -45,7 +45,7 @@
         this.style.border = '';
       });
 
-      g('#rotatezoom').zoomstart(function(e){
+      g('.rotate-zoom').zoomstart(function(e){
         this.width  = parseInt(this.style.width);
         this.height = parseInt(this.style.height);
       }).zoom(function(e){
@@ -56,11 +56,6 @@
       }).zoomend(function(){
         // console.log('zoom end.');
       });
-
-      var result = document.getElementById('result');
-      console.log = function( a ){
-        result.innerHTML += a + '<br/>';
-      }
     </script>
   </body>
 </html>

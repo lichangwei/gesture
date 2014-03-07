@@ -19,6 +19,7 @@
         width: 80%;
         height: 80%;
         background: #E2E2E2;
+        opacity: 0.8;
       }
       .item{
         position: absolute;
@@ -60,9 +61,9 @@
     </style>
   </head>
   <body>
-    <p>A moves with the mouse/touch but cannot be out of parent container.</p>
-    <p>The shadow of B moves with the mouse/touch but cannot be out of parent container.</p>
-    <p>C moves with the mouse/touch.</p>
+    <p>拖动A时，A随鼠标移动，并且不能超出灰色外框。</p>
+    <p>拖动B时，B的影子节点移动，并且不能超出灰色外框。</p>
+    <p>拖动C时，C的影子节点移动。</p>
     <div id="container">
       <ul class="trashcan"></ul>
       <span class="item child1" drag="move" container="#container">A</span>
