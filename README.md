@@ -191,9 +191,6 @@ g('.removable').draggable(ondragstart, ondrag, ondragend);
 g('.recyclebin').dropable(ondragenter, ondragover, ondragleave, ondrop);
 ```
 
-15. plugin/touch-alink.js
-修正这样一个[issue](http://jsfiddle.net/lichangwei/hLJH3/)，在iOS和Android设备中点击某元素X，在touchend事件触发时，隐藏元素X，如果此时手指下面还有一个链接元素A，那么很可能会触发A的click事件，即便在touchend事件中调用了`e.preventDefault(); e.stopPropagation();`。解决办法是：如果A链接元素上没有触发touchend事件，而直接触发click事件，那么取消其默认行为（跳转或者打开某个页面）。
-
 # 示例 Sample  
 ``` javascript  
 // 支持事件代理，支持同时绑定多个事件，支持namespace，支持链式调用
@@ -215,8 +212,7 @@ g('#menu').on('tap doubletap.namespace', 'li', function(e){
 或者使用`grunt uglify`命令。  
 
 # Q && A  
-1. Q：如何实现iOS中的效果：快速点击（tap）正常响应相应动作，按住不放（taphold）会出现拷贝，打开链接等选项卡，双击（doubletap）会放大或者缩小页面？  
-A：引入（1）gesture.js.（2）tap-doubletap.js，注册了tap和doubletap事件，tap行为完成之后并不会立即触发tap事件，而是等待下一次tap行为的发生。如果tap行为发生，则触发一个doubletap事件，如果在doubletap_max_interval = 250ms内都没有发生下一次的tap行为，则触发一个tap事件.（3）引入taphold.js（4）绑定tap， doubeltap或者taphold事件即可。
+
 
 # Change Log
 ######1.0.4 修改方法g.enbaleNativeEvent(type, alias)变成g.enbaleNativeEvents(types1[, types2, ...])
